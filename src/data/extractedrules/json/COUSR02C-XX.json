@@ -1,0 +1,88 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "RULE",
+    "name": "MAIN-PARA",
+    "paragraph": "       MAIN-PARA.\n           SET ERR-FLG-OFF     TO TRUE\n           SET USR-MODIFIED-NO TO TRUE\n           MOVE SPACES TO WS-MESSAGE\n                          ERRMSGO OF COUSR2AO\n           IF EIBCALEN = 0\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n               PERFORM RETURN-TO-PREV-SCREEN\n           ELSE\n               MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA\n               IF NOT CDEMO-PGM-REENTER\n                   SET CDEMO-PGM-REENTER    TO TRUE\n                   MOVE LOW-VALUES          TO COUSR2AO\n                   MOVE -1       TO USRIDINL OF COUSR2AI\n                   IF CDEMO-CU02-USR-SELECTED NOT =\n                                              SPACES AND LOW-VALUES\n                       MOVE CDEMO-CU02-USR-SELECTED TO\n                            USRIDINI OF COUSR2AI\n                       PERFORM PROCESS-ENTER-KEY\n                   END-IF\n                   PERFORM SEND-USRUPD-SCREEN\n               ELSE\n                   PERFORM RECEIVE-USRUPD-SCREEN\n                   EVALUATE EIBAID\n                       WHEN DFHENTER\n                           PERFORM PROCESS-ENTER-KEY\n                       WHEN DFHPF3\n                           PERFORM UPDATE-USER-INFO\n                           IF CDEMO-FROM-PROGRAM = SPACES OR LOW-VALUES\n                               MOVE 'COADM01C' TO CDEMO-TO-PROGRAM\n                           ELSE\n                               MOVE CDEMO-FROM-PROGRAM TO\n                               CDEMO-TO-PROGRAM\n                           END-IF\n                           PERFORM RETURN-TO-PREV-SCREEN\n                       WHEN DFHPF4\n                           PERFORM CLEAR-CURRENT-SCREEN\n                       WHEN DFHPF5\n                           PERFORM UPDATE-USER-INFO\n                       WHEN DFHPF12\n                           MOVE 'COADM01C' TO CDEMO-TO-PROGRAM\n                           PERFORM RETURN-TO-PREV-SCREEN\n                       WHEN OTHER\n                           MOVE 'Y'                       TO WS-ERR-FLG\n                           MOVE CCDA-MSG-INVALID-KEY      TO WS-MESSAGE\n                           PERFORM SEND-USRUPD-SCREEN\n                   END-EVALUATE\n               END-IF\n           END-IF\n           EXEC CICS RETURN\n                     TRANSID (WS-TRANID)\n                     COMMAREA (CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "NON-RULE",
+    "name": "PROCESS-ENTER-KEY",
+    "paragraph": "       PROCESS-ENTER-KEY.\n           EVALUATE TRUE\n               WHEN USRIDINI OF COUSR2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN OTHER\n                   MOVE -1       TO USRIDINL OF COUSR2AI\n                   CONTINUE\n           END-EVALUATE\n           IF NOT ERR-FLG-ON\n               MOVE SPACES      TO FNAMEI   OF COUSR2AI\n                                   LNAMEI   OF COUSR2AI\n                                   PASSWDI  OF COUSR2AI\n                                   USRTYPEI OF COUSR2AI\n               MOVE USRIDINI  OF COUSR2AI TO SEC-USR-ID\n               PERFORM READ-USER-SEC-FILE\n           END-IF.\n           IF NOT ERR-FLG-ON\n               MOVE SEC-USR-FNAME      TO FNAMEI    OF COUSR2AI\n               MOVE SEC-USR-LNAME      TO LNAMEI    OF COUSR2AI\n               MOVE SEC-USR-PWD        TO PASSWDI   OF COUSR2AI\n               MOVE SEC-USR-TYPE       TO USRTYPEI  OF COUSR2AI\n               PERFORM SEND-USRUPD-SCREEN\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "RULE",
+    "name": "UPDATE-USER-INFO",
+    "paragraph": "       UPDATE-USER-INFO.\n           EVALUATE TRUE\n               WHEN USRIDINI OF COUSR2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN FNAMEI OF COUSR2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'First Name can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO FNAMEL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN LNAMEI OF COUSR2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Last Name can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO LNAMEL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN PASSWDI OF COUSR2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Password can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO PASSWDL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN USRTYPEI OF COUSR2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User Type can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRTYPEL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN OTHER\n                   MOVE -1       TO FNAMEL OF COUSR2AI\n                   CONTINUE\n           END-EVALUATE\n           IF NOT ERR-FLG-ON\n               MOVE USRIDINI  OF COUSR2AI TO SEC-USR-ID\n               PERFORM READ-USER-SEC-FILE\n               IF FNAMEI  OF COUSR2AI NOT = SEC-USR-FNAME\n                   MOVE FNAMEI   OF COUSR2AI TO SEC-USR-FNAME\n                   SET USR-MODIFIED-YES TO TRUE\n               END-IF\n               IF LNAMEI  OF COUSR2AI NOT = SEC-USR-LNAME\n                   MOVE LNAMEI   OF COUSR2AI TO SEC-USR-LNAME\n                   SET USR-MODIFIED-YES TO TRUE\n               END-IF\n               IF PASSWDI  OF COUSR2AI NOT = SEC-USR-PWD\n                   MOVE PASSWDI  OF COUSR2AI TO SEC-USR-PWD\n                   SET USR-MODIFIED-YES TO TRUE\n               END-IF\n               IF USRTYPEI  OF COUSR2AI NOT = SEC-USR-TYPE\n                   MOVE USRTYPEI OF COUSR2AI TO SEC-USR-TYPE\n                   SET USR-MODIFIED-YES TO TRUE\n               END-IF\n               IF USR-MODIFIED-YES\n                   PERFORM UPDATE-USER-SEC-FILE\n               ELSE\n                   MOVE 'Please modify to update ...' TO\n                                   WS-MESSAGE\n                   MOVE DFHRED       TO ERRMSGC  OF COUSR2AO\n                   PERFORM SEND-USRUPD-SCREEN\n               END-IF\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "RULE",
+    "name": "RETURN-TO-PREV-SCREEN",
+    "paragraph": "       RETURN-TO-PREV-SCREEN.\n           IF CDEMO-TO-PROGRAM = LOW-VALUES OR SPACES\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n           END-IF\n           MOVE WS-TRANID    TO CDEMO-FROM-TRANID\n           MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM\n           MOVE ZEROS        TO CDEMO-PGM-CONTEXT\n           EXEC CICS\n               XCTL PROGRAM(CDEMO-TO-PROGRAM)\n               COMMAREA(CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "NON-RULE",
+    "name": "SEND-USRUPD-SCREEN",
+    "paragraph": "       SEND-USRUPD-SCREEN.\n           PERFORM POPULATE-HEADER-INFO\n           MOVE WS-MESSAGE TO ERRMSGO OF COUSR2AO\n           EXEC CICS SEND\n                     MAP('COUSR2A')\n                     MAPSET('COUSR02')\n                     FROM(COUSR2AO)\n                     ERASE\n                     CURSOR\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "NON-RULE",
+    "name": "RECEIVE-USRUPD-SCREEN",
+    "paragraph": "       RECEIVE-USRUPD-SCREEN.\n           EXEC CICS RECEIVE\n                     MAP('COUSR2A')\n                     MAPSET('COUSR02')\n                     INTO(COUSR2AI)\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "NON-RULE",
+    "name": "POPULATE-HEADER-INFO",
+    "paragraph": "       POPULATE-HEADER-INFO.\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01           TO TITLE01O OF COUSR2AO\n           MOVE CCDA-TITLE02           TO TITLE02O OF COUSR2AO\n           MOVE WS-TRANID              TO TRNNAMEO OF COUSR2AO\n           MOVE WS-PGMNAME             TO PGMNAMEO OF COUSR2AO\n           MOVE WS-CURDATE-MONTH       TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY         TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)   TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY    TO CURDATEO OF COUSR2AO\n           MOVE WS-CURTIME-HOURS       TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE      TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND      TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS    TO CURTIMEO OF COUSR2AO.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "RULE",
+    "name": "READ-USER-SEC-FILE",
+    "paragraph": "       READ-USER-SEC-FILE.\n           EXEC CICS READ\n                DATASET   (WS-USRSEC-FILE)\n                INTO      (SEC-USER-DATA)\n                LENGTH    (LENGTH OF SEC-USER-DATA)\n                RIDFLD    (SEC-USR-ID)\n                KEYLENGTH (LENGTH OF SEC-USR-ID)\n                UPDATE\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC.\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   CONTINUE\n                   MOVE 'Press PF5 key to save your updates ...' TO\n                                   WS-MESSAGE\n                   MOVE DFHNEUTR       TO ERRMSGC  OF COUSR2AO\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to lookup User...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO FNAMEL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "RULE",
+    "name": "UPDATE-USER-SEC-FILE",
+    "paragraph": "       UPDATE-USER-SEC-FILE.\n           EXEC CICS REWRITE\n                DATASET   (WS-USRSEC-FILE)\n                FROM      (SEC-USER-DATA)\n                LENGTH    (LENGTH OF SEC-USER-DATA)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC.\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   MOVE SPACES             TO WS-MESSAGE\n                   MOVE DFHGREEN           TO ERRMSGC  OF COUSR2AO\n                   STRING 'User '     DELIMITED BY SIZE\n                          SEC-USR-ID  DELIMITED BY SPACE\n                          ' has been updated ...' DELIMITED BY SIZE\n                     INTO WS-MESSAGE\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to Update User...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO FNAMEL OF COUSR2AI\n                   PERFORM SEND-USRUPD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "NON-RULE",
+    "name": "CLEAR-CURRENT-SCREEN",
+    "paragraph": "       CLEAR-CURRENT-SCREEN.\n           PERFORM INITIALIZE-ALL-FIELDS.\n           PERFORM SEND-USRUPD-SCREEN.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR02C.COB",
+    "kind": "NON-RULE",
+    "name": "INITIALIZE-ALL-FIELDS",
+    "paragraph": "       INITIALIZE-ALL-FIELDS.\n           MOVE -1              TO USRIDINL OF COUSR2AI\n           MOVE SPACES          TO USRIDINI OF COUSR2AI\n                                   FNAMEI   OF COUSR2AI\n                                   LNAMEI   OF COUSR2AI\n                                   PASSWDI  OF COUSR2AI\n                                   USRTYPEI OF COUSR2AI\n"
+}]

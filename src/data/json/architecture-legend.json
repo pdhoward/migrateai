@@ -1,0 +1,8 @@
+[
+    "    IO: input-output (READ, WRITE)        IFLW: inflows  (inbound  data)",
+    "+ MANI: manipulation (COMPUTE, MOVE)    + OFLW: outflows (outbound data)",
+    "+ CALL: CALL (& outline PERFORM)        + FANI: fan-in   (inbound  CALLs)",
+    "+  OSS: open source software            + FANO: fan-out  (outbound CALLs)",
+    "+  NET: internet (GET, POST, PUT)       =   EC: external complexity",
+    "=   IC: internal complexity                 AC: architecture complexity = IC+EC"
+]

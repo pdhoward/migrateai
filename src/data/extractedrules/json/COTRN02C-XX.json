@@ -1,0 +1,144 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "MAIN-PARA",
+    "paragraph": "       MAIN-PARA.\n           SET ERR-FLG-OFF     TO TRUE\n           SET USR-MODIFIED-NO TO TRUE\n           MOVE SPACES TO WS-MESSAGE\n                          ERRMSGO OF COTRN2AO\n           IF EIBCALEN = 0\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n               PERFORM RETURN-TO-PREV-SCREEN\n           ELSE\n               MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA\n               IF NOT CDEMO-PGM-REENTER\n                   SET CDEMO-PGM-REENTER    TO TRUE\n                   MOVE LOW-VALUES          TO COTRN2AO\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   IF CDEMO-CT02-TRN-SELECTED NOT =\n                                              SPACES AND LOW-VALUES\n                       MOVE CDEMO-CT02-TRN-SELECTED TO\n                            CARDNINI OF COTRN2AI\n                       PERFORM PROCESS-ENTER-KEY\n                   END-IF\n                   PERFORM SEND-TRNADD-SCREEN\n               ELSE\n                   PERFORM RECEIVE-TRNADD-SCREEN\n                   EVALUATE EIBAID\n                       WHEN DFHENTER\n                           PERFORM PROCESS-ENTER-KEY\n                       WHEN DFHPF3\n                           IF CDEMO-FROM-PROGRAM = SPACES OR LOW-VALUES\n                               MOVE 'COMEN01C' TO CDEMO-TO-PROGRAM\n                           ELSE\n                               MOVE CDEMO-FROM-PROGRAM TO\n                               CDEMO-TO-PROGRAM\n                           END-IF\n                           PERFORM RETURN-TO-PREV-SCREEN\n                       WHEN DFHPF4\n                           PERFORM CLEAR-CURRENT-SCREEN\n                       WHEN DFHPF5\n                           PERFORM COPY-LAST-TRAN-DATA\n                       WHEN OTHER\n                           MOVE 'Y'                       TO WS-ERR-FLG\n                           MOVE CCDA-MSG-INVALID-KEY      TO WS-MESSAGE\n                           PERFORM SEND-TRNADD-SCREEN\n                   END-EVALUATE\n               END-IF\n           END-IF\n           EXEC CICS RETURN\n                     TRANSID (WS-TRANID)\n                     COMMAREA (CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "PROCESS-ENTER-KEY",
+    "paragraph": "       PROCESS-ENTER-KEY.\n           PERFORM VALIDATE-INPUT-KEY-FIELDS\n           PERFORM VALIDATE-INPUT-DATA-FIELDS.\n           EVALUATE CONFIRMI OF COTRN2AI\n               WHEN 'Y'\n               WHEN 'y'\n                   PERFORM ADD-TRANSACTION\n               WHEN 'N'\n               WHEN 'n'\n               WHEN SPACES\n               WHEN LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Confirm to add this transaction...'\n                                TO WS-MESSAGE\n                   MOVE -1      TO CONFIRML OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Invalid value. Valid values are (Y/N)...'\n                                TO WS-MESSAGE\n                   MOVE -1      TO CONFIRML OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "VALIDATE-INPUT-KEY-FIELDS",
+    "paragraph": "       VALIDATE-INPUT-KEY-FIELDS.\n           EVALUATE TRUE\n               WHEN ACTIDINI OF COTRN2AI NOT = SPACES AND LOW-VALUES\n                   IF ACTIDINI OF COTRN2AI IS NOT NUMERIC\n                       MOVE 'Y'     TO WS-ERR-FLG\n                       MOVE 'Account ID must be Numeric...' TO\n                                       WS-MESSAGE\n                       MOVE -1       TO ACTIDINL OF COTRN2AI\n                       PERFORM SEND-TRNADD-SCREEN\n                   END-IF\n                   COMPUTE WS-ACCT-ID-N = FUNCTION NUMVAL(ACTIDINI OF\n                   COTRN2AI)\n                   MOVE WS-ACCT-ID-N            TO XREF-ACCT-ID\n                                                ACTIDINI OF COTRN2AI\n                   PERFORM READ-CXACAIX-FILE\n                   MOVE XREF-CARD-NUM         TO CARDNINI OF COTRN2AI\n               WHEN CARDNINI OF COTRN2AI NOT = SPACES AND LOW-VALUES\n                   IF CARDNINI OF COTRN2AI IS NOT NUMERIC\n                       MOVE 'Y'     TO WS-ERR-FLG\n                       MOVE 'Card Number must be Numeric...' TO\n                                       WS-MESSAGE\n                       MOVE -1       TO CARDNINL OF COTRN2AI\n                       PERFORM SEND-TRNADD-SCREEN\n                   END-IF\n                   COMPUTE WS-CARD-NUM-N = FUNCTION NUMVAL(CARDNINI OF\n                   COTRN2AI)\n                   MOVE WS-CARD-NUM-N        TO XREF-CARD-NUM\n                                                CARDNINI OF COTRN2AI\n                   PERFORM READ-CCXREF-FILE\n                   MOVE XREF-ACCT-ID         TO ACTIDINI OF COTRN2AI\n               WHEN OTHER\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Account or Card Number must be entered...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "VALIDATE-INPUT-DATA-FIELDS",
+    "paragraph": "       VALIDATE-INPUT-DATA-FIELDS.\n           IF ERR-FLG-ON\n               MOVE SPACES      TO TTYPCDI  OF COTRN2AI\n                                   TCATCDI  OF COTRN2AI\n                                   TRNSRCI  OF COTRN2AI\n                                   TRNAMTI  OF COTRN2AI\n                                   TDESCI   OF COTRN2AI\n                                   TORIGDTI OF COTRN2AI\n                                   TPROCDTI OF COTRN2AI\n                                   MIDI     OF COTRN2AI\n                                   MNAMEI   OF COTRN2AI\n                                   MCITYI   OF COTRN2AI\n                                   MZIPI    OF COTRN2AI\n           END-IF.\n           EVALUATE TRUE\n               WHEN TTYPCDI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Type CD can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TTYPCDL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN TCATCDI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Category CD can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TCATCDL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN TRNSRCI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Source can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TRNSRCL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN TDESCI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Description can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TDESCL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN TRNAMTI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Amount can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TRNAMTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN TORIGDTI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Orig Date can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TORIGDTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN TPROCDTI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Proc Date can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TPROCDTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN MIDI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Merchant ID can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO MIDL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN MNAMEI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Merchant Name can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO MNAMEL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN MCITYI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Merchant City can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO MCITYL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN MZIPI OF COTRN2AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Merchant Zip can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO MZIPL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   CONTINUE\n           END-EVALUATE.\n           EVALUATE TRUE\n               WHEN TTYPCDI OF COTRN2AI NOT NUMERIC\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Type CD must be Numeric...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TTYPCDL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN TCATCDI OF COTRN2AI NOT NUMERIC\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Category CD must be Numeric...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TCATCDL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   CONTINUE\n           END-EVALUATE\n           EVALUATE TRUE\n               WHEN TRNAMTI OF COTRN2AI(1:1) NOT EQUAL '-' AND '+'\n               WHEN TRNAMTI OF COTRN2AI(2:8) NOT NUMERIC\n               WHEN TRNAMTI OF COTRN2AI(10:1) NOT = '.'\n               WHEN TRNAMTI OF COTRN2AI(11:2) IS NOT NUMERIC\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Amount should be in format -99999999.99' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TRNAMTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   CONTINUE\n           END-EVALUATE\n           EVALUATE TRUE\n               WHEN TORIGDTI OF COTRN2AI(1:4) IS NOT NUMERIC\n               WHEN TORIGDTI OF COTRN2AI(5:1) NOT EQUAL '-'\n               WHEN TORIGDTI OF COTRN2AI(6:2) NOT NUMERIC\n               WHEN TORIGDTI OF COTRN2AI(8:1) NOT EQUAL '-'\n               WHEN TORIGDTI OF COTRN2AI(9:2) NOT NUMERIC\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Orig Date should be in format YYYY-MM-DD' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TORIGDTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   CONTINUE\n           END-EVALUATE\n           EVALUATE TRUE\n               WHEN TPROCDTI OF COTRN2AI(1:4) IS NOT NUMERIC\n               WHEN TPROCDTI OF COTRN2AI(5:1) NOT EQUAL '-'\n               WHEN TPROCDTI OF COTRN2AI(6:2) NOT NUMERIC\n               WHEN TPROCDTI OF COTRN2AI(8:1) NOT EQUAL '-'\n               WHEN TPROCDTI OF COTRN2AI(9:2) NOT NUMERIC\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Proc Date should be in format YYYY-MM-DD' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TPROCDTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   CONTINUE\n           END-EVALUATE\n           COMPUTE WS-TRAN-AMT-N = FUNCTION NUMVAL-C(TRNAMTI OF\n           COTRN2AI)\n           MOVE WS-TRAN-AMT-N TO WS-TRAN-AMT-E\n           MOVE WS-TRAN-AMT-E TO TRNAMTI OF COTRN2AI\n           MOVE TORIGDTI OF COTRN2AI TO CSUTLDTC-DATE\n           MOVE WS-DATE-FORMAT       TO CSUTLDTC-DATE-FORMAT\n           MOVE SPACES               TO CSUTLDTC-RESULT\n           CALL 'CSUTLDTC' USING   CSUTLDTC-DATE\n                                   CSUTLDTC-DATE-FORMAT\n                                   CSUTLDTC-RESULT\n           IF CSUTLDTC-RESULT-SEV-CD = '0000'\n               CONTINUE\n           ELSE\n               IF CSUTLDTC-RESULT-MSG-NUM NOT = '2513'\n                   MOVE 'Orig Date - Not a valid date...'\n                     TO WS-MESSAGE\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE -1       TO TORIGDTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               END-IF\n           END-IF\n           MOVE TPROCDTI OF COTRN2AI TO CSUTLDTC-DATE\n           MOVE WS-DATE-FORMAT       TO CSUTLDTC-DATE-FORMAT\n           MOVE SPACES               TO CSUTLDTC-RESULT\n           CALL 'CSUTLDTC' USING   CSUTLDTC-DATE\n                                   CSUTLDTC-DATE-FORMAT\n                                   CSUTLDTC-RESULT\n           IF CSUTLDTC-RESULT-SEV-CD = '0000'\n               CONTINUE\n           ELSE\n               IF CSUTLDTC-RESULT-MSG-NUM NOT = '2513'\n                   MOVE 'Proc Date - Not a valid date...'\n                     TO WS-MESSAGE\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE -1       TO TPROCDTL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               END-IF\n           END-IF\n           IF MIDI OF COTRN2AI IS NOT NUMERIC\n               MOVE 'Y'     TO WS-ERR-FLG\n               MOVE 'Merchant ID must be Numeric...' TO\n                               WS-MESSAGE\n               MOVE -1       TO MIDL OF COTRN2AI\n               PERFORM SEND-TRNADD-SCREEN\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "ADD-TRANSACTION",
+    "paragraph": "       ADD-TRANSACTION.\n           MOVE HIGH-VALUES TO TRAN-ID\n           PERFORM STARTBR-TRANSACT-FILE\n           PERFORM READPREV-TRANSACT-FILE\n           PERFORM ENDBR-TRANSACT-FILE\n           MOVE TRAN-ID     TO WS-TRAN-ID-N\n           ADD 1 TO WS-TRAN-ID-N\n           INITIALIZE TRAN-RECORD\n           MOVE WS-TRAN-ID-N         TO TRAN-ID\n           MOVE TTYPCDI  OF COTRN2AI TO TRAN-TYPE-CD\n           MOVE TCATCDI  OF COTRN2AI TO TRAN-CAT-CD\n           MOVE TRNSRCI  OF COTRN2AI TO TRAN-SOURCE\n           MOVE TDESCI   OF COTRN2AI TO TRAN-DESC\n           COMPUTE WS-TRAN-AMT-N = FUNCTION NUMVAL-C(TRNAMTI OF\n           COTRN2AI)\n           MOVE WS-TRAN-AMT-N TO TRAN-AMT\n           MOVE CARDNINI OF COTRN2AI TO TRAN-CARD-NUM\n           MOVE MIDI     OF COTRN2AI TO TRAN-MERCHANT-ID\n           MOVE MNAMEI   OF COTRN2AI TO TRAN-MERCHANT-NAME\n           MOVE MCITYI   OF COTRN2AI TO TRAN-MERCHANT-CITY\n           MOVE MZIPI    OF COTRN2AI TO TRAN-MERCHANT-ZIP\n           MOVE TORIGDTI OF COTRN2AI TO TRAN-ORIG-TS\n           MOVE TPROCDTI OF COTRN2AI TO TRAN-PROC-TS\n           PERFORM WRITE-TRANSACT-FILE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "COPY-LAST-TRAN-DATA",
+    "paragraph": "       COPY-LAST-TRAN-DATA.\n           PERFORM VALIDATE-INPUT-KEY-FIELDS\n           MOVE HIGH-VALUES TO TRAN-ID\n           PERFORM STARTBR-TRANSACT-FILE\n           PERFORM READPREV-TRANSACT-FILE\n           PERFORM ENDBR-TRANSACT-FILE\n           IF NOT ERR-FLG-ON\n               MOVE TRAN-AMT TO WS-TRAN-AMT-E\n               MOVE TRAN-TYPE-CD        TO TTYPCDI  OF COTRN2AI\n               MOVE TRAN-CAT-CD         TO TCATCDI  OF COTRN2AI\n               MOVE TRAN-SOURCE         TO TRNSRCI  OF COTRN2AI\n               MOVE WS-TRAN-AMT-E       TO TRNAMTI  OF COTRN2AI\n               MOVE TRAN-DESC           TO TDESCI   OF COTRN2AI\n               MOVE TRAN-ORIG-TS        TO TORIGDTI OF COTRN2AI\n               MOVE TRAN-PROC-TS        TO TPROCDTI OF COTRN2AI\n               MOVE TRAN-MERCHANT-ID    TO MIDI     OF COTRN2AI\n               MOVE TRAN-MERCHANT-NAME  TO MNAMEI   OF COTRN2AI\n               MOVE TRAN-MERCHANT-CITY  TO MCITYI   OF COTRN2AI\n               MOVE TRAN-MERCHANT-ZIP   TO MZIPI    OF COTRN2AI\n           END-IF\n           PERFORM PROCESS-ENTER-KEY.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "RETURN-TO-PREV-SCREEN",
+    "paragraph": "       RETURN-TO-PREV-SCREEN.\n           IF CDEMO-TO-PROGRAM = LOW-VALUES OR SPACES\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n           END-IF\n           MOVE WS-TRANID    TO CDEMO-FROM-TRANID\n           MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM\n           MOVE ZEROS        TO CDEMO-PGM-CONTEXT\n           EXEC CICS\n               XCTL PROGRAM(CDEMO-TO-PROGRAM)\n               COMMAREA(CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "SEND-TRNADD-SCREEN",
+    "paragraph": "       SEND-TRNADD-SCREEN.\n           PERFORM POPULATE-HEADER-INFO\n           MOVE WS-MESSAGE TO ERRMSGO OF COTRN2AO\n           EXEC CICS SEND\n                     MAP('COTRN2A')\n                     MAPSET('COTRN02')\n                     FROM(COTRN2AO)\n                     ERASE\n                     CURSOR\n           END-EXEC.\n           EXEC CICS RETURN\n                     TRANSID (WS-TRANID)\n                     COMMAREA (CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "RECEIVE-TRNADD-SCREEN",
+    "paragraph": "       RECEIVE-TRNADD-SCREEN.\n           EXEC CICS RECEIVE\n                     MAP('COTRN2A')\n                     MAPSET('COTRN02')\n                     INTO(COTRN2AI)\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "POPULATE-HEADER-INFO",
+    "paragraph": "       POPULATE-HEADER-INFO.\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01           TO TITLE01O OF COTRN2AO\n           MOVE CCDA-TITLE02           TO TITLE02O OF COTRN2AO\n           MOVE WS-TRANID              TO TRNNAMEO OF COTRN2AO\n           MOVE WS-PGMNAME             TO PGMNAMEO OF COTRN2AO\n           MOVE WS-CURDATE-MONTH       TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY         TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)   TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY    TO CURDATEO OF COTRN2AO\n           MOVE WS-CURTIME-HOURS       TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE      TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND      TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS    TO CURTIMEO OF COTRN2AO.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "READ-CXACAIX-FILE",
+    "paragraph": "       READ-CXACAIX-FILE.\n           EXEC CICS READ\n                DATASET   (WS-CXACAIX-FILE)\n                INTO      (CARD-XREF-RECORD)\n                LENGTH    (LENGTH OF CARD-XREF-RECORD)\n                RIDFLD    (XREF-ACCT-ID)\n                KEYLENGTH (LENGTH OF XREF-ACCT-ID)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   CONTINUE\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Account ID NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to lookup Acct in XREF AIX file...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "READ-CCXREF-FILE",
+    "paragraph": "       READ-CCXREF-FILE.\n           EXEC CICS READ\n                DATASET   (WS-CCXREF-FILE)\n                INTO      (CARD-XREF-RECORD)\n                LENGTH    (LENGTH OF CARD-XREF-RECORD)\n                RIDFLD    (XREF-CARD-NUM)\n                KEYLENGTH (LENGTH OF XREF-CARD-NUM)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   CONTINUE\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Card Number NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO CARDNINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to lookup Card # in XREF file...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO CARDNINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "STARTBR-TRANSACT-FILE",
+    "paragraph": "       STARTBR-TRANSACT-FILE.\n           EXEC CICS STARTBR\n                DATASET   (WS-TRANSACT-FILE)\n                RIDFLD    (TRAN-ID)\n                KEYLENGTH (LENGTH OF TRAN-ID)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   CONTINUE\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Transaction ID NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to lookup Transaction...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "READPREV-TRANSACT-FILE",
+    "paragraph": "       READPREV-TRANSACT-FILE.\n           EXEC CICS READPREV\n                DATASET   (WS-TRANSACT-FILE)\n                INTO      (TRAN-RECORD)\n                LENGTH    (LENGTH OF TRAN-RECORD)\n                RIDFLD    (TRAN-ID)\n                KEYLENGTH (LENGTH OF TRAN-ID)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   CONTINUE\n               WHEN DFHRESP(ENDFILE)\n                   MOVE ZEROS TO TRAN-ID\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to lookup Transaction...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "ENDBR-TRANSACT-FILE",
+    "paragraph": "       ENDBR-TRANSACT-FILE.\n           EXEC CICS ENDBR\n                DATASET   (WS-TRANSACT-FILE)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "RULE",
+    "name": "WRITE-TRANSACT-FILE",
+    "paragraph": "       WRITE-TRANSACT-FILE.\n           EXEC CICS WRITE\n                DATASET   (WS-TRANSACT-FILE)\n                FROM      (TRAN-RECORD)\n                LENGTH    (LENGTH OF TRAN-RECORD)\n                RIDFLD    (TRAN-ID)\n                KEYLENGTH (LENGTH OF TRAN-ID)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   PERFORM INITIALIZE-ALL-FIELDS\n                   MOVE SPACES             TO WS-MESSAGE\n                   MOVE DFHGREEN           TO ERRMSGC  OF COTRN2AO\n                   STRING 'Transaction added successfully. '\n                                               DELIMITED BY SIZE\n                     ' Your Tran ID is ' DELIMITED BY SIZE\n                          TRAN-ID  DELIMITED BY SPACE\n                          '.' DELIMITED BY SIZE\n                     INTO WS-MESSAGE\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN DFHRESP(DUPKEY)\n               WHEN DFHRESP(DUPREC)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Tran ID already exist...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to Add Transaction...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO ACTIDINL OF COTRN2AI\n                   PERFORM SEND-TRNADD-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "CLEAR-CURRENT-SCREEN",
+    "paragraph": "       CLEAR-CURRENT-SCREEN.\n           PERFORM INITIALIZE-ALL-FIELDS.\n           PERFORM SEND-TRNADD-SCREEN.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN02C.COB",
+    "kind": "NON-RULE",
+    "name": "INITIALIZE-ALL-FIELDS",
+    "paragraph": "       INITIALIZE-ALL-FIELDS.\n           MOVE -1              TO ACTIDINL OF COTRN2AI\n           MOVE SPACES          TO ACTIDINI OF COTRN2AI\n                                   CARDNINI OF COTRN2AI\n                                   TTYPCDI  OF COTRN2AI\n                                   TCATCDI  OF COTRN2AI\n                                   TRNSRCI  OF COTRN2AI\n                                   TRNAMTI  OF COTRN2AI\n                                   TDESCI   OF COTRN2AI\n                                   TORIGDTI OF COTRN2AI\n                                   TPROCDTI OF COTRN2AI\n                                   MIDI     OF COTRN2AI\n                                   MNAMEI   OF COTRN2AI\n                                   MCITYI   OF COTRN2AI\n                                   MZIPI    OF COTRN2AI\n                                   CONFIRMI OF COTRN2AI\n"
+}]

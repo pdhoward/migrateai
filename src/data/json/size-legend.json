@@ -1,0 +1,7 @@
+[
+    "  IDL: IDENTIFICATION DIVISION lines",
+    "+ EDL: ENVIRONMENT DIVISION lines       BL: blank lines           DL: dead lines",
+    "+ DDL: DATA DIVISION lines            + CL: comment lines       + LL: live lines",
+    "+ PDL: PROCEDURE DIVISION lines       + EL: executable lines    = EL: executable lines",
+    "=  SL: source lines                   = SL: source lines          LD: live density = LL/EL"
+]

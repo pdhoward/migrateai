@@ -1,0 +1,88 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "RULE",
+    "name": "MAIN-PARA",
+    "paragraph": "       MAIN-PARA.\n           SET ERR-FLG-OFF     TO TRUE\n           SET USR-MODIFIED-NO TO TRUE\n           MOVE SPACES TO WS-MESSAGE\n                          ERRMSGO OF COUSR3AO\n           IF EIBCALEN = 0\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n               PERFORM RETURN-TO-PREV-SCREEN\n           ELSE\n               MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA\n               IF NOT CDEMO-PGM-REENTER\n                   SET CDEMO-PGM-REENTER    TO TRUE\n                   MOVE LOW-VALUES          TO COUSR3AO\n                   MOVE -1       TO USRIDINL OF COUSR3AI\n                   IF CDEMO-CU03-USR-SELECTED NOT =\n                                              SPACES AND LOW-VALUES\n                       MOVE CDEMO-CU03-USR-SELECTED TO\n                            USRIDINI OF COUSR3AI\n                       PERFORM PROCESS-ENTER-KEY\n                   END-IF\n                   PERFORM SEND-USRDEL-SCREEN\n               ELSE\n                   PERFORM RECEIVE-USRDEL-SCREEN\n                   EVALUATE EIBAID\n                       WHEN DFHENTER\n                           PERFORM PROCESS-ENTER-KEY\n                       WHEN DFHPF3\n                           IF CDEMO-FROM-PROGRAM = SPACES OR LOW-VALUES\n                               MOVE 'COADM01C' TO CDEMO-TO-PROGRAM\n                           ELSE\n                               MOVE CDEMO-FROM-PROGRAM TO\n                               CDEMO-TO-PROGRAM\n                           END-IF\n                           PERFORM RETURN-TO-PREV-SCREEN\n                       WHEN DFHPF4\n                           PERFORM CLEAR-CURRENT-SCREEN\n                       WHEN DFHPF5\n                           PERFORM DELETE-USER-INFO\n                       WHEN DFHPF12\n                           MOVE 'COADM01C' TO CDEMO-TO-PROGRAM\n                           PERFORM RETURN-TO-PREV-SCREEN\n                       WHEN OTHER\n                           MOVE 'Y'                       TO WS-ERR-FLG\n                           MOVE CCDA-MSG-INVALID-KEY      TO WS-MESSAGE\n                           PERFORM SEND-USRDEL-SCREEN\n                   END-EVALUATE\n               END-IF\n           END-IF\n           EXEC CICS RETURN\n                     TRANSID (WS-TRANID)\n                     COMMAREA (CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "NON-RULE",
+    "name": "PROCESS-ENTER-KEY",
+    "paragraph": "       PROCESS-ENTER-KEY.\n           EVALUATE TRUE\n               WHEN USRIDINI OF COUSR3AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR3AI\n                   PERFORM SEND-USRDEL-SCREEN\n               WHEN OTHER\n                   MOVE -1       TO USRIDINL OF COUSR3AI\n                   CONTINUE\n           END-EVALUATE\n           IF NOT ERR-FLG-ON\n               MOVE SPACES      TO FNAMEI   OF COUSR3AI\n                                   LNAMEI   OF COUSR3AI\n                                   USRTYPEI OF COUSR3AI\n               MOVE USRIDINI  OF COUSR3AI TO SEC-USR-ID\n               PERFORM READ-USER-SEC-FILE\n           END-IF.\n           IF NOT ERR-FLG-ON\n               MOVE SEC-USR-FNAME      TO FNAMEI    OF COUSR3AI\n               MOVE SEC-USR-LNAME      TO LNAMEI    OF COUSR3AI\n               MOVE SEC-USR-TYPE       TO USRTYPEI  OF COUSR3AI\n               PERFORM SEND-USRDEL-SCREEN\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "NON-RULE",
+    "name": "DELETE-USER-INFO",
+    "paragraph": "       DELETE-USER-INFO.\n           EVALUATE TRUE\n               WHEN USRIDINI OF COUSR3AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR3AI\n                   PERFORM SEND-USRDEL-SCREEN\n               WHEN OTHER\n                   MOVE -1       TO USRIDINL OF COUSR3AI\n                   CONTINUE\n           END-EVALUATE\n           IF NOT ERR-FLG-ON\n               MOVE USRIDINI  OF COUSR3AI TO SEC-USR-ID\n               PERFORM READ-USER-SEC-FILE\n               PERFORM DELETE-USER-SEC-FILE\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "RULE",
+    "name": "RETURN-TO-PREV-SCREEN",
+    "paragraph": "       RETURN-TO-PREV-SCREEN.\n           IF CDEMO-TO-PROGRAM = LOW-VALUES OR SPACES\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n           END-IF\n           MOVE WS-TRANID    TO CDEMO-FROM-TRANID\n           MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM\n           MOVE ZEROS        TO CDEMO-PGM-CONTEXT\n           EXEC CICS\n               XCTL PROGRAM(CDEMO-TO-PROGRAM)\n               COMMAREA(CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "RULE",
+    "name": "SEND-USRDEL-SCREEN",
+    "paragraph": "       SEND-USRDEL-SCREEN.\n           PERFORM POPULATE-HEADER-INFO\n           MOVE WS-MESSAGE TO ERRMSGO OF COUSR3AO\n           EXEC CICS SEND\n                     MAP('COUSR3A')\n                     MAPSET('COUSR03')\n                     FROM(COUSR3AO)\n                     ERASE\n                     CURSOR\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "RULE",
+    "name": "RECEIVE-USRDEL-SCREEN",
+    "paragraph": "       RECEIVE-USRDEL-SCREEN.\n           EXEC CICS RECEIVE\n                     MAP('COUSR3A')\n                     MAPSET('COUSR03')\n                     INTO(COUSR3AI)\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "NON-RULE",
+    "name": "POPULATE-HEADER-INFO",
+    "paragraph": "       POPULATE-HEADER-INFO.\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01           TO TITLE01O OF COUSR3AO\n           MOVE CCDA-TITLE02           TO TITLE02O OF COUSR3AO\n           MOVE WS-TRANID              TO TRNNAMEO OF COUSR3AO\n           MOVE WS-PGMNAME             TO PGMNAMEO OF COUSR3AO\n           MOVE WS-CURDATE-MONTH       TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY         TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)   TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY    TO CURDATEO OF COUSR3AO\n           MOVE WS-CURTIME-HOURS       TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE      TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND      TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS    TO CURTIMEO OF COUSR3AO.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "RULE",
+    "name": "READ-USER-SEC-FILE",
+    "paragraph": "       READ-USER-SEC-FILE.\n           EXEC CICS READ\n                DATASET   (WS-USRSEC-FILE)\n                INTO      (SEC-USER-DATA)\n                LENGTH    (LENGTH OF SEC-USER-DATA)\n                RIDFLD    (SEC-USR-ID)\n                KEYLENGTH (LENGTH OF SEC-USR-ID)\n                UPDATE\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC.\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   CONTINUE\n                   MOVE 'Press PF5 key to delete this user ...' TO\n                                   WS-MESSAGE\n                   MOVE DFHNEUTR       TO ERRMSGC  OF COUSR3AO\n                   PERFORM SEND-USRDEL-SCREEN\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR3AI\n                   PERFORM SEND-USRDEL-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to lookup User...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO FNAMEL OF COUSR3AI\n                   PERFORM SEND-USRDEL-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "RULE",
+    "name": "DELETE-USER-SEC-FILE",
+    "paragraph": "       DELETE-USER-SEC-FILE.\n           EXEC CICS DELETE\n                DATASET   (WS-USRSEC-FILE)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC.\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   PERFORM INITIALIZE-ALL-FIELDS\n                   MOVE SPACES             TO WS-MESSAGE\n                   MOVE DFHGREEN           TO ERRMSGC  OF COUSR3AO\n                   STRING 'User '     DELIMITED BY SIZE\n                          SEC-USR-ID  DELIMITED BY SPACE\n                          ' has been deleted ...' DELIMITED BY SIZE\n                     INTO WS-MESSAGE\n                   PERFORM SEND-USRDEL-SCREEN\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'User ID NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO USRIDINL OF COUSR3AI\n                   PERFORM SEND-USRDEL-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to Update User...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO FNAMEL OF COUSR3AI\n                   PERFORM SEND-USRDEL-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "NON-RULE",
+    "name": "CLEAR-CURRENT-SCREEN",
+    "paragraph": "       CLEAR-CURRENT-SCREEN.\n           PERFORM INITIALIZE-ALL-FIELDS.\n           PERFORM SEND-USRDEL-SCREEN.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COUSR03C.COB",
+    "kind": "NON-RULE",
+    "name": "INITIALIZE-ALL-FIELDS",
+    "paragraph": "       INITIALIZE-ALL-FIELDS.\n           MOVE -1              TO USRIDINL OF COUSR3AI\n           MOVE SPACES          TO USRIDINI OF COUSR3AI\n                                   FNAMEI   OF COUSR3AI\n                                   LNAMEI   OF COUSR3AI\n                                   USRTYPEI OF COUSR3AI\n"
+}]

@@ -1,0 +1,5 @@
+[
+    "PG: paragraphs        COV: coverage     RL: rule lines",
+    "BR: business rules   EXTR: extracted   PDL: PROC DIV lines",
+    "                                        RD: rule density = RL/PDL"
+]

@@ -1,0 +1,24 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CSUTLDTC.COB",
+    "kind": "RULE",
+    "name": "PROC_DIV",
+    "paragraph": "       PROC_DIV.\n           MOVE SPACES TO WS-DATE\n           PERFORM A000-MAIN\n              THRU A000-MAIN-EXIT\n           MOVE WS-MESSAGE                 TO LS-RESULT\n           MOVE WS-SEVERITY-N              TO RETURN-CODE\n           EXIT PROGRAM\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CSUTLDTC.COB",
+    "kind": "RULE",
+    "name": "A000-MAIN",
+    "paragraph": "       A000-MAIN.\n           MOVE LENGTH OF LS-DATE\n                        TO VSTRING-LENGTH  OF WS-DATE-TO-TEST\n           MOVE LS-DATE TO VSTRING-TEXT    OF WS-DATE-TO-TEST\n                           WS-DATE\n           MOVE LENGTH OF LS-DATE-FORMAT\n                         TO VSTRING-LENGTH OF WS-DATE-FORMAT\n           MOVE LS-DATE-FORMAT\n                         TO VSTRING-TEXT   OF WS-DATE-FORMAT\n                            WS-DATE-FMT\n           MOVE 0        TO OUTPUT-LILLIAN\n           CALL \"CEEDAYS\" USING\n                  WS-DATE-TO-TEST,\n                  WS-DATE-FORMAT,\n                  OUTPUT-LILLIAN,\n                  FEEDBACK-CODE\n           MOVE WS-DATE-TO-TEST            TO WS-DATE\n           MOVE SEVERITY OF FEEDBACK-CODE  TO WS-SEVERITY-N\n           MOVE MSG-NO OF FEEDBACK-CODE    TO WS-MSG-NO-N\n           EVALUATE TRUE\n              WHEN FC-INVALID-DATE\n                 MOVE 'Date is valid'      TO WS-RESULT\n              WHEN FC-INSUFFICIENT-DATA\n                 MOVE 'Insufficient'       TO WS-RESULT\n              WHEN FC-BAD-DATE-VALUE\n                 MOVE 'Datevalue error'    TO WS-RESULT\n              WHEN FC-INVALID-ERA\n                 MOVE 'Invalid Era    '    TO WS-RESULT\n              WHEN FC-UNSUPP-RANGE\n                 MOVE 'Unsupp. Range  '    TO WS-RESULT\n              WHEN FC-INVALID-MONTH\n                 MOVE 'Invalid month  '    TO WS-RESULT\n              WHEN FC-BAD-PIC-STRING\n                 MOVE 'Bad Pic String '    TO WS-RESULT\n              WHEN FC-NON-NUMERIC-DATA\n                 MOVE 'Nonnumeric data'    TO WS-RESULT\n              WHEN FC-YEAR-IN-ERA-ZERO\n                 MOVE 'YearInEra is 0 '    TO WS-RESULT\n              WHEN OTHER\n                 MOVE 'Date is invalid'    TO WS-RESULT\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CSUTLDTC.COB",
+    "kind": "NON-RULE",
+    "name": "A000-MAIN-EXIT",
+    "paragraph": "       A000-MAIN-EXIT.\n           EXIT\n"
+}]

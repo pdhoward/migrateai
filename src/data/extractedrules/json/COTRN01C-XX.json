@@ -1,0 +1,72 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "RULE",
+    "name": "MAIN-PARA",
+    "paragraph": "       MAIN-PARA.\n           SET ERR-FLG-OFF     TO TRUE\n           SET USR-MODIFIED-NO TO TRUE\n           MOVE SPACES TO WS-MESSAGE\n                          ERRMSGO OF COTRN1AO\n           IF EIBCALEN = 0\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n               PERFORM RETURN-TO-PREV-SCREEN\n           ELSE\n               MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA\n               IF NOT CDEMO-PGM-REENTER\n                   SET CDEMO-PGM-REENTER    TO TRUE\n                   MOVE LOW-VALUES          TO COTRN1AO\n                   MOVE -1       TO TRNIDINL OF COTRN1AI\n                   IF CDEMO-CT01-TRN-SELECTED NOT =\n                                              SPACES AND LOW-VALUES\n                       MOVE CDEMO-CT01-TRN-SELECTED TO\n                            TRNIDINI OF COTRN1AI\n                       PERFORM PROCESS-ENTER-KEY\n                   END-IF\n                   PERFORM SEND-TRNVIEW-SCREEN\n               ELSE\n                   PERFORM RECEIVE-TRNVIEW-SCREEN\n                   EVALUATE EIBAID\n                       WHEN DFHENTER\n                           PERFORM PROCESS-ENTER-KEY\n                       WHEN DFHPF3\n                           IF CDEMO-FROM-PROGRAM = SPACES OR LOW-VALUES\n                               MOVE 'COMEN01C' TO CDEMO-TO-PROGRAM\n                           ELSE\n                               MOVE CDEMO-FROM-PROGRAM TO\n                               CDEMO-TO-PROGRAM\n                           END-IF\n                           PERFORM RETURN-TO-PREV-SCREEN\n                       WHEN DFHPF4\n                           PERFORM CLEAR-CURRENT-SCREEN\n                       WHEN DFHPF5\n                           MOVE 'COTRN00C' TO CDEMO-TO-PROGRAM\n                           PERFORM RETURN-TO-PREV-SCREEN\n                       WHEN OTHER\n                           MOVE 'Y'                       TO WS-ERR-FLG\n                           MOVE CCDA-MSG-INVALID-KEY      TO WS-MESSAGE\n                           PERFORM SEND-TRNVIEW-SCREEN\n                   END-EVALUATE\n               END-IF\n           END-IF\n           EXEC CICS RETURN\n                     TRANSID (WS-TRANID)\n                     COMMAREA (CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "RULE",
+    "name": "PROCESS-ENTER-KEY",
+    "paragraph": "       PROCESS-ENTER-KEY.\n           EVALUATE TRUE\n               WHEN TRNIDINI OF COTRN1AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Tran ID can NOT be empty...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TRNIDINL OF COTRN1AI\n                   PERFORM SEND-TRNVIEW-SCREEN\n               WHEN OTHER\n                   MOVE -1       TO TRNIDINL OF COTRN1AI\n                   CONTINUE\n           END-EVALUATE\n           IF NOT ERR-FLG-ON\n               MOVE SPACES      TO TRNIDI   OF COTRN1AI\n                                   CARDNUMI OF COTRN1AI\n                                   TTYPCDI  OF COTRN1AI\n                                   TCATCDI  OF COTRN1AI\n                                   TRNSRCI  OF COTRN1AI\n                                   TRNAMTI  OF COTRN1AI\n                                   TDESCI   OF COTRN1AI\n                                   TORIGDTI OF COTRN1AI\n                                   TPROCDTI OF COTRN1AI\n                                   MIDI     OF COTRN1AI\n                                   MNAMEI   OF COTRN1AI\n                                   MCITYI   OF COTRN1AI\n                                   MZIPI    OF COTRN1AI\n               MOVE TRNIDINI  OF COTRN1AI TO TRAN-ID\n               PERFORM READ-TRANSACT-FILE\n           END-IF.\n           IF NOT ERR-FLG-ON\n               MOVE TRAN-AMT TO WS-TRAN-AMT\n               MOVE TRAN-ID      TO TRNIDI    OF COTRN1AI\n               MOVE TRAN-CARD-NUM      TO CARDNUMI    OF COTRN1AI\n               MOVE TRAN-TYPE-CD        TO TTYPCDI   OF COTRN1AI\n               MOVE TRAN-CAT-CD        TO TCATCDI   OF COTRN1AI\n               MOVE TRAN-SOURCE       TO TRNSRCI  OF COTRN1AI\n               MOVE WS-TRAN-AMT      TO TRNAMTI    OF COTRN1AI\n               MOVE TRAN-DESC      TO TDESCI    OF COTRN1AI\n               MOVE TRAN-ORIG-TS        TO TORIGDTI   OF COTRN1AI\n               MOVE TRAN-PROC-TS       TO TPROCDTI  OF COTRN1AI\n               MOVE TRAN-MERCHANT-ID       TO MIDI  OF COTRN1AI\n               MOVE TRAN-MERCHANT-NAME       TO MNAMEI  OF COTRN1AI\n               MOVE TRAN-MERCHANT-CITY       TO MCITYI  OF COTRN1AI\n               MOVE TRAN-MERCHANT-ZIP       TO MZIPI  OF COTRN1AI\n               PERFORM SEND-TRNVIEW-SCREEN\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "RULE",
+    "name": "RETURN-TO-PREV-SCREEN",
+    "paragraph": "       RETURN-TO-PREV-SCREEN.\n           IF CDEMO-TO-PROGRAM = LOW-VALUES OR SPACES\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n           END-IF\n           MOVE WS-TRANID    TO CDEMO-FROM-TRANID\n           MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM\n           MOVE ZEROS        TO CDEMO-PGM-CONTEXT\n           EXEC CICS\n               XCTL PROGRAM(CDEMO-TO-PROGRAM)\n               COMMAREA(CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "RULE",
+    "name": "SEND-TRNVIEW-SCREEN",
+    "paragraph": "       SEND-TRNVIEW-SCREEN.\n           PERFORM POPULATE-HEADER-INFO\n           MOVE WS-MESSAGE TO ERRMSGO OF COTRN1AO\n           EXEC CICS SEND\n                     MAP('COTRN1A')\n                     MAPSET('COTRN01')\n                     FROM(COTRN1AO)\n                     ERASE\n                     CURSOR\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "NON-RULE",
+    "name": "RECEIVE-TRNVIEW-SCREEN",
+    "paragraph": "       RECEIVE-TRNVIEW-SCREEN.\n           EXEC CICS RECEIVE\n                     MAP('COTRN1A')\n                     MAPSET('COTRN01')\n                     INTO(COTRN1AI)\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "NON-RULE",
+    "name": "POPULATE-HEADER-INFO",
+    "paragraph": "       POPULATE-HEADER-INFO.\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01           TO TITLE01O OF COTRN1AO\n           MOVE CCDA-TITLE02           TO TITLE02O OF COTRN1AO\n           MOVE WS-TRANID              TO TRNNAMEO OF COTRN1AO\n           MOVE WS-PGMNAME             TO PGMNAMEO OF COTRN1AO\n           MOVE WS-CURDATE-MONTH       TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY         TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)   TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY    TO CURDATEO OF COTRN1AO\n           MOVE WS-CURTIME-HOURS       TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE      TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND      TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS    TO CURTIMEO OF COTRN1AO.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "RULE",
+    "name": "READ-TRANSACT-FILE",
+    "paragraph": "       READ-TRANSACT-FILE.\n           EXEC CICS READ\n                DATASET   (WS-TRANSACT-FILE)\n                INTO      (TRAN-RECORD)\n                LENGTH    (LENGTH OF TRAN-RECORD)\n                RIDFLD    (TRAN-ID)\n                KEYLENGTH (LENGTH OF TRAN-ID)\n                UPDATE\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC.\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                   CONTINUE\n               WHEN DFHRESP(NOTFND)\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Transaction ID NOT found...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TRNIDINL OF COTRN1AI\n                   PERFORM SEND-TRNVIEW-SCREEN\n               WHEN OTHER\n                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD\n                   MOVE 'Y'     TO WS-ERR-FLG\n                   MOVE 'Unable to lookup Transaction...' TO\n                                   WS-MESSAGE\n                   MOVE -1       TO TRNIDINL OF COTRN1AI\n                   PERFORM SEND-TRNVIEW-SCREEN\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "NON-RULE",
+    "name": "CLEAR-CURRENT-SCREEN",
+    "paragraph": "       CLEAR-CURRENT-SCREEN.\n           PERFORM INITIALIZE-ALL-FIELDS.\n           PERFORM SEND-TRNVIEW-SCREEN.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COTRN01C.COB",
+    "kind": "NON-RULE",
+    "name": "INITIALIZE-ALL-FIELDS",
+    "paragraph": "       INITIALIZE-ALL-FIELDS.\n           MOVE -1              TO TRNIDINL OF COTRN1AI\n           MOVE SPACES          TO TRNIDINI OF COTRN1AI\n                                   TRNIDI   OF COTRN1AI\n                                   CARDNUMI OF COTRN1AI\n                                   TTYPCDI  OF COTRN1AI\n                                   TCATCDI  OF COTRN1AI\n                                   TRNSRCI  OF COTRN1AI\n                                   TRNAMTI  OF COTRN1AI\n                                   TDESCI   OF COTRN1AI\n                                   TORIGDTI OF COTRN1AI\n                                   TPROCDTI OF COTRN1AI\n                                   MIDI     OF COTRN1AI\n                                   MNAMEI   OF COTRN1AI\n                                   MCITYI   OF COTRN1AI\n                                   MZIPI    OF COTRN1AI\n"
+}]

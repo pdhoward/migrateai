@@ -1,0 +1,776 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "0000-MAIN",
+    "paragraph": "       0000-MAIN.\n           EXEC CICS HANDLE ABEND\n                     LABEL(ABEND-ROUTINE)\n           END-EXEC\n           INITIALIZE CC-WORK-AREA\n                      WS-MISC-STORAGE\n                      WS-COMMAREA\n           MOVE LIT-THISTRANID       TO WS-TRANID\n           SET WS-RETURN-MSG-OFF  TO TRUE\n           IF EIBCALEN IS EQUAL TO 0\n               OR (CDEMO-FROM-PROGRAM = LIT-MENUPGM\n               AND NOT CDEMO-PGM-REENTER)\n              INITIALIZE CARDDEMO-COMMAREA\n                         WS-THIS-PROGCOMMAREA\n              SET CDEMO-PGM-ENTER TO TRUE\n              SET ACUP-DETAILS-NOT-FETCHED TO TRUE\n           ELSE\n              MOVE DFHCOMMAREA (1:LENGTH OF CARDDEMO-COMMAREA)  TO\n                                CARDDEMO-COMMAREA\n              MOVE DFHCOMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:\n                               LENGTH OF WS-THIS-PROGCOMMAREA ) TO\n                                WS-THIS-PROGCOMMAREA\n           END-IF\n           PERFORM YYYY-STORE-PFKEY\n              THRU YYYY-STORE-PFKEY-EXIT\n           SET PFK-INVALID TO TRUE\n           IF CCARD-AID-ENTER OR\n              CCARD-AID-PFK03 OR\n              (CCARD-AID-PFK05 AND ACUP-CHANGES-OK-NOT-CONFIRMED)\n                              OR\n              (CCARD-AID-PFK12 AND NOT ACUP-DETAILS-NOT-FETCHED)\n              SET PFK-VALID TO TRUE\n           END-IF\n           IF PFK-INVALID\n              SET CCARD-AID-ENTER TO TRUE\n           END-IF\n           EVALUATE TRUE\n              WHEN CCARD-AID-PFK03\n                   SET CCARD-AID-PFK03     TO TRUE\n                   IF CDEMO-FROM-TRANID    EQUAL LOW-VALUES\n                   OR CDEMO-FROM-TRANID    EQUAL SPACES\n                      MOVE LIT-MENUTRANID  TO CDEMO-TO-TRANID\n                   ELSE\n                      MOVE CDEMO-FROM-TRANID  TO CDEMO-TO-TRANID\n                   END-IF\n                   IF CDEMO-FROM-PROGRAM   EQUAL LOW-VALUES\n                   OR CDEMO-FROM-PROGRAM   EQUAL SPACES\n                      MOVE LIT-MENUPGM     TO CDEMO-TO-PROGRAM\n                   ELSE\n                      MOVE CDEMO-FROM-PROGRAM TO CDEMO-TO-PROGRAM\n                   END-IF\n                   MOVE LIT-THISTRANID     TO CDEMO-FROM-TRANID\n                   MOVE LIT-THISPGM        TO CDEMO-FROM-PROGRAM\n                   SET  CDEMO-USRTYP-USER  TO TRUE\n                   SET  CDEMO-PGM-ENTER    TO TRUE\n                   MOVE LIT-THISMAPSET     TO CDEMO-LAST-MAPSET\n                   MOVE LIT-THISMAP        TO CDEMO-LAST-MAP\n                   EXEC CICS\n                        SYNCPOINT\n                   END-EXEC\n                   EXEC CICS XCTL\n                        PROGRAM (CDEMO-TO-PROGRAM)\n                        COMMAREA(CARDDEMO-COMMAREA)\n                   END-EXEC\n              WHEN ACUP-DETAILS-NOT-FETCHED\n               AND CDEMO-PGM-ENTER\n              WHEN CDEMO-FROM-PROGRAM   EQUAL LIT-MENUPGM\n               AND NOT CDEMO-PGM-REENTER\n                   INITIALIZE WS-THIS-PROGCOMMAREA\n                   PERFORM 3000-SEND-MAP THRU\n                           3000-SEND-MAP-EXIT\n                   SET CDEMO-PGM-REENTER        TO TRUE\n                   SET ACUP-DETAILS-NOT-FETCHED TO TRUE\n                   GO TO COMMON-RETURN\n              WHEN ACUP-CHANGES-OKAYED-AND-DONE\n              WHEN ACUP-CHANGES-FAILED\n                   INITIALIZE WS-THIS-PROGCOMMAREA\n                              WS-MISC-STORAGE\n                              CDEMO-ACCT-ID\n                   SET CDEMO-PGM-ENTER            TO TRUE\n                   PERFORM 3000-SEND-MAP THRU\n                           3000-SEND-MAP-EXIT\n                   SET CDEMO-PGM-REENTER          TO TRUE\n                   SET ACUP-DETAILS-NOT-FETCHED   TO TRUE\n                   GO TO COMMON-RETURN\n              WHEN OTHER\n                   PERFORM 1000-PROCESS-INPUTS\n                      THRU 1000-PROCESS-INPUTS-EXIT\n                   PERFORM 2000-DECIDE-ACTION\n                      THRU 2000-DECIDE-ACTION-EXIT\n                   PERFORM 3000-SEND-MAP\n                      THRU 3000-SEND-MAP-EXIT\n                   GO TO COMMON-RETURN\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "COMMON-RETURN",
+    "paragraph": "       COMMON-RETURN.\n           MOVE WS-RETURN-MSG     TO CCARD-ERROR-MSG\n           MOVE  CARDDEMO-COMMAREA    TO WS-COMMAREA\n           MOVE  WS-THIS-PROGCOMMAREA TO\n                  WS-COMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:\n                               LENGTH OF WS-THIS-PROGCOMMAREA )\n           EXEC CICS RETURN\n                TRANSID (LIT-THISTRANID)\n                COMMAREA (WS-COMMAREA)\n                LENGTH(LENGTH OF WS-COMMAREA)\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "0000-MAIN-EXIT",
+    "paragraph": "       0000-MAIN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1000-PROCESS-INPUTS",
+    "paragraph": "       1000-PROCESS-INPUTS.\n           PERFORM 1100-RECEIVE-MAP\n              THRU 1100-RECEIVE-MAP-EXIT\n           PERFORM 1200-EDIT-MAP-INPUTS\n              THRU 1200-EDIT-MAP-INPUTS-EXIT\n           MOVE WS-RETURN-MSG  TO CCARD-ERROR-MSG\n           MOVE LIT-THISPGM    TO CCARD-NEXT-PROG\n           MOVE LIT-THISMAPSET TO CCARD-NEXT-MAPSET\n           MOVE LIT-THISMAP    TO CCARD-NEXT-MAP\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1000-PROCESS-INPUTS-EXIT",
+    "paragraph": "       1000-PROCESS-INPUTS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1100-RECEIVE-MAP",
+    "paragraph": "       1100-RECEIVE-MAP.\n           EXEC CICS RECEIVE MAP(LIT-THISMAP)\n                     MAPSET(LIT-THISMAPSET)\n                     INTO(CACTUPAI)\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC\n           INITIALIZE ACUP-NEW-DETAILS\n           IF  ACCTSIDI OF CACTUPAI = '*'\n           OR  ACCTSIDI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO CC-ACCT-ID\n                                            ACUP-NEW-ACCT-ID-X\n           ELSE\n               MOVE ACCTSIDI OF CACTUPAI TO CC-ACCT-ID\n                                            ACUP-NEW-ACCT-ID-X\n           END-IF\n           IF ACUP-DETAILS-NOT-FETCHED\n              GO TO 1100-RECEIVE-MAP-EXIT\n           END-IF\n           IF  ACSTTUSI OF CACTUPAI = '*'\n           OR  ACSTTUSI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-ACTIVE-STATUS\n           ELSE\n               MOVE ACSTTUSI OF CACTUPAI TO ACUP-NEW-ACTIVE-STATUS\n           END-IF\n           IF  ACRDLIMI OF CACTUPAI = '*'\n           OR  ACRDLIMI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CREDIT-LIMIT-X\n           ELSE\n               MOVE ACRDLIMI OF CACTUPAI TO ACUP-NEW-CREDIT-LIMIT-X\n               IF FUNCTION TEST-NUMVAL-C(ACUP-NEW-CREDIT-LIMIT-X) = 0\n                  COMPUTE ACUP-NEW-CREDIT-LIMIT-N =\n                     FUNCTION NUMVAL-C(ACRDLIMI OF CACTUPAI)\n               ELSE\n                  CONTINUE\n               END-IF\n           END-IF\n           IF  ACSHLIMI OF CACTUPAI = '*'\n           OR  ACSHLIMI OF CACTUPAI = SPACES\n             MOVE LOW-VALUES           TO ACUP-NEW-CASH-CREDIT-LIMIT-X\n           ELSE\n             MOVE ACSHLIMI OF CACTUPAI TO ACUP-NEW-CASH-CREDIT-LIMIT-X\n             IF FUNCTION TEST-NUMVAL-C(ACUP-NEW-CASH-CREDIT-LIMIT-X) = 0\n                COMPUTE ACUP-NEW-CASH-CREDIT-LIMIT-N =\n                     FUNCTION NUMVAL-C(ACSHLIMI OF CACTUPAI)\n             ELSE\n                CONTINUE\n             END-IF\n           END-IF\n           IF  ACURBALI OF CACTUPAI = '*'\n           OR  ACURBALI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CURR-BAL-X\n           ELSE\n               MOVE ACURBALI OF CACTUPAI TO ACUP-NEW-CURR-BAL-X\n               IF  FUNCTION TEST-NUMVAL-C(ACUP-NEW-CURR-BAL-X) = 0\n                   COMPUTE ACUP-NEW-CURR-BAL-N =\n                     FUNCTION NUMVAL-C(ACUP-NEW-CURR-BAL-X)\n               ELSE\n                   CONTINUE\n               END-IF\n           END-IF\n           IF  ACRCYCRI OF CACTUPAI = '*'\n           OR  ACRCYCRI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CURR-CYC-CREDIT-X\n           ELSE\n               MOVE ACRCYCRI OF CACTUPAI TO ACUP-NEW-CURR-CYC-CREDIT-X\n               IF FUNCTION TEST-NUMVAL-C(ACUP-NEW-CURR-CYC-CREDIT-X) = 0\n                   COMPUTE ACUP-NEW-CURR-CYC-CREDIT-N =\n                     FUNCTION NUMVAL-C(ACRCYCRI OF CACTUPAI)\n               ELSE\n                   CONTINUE\n               END-IF\n           END-IF\n           IF  ACRCYDBI OF CACTUPAI = '*'\n           OR  ACRCYDBI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CURR-CYC-DEBIT-X\n           ELSE\n               MOVE ACRCYDBI OF CACTUPAI TO ACUP-NEW-CURR-CYC-DEBIT-X\n               IF  FUNCTION TEST-NUMVAL-C(ACUP-NEW-CURR-CYC-DEBIT-X) = 0\n                   COMPUTE ACUP-NEW-CURR-CYC-DEBIT-N =\n                     FUNCTION NUMVAL-C(ACRCYDBI OF CACTUPAI)\n               ELSE\n                   CONTINUE\n               END-IF\n           END-IF\n           IF  OPNYEARI OF CACTUPAI = '*'\n           OR  OPNYEARI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-OPEN-YEAR\n           ELSE\n               MOVE OPNYEARI OF CACTUPAI TO ACUP-NEW-OPEN-YEAR\n           END-IF\n           IF  OPNMONI OF CACTUPAI = '*'\n           OR  OPNMONI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-OPEN-MON\n           ELSE\n               MOVE OPNMONI OF CACTUPAI TO  ACUP-NEW-OPEN-MON\n           END-IF\n           IF  OPNDAYI OF CACTUPAI = '*'\n           OR  OPNDAYI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-OPEN-DAY\n           ELSE\n               MOVE OPNDAYI OF CACTUPAI TO  ACUP-NEW-OPEN-DAY\n           END-IF\n           IF  EXPYEARI OF CACTUPAI = '*'\n           OR  EXPYEARI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-EXP-YEAR\n           ELSE\n               MOVE EXPYEARI OF CACTUPAI TO ACUP-NEW-EXP-YEAR\n           END-IF\n           IF  EXPMONI OF CACTUPAI = '*'\n           OR  EXPMONI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-EXP-MON\n           ELSE\n               MOVE EXPMONI OF CACTUPAI TO  ACUP-NEW-EXP-MON\n           END-IF\n           IF  EXPDAYI OF CACTUPAI = '*'\n           OR  EXPDAYI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-EXP-DAY\n           ELSE\n               MOVE EXPDAYI OF CACTUPAI TO  ACUP-NEW-EXP-DAY\n           END-IF\n           IF  RISYEARI OF CACTUPAI = '*'\n           OR  RISYEARI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-REISSUE-YEAR\n           ELSE\n               MOVE RISYEARI OF CACTUPAI TO ACUP-NEW-REISSUE-YEAR\n           END-IF\n           IF  RISMONI OF CACTUPAI = '*'\n           OR  RISMONI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-REISSUE-MON\n           ELSE\n               MOVE RISMONI OF CACTUPAI TO  ACUP-NEW-REISSUE-MON\n           END-IF\n           IF  RISDAYI OF CACTUPAI = '*'\n           OR  RISDAYI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-REISSUE-DAY\n           ELSE\n               MOVE RISDAYI OF CACTUPAI TO  ACUP-NEW-REISSUE-DAY\n           END-IF\n           IF  AADDGRPI OF CACTUPAI = '*'\n           OR  AADDGRPI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-GROUP-ID\n           ELSE\n               MOVE AADDGRPI OF CACTUPAI TO ACUP-NEW-GROUP-ID\n           END-IF\n           IF  ACSTNUMI OF CACTUPAI = '*'\n           OR  ACSTNUMI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-ID-X\n           ELSE\n               MOVE ACSTNUMI OF CACTUPAI TO ACUP-NEW-CUST-ID-X\n           END-IF\n           IF  ACTSSN1I OF CACTUPAI = '*'\n           OR  ACTSSN1I OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-SSN-1\n           ELSE\n               MOVE ACTSSN1I OF CACTUPAI TO ACUP-NEW-CUST-SSN-1\n           END-IF\n           IF  ACTSSN2I OF CACTUPAI = '*'\n           OR  ACTSSN2I OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-SSN-2\n           ELSE\n               MOVE ACTSSN2I OF CACTUPAI TO ACUP-NEW-CUST-SSN-2\n           END-IF\n           IF  ACTSSN3I OF CACTUPAI = '*'\n           OR  ACTSSN3I OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-SSN-3\n           ELSE\n               MOVE ACTSSN3I OF CACTUPAI TO ACUP-NEW-CUST-SSN-3\n           END-IF\n           IF  DOBYEARI OF CACTUPAI = '*'\n           OR  DOBYEARI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-DOB-YEAR\n           ELSE\n               MOVE DOBYEARI OF CACTUPAI TO ACUP-NEW-CUST-DOB-YEAR\n           END-IF\n           IF  DOBMONI OF CACTUPAI = '*'\n           OR  DOBMONI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-DOB-MON\n           ELSE\n               MOVE DOBMONI OF CACTUPAI  TO ACUP-NEW-CUST-DOB-MON\n           END-IF\n           IF  DOBDAYI OF CACTUPAI = '*'\n           OR  DOBDAYI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-DOB-DAY\n           ELSE\n               MOVE DOBDAYI OF CACTUPAI  TO ACUP-NEW-CUST-DOB-DAY\n           END-IF\n           IF  ACSTFCOI OF CACTUPAI = '*'\n           OR  ACSTFCOI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-FICO-SCORE-X\n           ELSE\n               MOVE ACSTFCOI OF CACTUPAI TO ACUP-NEW-CUST-FICO-SCORE-X\n           END-IF\n           IF  ACSFNAMI OF CACTUPAI = '*'\n           OR  ACSFNAMI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-FIRST-NAME\n           ELSE\n               MOVE ACSFNAMI OF CACTUPAI TO ACUP-NEW-CUST-FIRST-NAME\n           END-IF\n           IF  ACSMNAMI OF CACTUPAI = '*'\n           OR  ACSMNAMI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-MIDDLE-NAME\n           ELSE\n               MOVE ACSMNAMI OF CACTUPAI TO ACUP-NEW-CUST-MIDDLE-NAME\n           END-IF\n           IF  ACSLNAMI OF CACTUPAI = '*'\n           OR  ACSLNAMI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-LAST-NAME\n           ELSE\n               MOVE ACSLNAMI OF CACTUPAI TO ACUP-NEW-CUST-LAST-NAME\n           END-IF\n           IF  ACSADL1I OF CACTUPAI = '*'\n           OR  ACSADL1I OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-ADDR-LINE-1\n           ELSE\n               MOVE ACSADL1I OF CACTUPAI TO ACUP-NEW-CUST-ADDR-LINE-1\n           END-IF\n           IF  ACSADL2I OF CACTUPAI = '*'\n           OR  ACSADL2I OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-ADDR-LINE-2\n           ELSE\n               MOVE ACSADL2I OF CACTUPAI TO ACUP-NEW-CUST-ADDR-LINE-2\n           END-IF\n           IF  ACSCITYI OF CACTUPAI = '*'\n           OR  ACSCITYI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-ADDR-LINE-3\n           ELSE\n               MOVE ACSCITYI OF CACTUPAI TO ACUP-NEW-CUST-ADDR-LINE-3\n           END-IF\n           IF  ACSSTTEI OF CACTUPAI = '*'\n           OR  ACSSTTEI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-ADDR-STATE-CD\n           ELSE\n               MOVE ACSSTTEI OF CACTUPAI TO ACUP-NEW-CUST-ADDR-STATE-CD\n           END-IF\n           IF  ACSCTRYI OF CACTUPAI = '*'\n           OR  ACSCTRYI OF CACTUPAI = SPACES\n              MOVE LOW-VALUES           TO ACUP-NEW-CUST-ADDR-COUNTRY-CD\n           ELSE\n              MOVE ACSCTRYI OF CACTUPAI TO ACUP-NEW-CUST-ADDR-COUNTRY-CD\n           END-IF\n           IF  ACSZIPCI OF CACTUPAI = '*'\n           OR  ACSZIPCI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-ADDR-ZIP\n           ELSE\n               MOVE ACSZIPCI OF CACTUPAI TO ACUP-NEW-CUST-ADDR-ZIP\n           END-IF\n           IF  ACSPH1AI OF CACTUPAI = '*'\n           OR  ACSPH1AI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-PHONE-NUM-1A\n           ELSE\n               MOVE ACSPH1AI OF CACTUPAI TO ACUP-NEW-CUST-PHONE-NUM-1A\n           END-IF\n           IF  ACSPH1BI OF CACTUPAI = '*'\n           OR  ACSPH1BI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-PHONE-NUM-1B\n           ELSE\n               MOVE ACSPH1BI OF CACTUPAI TO ACUP-NEW-CUST-PHONE-NUM-1B\n           END-IF\n           IF  ACSPH1CI OF CACTUPAI = '*'\n           OR  ACSPH1CI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-PHONE-NUM-1C\n           ELSE\n               MOVE ACSPH1CI OF CACTUPAI TO ACUP-NEW-CUST-PHONE-NUM-1C\n           END-IF\n           IF  ACSPH2AI OF CACTUPAI = '*'\n           OR  ACSPH2AI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-PHONE-NUM-2A\n           ELSE\n               MOVE ACSPH2AI OF CACTUPAI TO ACUP-NEW-CUST-PHONE-NUM-2A\n           END-IF\n           IF  ACSPH2BI OF CACTUPAI = '*'\n           OR  ACSPH2BI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-PHONE-NUM-2B\n           ELSE\n               MOVE ACSPH2BI OF CACTUPAI TO ACUP-NEW-CUST-PHONE-NUM-2B\n           END-IF\n           IF  ACSPH2CI OF CACTUPAI = '*'\n           OR  ACSPH2CI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-PHONE-NUM-2C\n           ELSE\n               MOVE ACSPH2CI OF CACTUPAI TO ACUP-NEW-CUST-PHONE-NUM-2C\n           END-IF\n           IF  ACSGOVTI OF CACTUPAI = '*'\n           OR  ACSGOVTI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-GOVT-ISSUED-ID\n           ELSE\n               MOVE ACSGOVTI OF CACTUPAI TO ACUP-NEW-CUST-GOVT-ISSUED-ID\n           END-IF\n           IF  ACSEFTCI OF CACTUPAI = '*'\n           OR  ACSEFTCI OF CACTUPAI = SPACES\n               MOVE LOW-VALUES           TO ACUP-NEW-CUST-EFT-ACCOUNT-ID\n           ELSE\n               MOVE ACSEFTCI OF CACTUPAI TO ACUP-NEW-CUST-EFT-ACCOUNT-ID\n           END-IF\n           IF  ACSPFLGI OF CACTUPAI = '*'\n           OR  ACSPFLGI OF CACTUPAI = SPACES\n              MOVE LOW-VALUES            TO ACUP-NEW-CUST-PRI-HOLDER-IND\n           ELSE\n              MOVE ACSPFLGI OF CACTUPAI  TO ACUP-NEW-CUST-PRI-HOLDER-IND\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1100-RECEIVE-MAP-EXIT",
+    "paragraph": "       1100-RECEIVE-MAP-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1200-EDIT-MAP-INPUTS",
+    "paragraph": "       1200-EDIT-MAP-INPUTS.\n           SET INPUT-OK                  TO TRUE\n           IF  ACUP-DETAILS-NOT-FETCHED\n               PERFORM 1210-EDIT-ACCOUNT\n                  THRU 1210-EDIT-ACCOUNT-EXIT\n               MOVE LOW-VALUES           TO ACUP-OLD-ACCT-DATA\n              IF  FLG-ACCTFILTER-BLANK\n                  SET NO-SEARCH-CRITERIA-RECEIVED TO TRUE\n              END-IF\n              GO TO 1200-EDIT-MAP-INPUTS-EXIT\n           ELSE\n               CONTINUE\n           END-IF\n           SET FOUND-ACCOUNT-DATA        TO TRUE\n           SET FOUND-ACCT-IN-MASTER      TO TRUE\n           SET FLG-ACCTFILTER-ISVALID    TO TRUE\n           SET FOUND-CUST-IN-MASTER      TO TRUE\n           SET FLG-CUSTFILTER-ISVALID    TO TRUE\n           PERFORM 1205-COMPARE-OLD-NEW\n              THRU 1205-COMPARE-OLD-NEW-EXIT\n           IF  NO-CHANGES-FOUND\n           OR  ACUP-CHANGES-OK-NOT-CONFIRMED\n           OR  ACUP-CHANGES-OKAYED-AND-DONE\n               MOVE LOW-VALUES           TO WS-NON-KEY-FLAGS\n               GO TO 1200-EDIT-MAP-INPUTS-EXIT\n           END-IF\n           SET ACUP-CHANGES-NOT-OK       TO TRUE\n           MOVE 'Account Status'          TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-ACTIVE-STATUS    TO WS-EDIT-YES-NO\n           PERFORM 1220-EDIT-YESNO\n              THRU 1220-EDIT-YESNO-EXIT\n           MOVE WS-EDIT-YES-NO            TO WS-EDIT-ACCT-STATUS\n           MOVE 'Open Date'              TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-OPEN-DATE       TO WS-EDIT-DATE-CCYYMMDD\n           PERFORM EDIT-DATE-CCYYMMDD\n              THRU EDIT-DATE-CCYYMMDD-EXIT\n           MOVE WS-EDIT-DATE-FLGS        TO WS-EDIT-OPEN-DATE-FLGS\n           MOVE 'Credit Limit'           TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CREDIT-LIMIT-X  TO WS-EDIT-SIGNED-NUMBER-9V2-X\n           PERFORM 1250-EDIT-SIGNED-9V2\n              THRU 1250-EDIT-SIGNED-9V2-EXIT\n           MOVE WS-FLG-SIGNED-NUMBER-EDIT  TO WS-EDIT-CREDIT-LIMIT\n           MOVE 'Expiry Date'            TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-EXPIRAION-DATE  TO WS-EDIT-DATE-CCYYMMDD\n           PERFORM EDIT-DATE-CCYYMMDD\n              THRU EDIT-DATE-CCYYMMDD-EXIT\n           MOVE WS-EDIT-DATE-FLGS        TO WS-EXPIRY-DATE-FLGS\n           MOVE 'Cash Credit Limit'      TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CASH-CREDIT-LIMIT-X\n                                         TO WS-EDIT-SIGNED-NUMBER-9V2-X\n           PERFORM 1250-EDIT-SIGNED-9V2\n              THRU 1250-EDIT-SIGNED-9V2-EXIT\n           MOVE WS-FLG-SIGNED-NUMBER-EDIT TO WS-EDIT-CASH-CREDIT-LIMIT\n           MOVE 'Reissue Date'           TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-REISSUE-DATE    TO WS-EDIT-DATE-CCYYMMDD\n           PERFORM EDIT-DATE-CCYYMMDD\n              THRU EDIT-DATE-CCYYMMDD-EXIT\n           MOVE WS-EDIT-DATE-FLGS        TO WS-EDIT-REISSUE-DATE-FLGS\n           MOVE 'Current Balance'        TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CURR-BAL-X      TO WS-EDIT-SIGNED-NUMBER-9V2-X\n           PERFORM 1250-EDIT-SIGNED-9V2\n              THRU 1250-EDIT-SIGNED-9V2-EXIT\n           MOVE WS-FLG-SIGNED-NUMBER-EDIT   TO WS-EDIT-CURR-BAL\n           MOVE 'Current Cycle Credit Limit' TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CURR-CYC-CREDIT-X\n                                         TO WS-EDIT-SIGNED-NUMBER-9V2-X\n           PERFORM 1250-EDIT-SIGNED-9V2\n              THRU 1250-EDIT-SIGNED-9V2-EXIT\n           MOVE WS-FLG-SIGNED-NUMBER-EDIT   TO WS-EDIT-CURR-CYC-CREDIT\n           MOVE 'Current Cycle Debit Limit' TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CURR-CYC-DEBIT-X\n                                         TO WS-EDIT-SIGNED-NUMBER-9V2-X\n           PERFORM 1250-EDIT-SIGNED-9V2\n              THRU 1250-EDIT-SIGNED-9V2-EXIT\n           MOVE WS-FLG-SIGNED-NUMBER-EDIT   TO WS-EDIT-CURR-CYC-DEBIT\n           MOVE 'SSN'                    TO WS-EDIT-VARIABLE-NAME\n           PERFORM 1265-EDIT-US-SSN\n              THRU 1265-EDIT-US-SSN-EXIT\n           MOVE 'Date of Birth'          TO WS-EDIT-VARIABLE-NAME\n           MOVE   ACUP-NEW-CUST-DOB-YYYY-MM-DD\n                                         TO WS-EDIT-DATE-CCYYMMDD\n           PERFORM EDIT-DATE-CCYYMMDD\n              THRU EDIT-DATE-CCYYMMDD-EXIT\n           MOVE WS-EDIT-DATE-FLGS        TO WS-EDIT-DT-OF-BIRTH-FLGS\n           IF WS-EDIT-DT-OF-BIRTH-ISVALID\n              PERFORM  EDIT-DATE-OF-BIRTH\n                 THRU  EDIT-DATE-OF-BIRTH-EXIT\n              MOVE WS-EDIT-DATE-FLGS    TO WS-EDIT-DT-OF-BIRTH-FLGS\n           END-IF\n           MOVE 'FICO Score'             TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-FICO-SCORE-X\n                                         TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 3                        TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1245-EDIT-NUM-REQD\n              THRU 1245-EDIT-NUM-REQD-EXIT\n           MOVE WS-EDIT-ALPHANUM-ONLY-FLAGS\n                                         TO WS-EDIT-FICO-SCORE-FLGS\n           IF FLG-FICO-SCORE-ISVALID\n              PERFORM  1275-EDIT-FICO-SCORE\n                 THRU  1275-EDIT-FICO-SCORE-EXIT\n           END-IF\n           MOVE 'First Name'             TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-FIRST-NAME TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 25                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1225-EDIT-ALPHA-REQD\n              THRU 1225-EDIT-ALPHA-REQD-EXIT\n           MOVE WS-EDIT-ALPHA-ONLY-FLAGS\n                                         TO WS-EDIT-FIRST-NAME-FLGS\n           MOVE 'Middle Name'            TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-MIDDLE-NAME TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 25                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1235-EDIT-ALPHA-OPT\n              THRU 1235-EDIT-ALPHA-OPT-EXIT\n           MOVE WS-EDIT-ALPHA-ONLY-FLAGS\n                                         TO WS-EDIT-MIDDLE-NAME-FLGS\n           MOVE 'Last Name'              TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-LAST-NAME  TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 25                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1225-EDIT-ALPHA-REQD\n              THRU 1225-EDIT-ALPHA-REQD-EXIT\n           MOVE WS-EDIT-ALPHA-ONLY-FLAGS\n                                        TO WS-EDIT-LAST-NAME-FLGS\n           MOVE 'Address Line 1'         TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-ADDR-LINE-1 TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 50                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1215-EDIT-MANDATORY\n              THRU 1215-EDIT-MANDATORY-EXIT\n           MOVE WS-EDIT-MANDATORY-FLAGS\n                                         TO WS-EDIT-ADDRESS-LINE-1-FLGS\n           MOVE 'State'                  TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-ADDR-STATE-CD TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 2                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1225-EDIT-ALPHA-REQD\n              THRU 1225-EDIT-ALPHA-REQD-EXIT\n           MOVE WS-EDIT-ALPHA-ONLY-FLAGS\n                                         TO WS-EDIT-STATE-FLGS\n           IF FLG-ALPHA-ISVALID\n           PERFORM 1270-EDIT-US-STATE-CD\n              THRU 1270-EDIT-US-STATE-CD-EXIT\n           END-IF\n           MOVE 'Zip'                    TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-ADDR-ZIP   TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 5                        TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1245-EDIT-NUM-REQD\n              THRU 1245-EDIT-NUM-REQD-EXIT\n           MOVE WS-EDIT-ALPHANUM-ONLY-FLAGS\n                                         TO WS-EDIT-ZIPCODE-FLGS\n           MOVE 'City'                   TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-ADDR-LINE-3 TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 50                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1225-EDIT-ALPHA-REQD\n              THRU 1225-EDIT-ALPHA-REQD-EXIT\n           MOVE WS-EDIT-ALPHA-ONLY-FLAGS\n                                         TO WS-EDIT-CITY-FLGS\n           MOVE 'Country'                TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-ADDR-COUNTRY-CD\n                                        TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 3                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1225-EDIT-ALPHA-REQD\n              THRU 1225-EDIT-ALPHA-REQD-EXIT\n           MOVE WS-EDIT-ALPHA-ONLY-FLAGS\n                                         TO WS-EDIT-COUNTRY-FLGS\n           MOVE 'Phone Number 1'         TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-PHONE-NUM-1\n                                         TO WS-EDIT-US-PHONE-NUM\n           PERFORM 1260-EDIT-US-PHONE-NUM\n              THRU 1260-EDIT-US-PHONE-NUM-EXIT\n           MOVE WS-EDIT-US-PHONE-NUM-FLGS\n                                         TO  WS-EDIT-PHONE-NUM-1-FLGS\n           MOVE 'Phone Number 2'         TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-PHONE-NUM-2\n                                         TO WS-EDIT-US-PHONE-NUM\n           PERFORM 1260-EDIT-US-PHONE-NUM\n              THRU 1260-EDIT-US-PHONE-NUM-EXIT\n           MOVE WS-EDIT-US-PHONE-NUM-FLGS\n                                         TO WS-EDIT-PHONE-NUM-2-FLGS\n           MOVE 'EFT Account Id'         TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-EFT-ACCOUNT-ID\n                                         TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 10                       TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1245-EDIT-NUM-REQD\n              THRU 1245-EDIT-NUM-REQD-EXIT\n           MOVE WS-EDIT-ALPHANUM-ONLY-FLAGS\n                                         TO WS-EFT-ACCOUNT-ID-FLGS\n           MOVE 'Primary Card Holder'    TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-PRI-HOLDER-IND\n                                         TO WS-EDIT-YES-NO\n           PERFORM 1220-EDIT-YESNO\n              THRU 1220-EDIT-YESNO-EXIT\n           MOVE WS-EDIT-YES-NO           TO WS-EDIT-PRI-CARDHOLDER\n           IF  FLG-STATE-ISVALID\n           AND FLG-ZIPCODE-ISVALID\n               PERFORM 1280-EDIT-US-STATE-ZIP-CD\n                  THRU 1280-EDIT-US-STATE-ZIP-CD-EXIT\n           END-IF\n           IF INPUT-ERROR\n              CONTINUE\n           ELSE\n              SET ACUP-CHANGES-OK-NOT-CONFIRMED TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1200-EDIT-MAP-INPUTS-EXIT",
+    "paragraph": "       1200-EDIT-MAP-INPUTS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1205-COMPARE-OLD-NEW",
+    "paragraph": "       1205-COMPARE-OLD-NEW.\n           SET NO-CHANGES-FOUND           TO TRUE\n           IF  ACUP-NEW-ACCT-ID-X         = ACUP-OLD-ACCT-ID-X\n           AND FUNCTION UPPER-CASE (\n               ACUP-NEW-ACTIVE-STATUS)    =\n               FUNCTION UPPER-CASE (\n               ACUP-OLD-ACTIVE-STATUS)\n           AND ACUP-NEW-CURR-BAL          = ACUP-OLD-CURR-BAL\n           AND ACUP-NEW-CREDIT-LIMIT      = ACUP-OLD-CREDIT-LIMIT\n           AND ACUP-NEW-CASH-CREDIT-LIMIT = ACUP-OLD-CASH-CREDIT-LIMIT\n           AND ACUP-NEW-OPEN-DATE         = ACUP-OLD-OPEN-DATE\n           AND ACUP-NEW-EXPIRAION-DATE    = ACUP-OLD-EXPIRAION-DATE\n           AND ACUP-NEW-REISSUE-DATE      = ACUP-OLD-REISSUE-DATE\n           AND ACUP-NEW-CURR-CYC-CREDIT   = ACUP-OLD-CURR-CYC-CREDIT\n           AND ACUP-NEW-CURR-CYC-DEBIT    = ACUP-OLD-CURR-CYC-DEBIT\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-GROUP-ID))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-GROUP-ID))\n               CONTINUE\n           ELSE\n               SET CHANGE-HAS-OCCURRED   TO TRUE\n               GO TO 1205-COMPARE-OLD-NEW-EXIT\n           END-IF\n           IF  FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-ID-X))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-ID-X))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-FIRST-NAME))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-FIRST-NAME))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-MIDDLE-NAME))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-MIDDLE-NAME))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-LAST-NAME))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-LAST-NAME))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-ADDR-LINE-1))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-ADDR-LINE-1))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-ADDR-LINE-2))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-ADDR-LINE-2))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-ADDR-LINE-3))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-ADDR-LINE-3))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-ADDR-STATE-CD))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-ADDR-STATE-CD))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-ADDR-COUNTRY-CD))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-ADDR-COUNTRY-CD))\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-ADDR-ZIP))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-ADDR-ZIP))\n           AND ACUP-NEW-CUST-PHONE-NUM-1A = ACUP-OLD-CUST-PHONE-NUM-1A\n           AND ACUP-NEW-CUST-PHONE-NUM-1B = ACUP-OLD-CUST-PHONE-NUM-1B\n           AND ACUP-NEW-CUST-PHONE-NUM-1C = ACUP-OLD-CUST-PHONE-NUM-1C\n           AND ACUP-NEW-CUST-PHONE-NUM-2A = ACUP-OLD-CUST-PHONE-NUM-2A\n           AND ACUP-NEW-CUST-PHONE-NUM-2B = ACUP-OLD-CUST-PHONE-NUM-2B\n           AND ACUP-NEW-CUST-PHONE-NUM-2C = ACUP-OLD-CUST-PHONE-NUM-2C\n           AND ACUP-NEW-CUST-SSN-X       = ACUP-OLD-CUST-SSN-X\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-GOVT-ISSUED-ID ))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-GOVT-ISSUED-ID))\n           AND ACUP-NEW-CUST-DOB-YYYY-MM-DD\n                                     = ACUP-OLD-CUST-DOB-YYYY-MM-DD\n           AND ACUP-NEW-CUST-EFT-ACCOUNT-ID\n                                     = ACUP-OLD-CUST-EFT-ACCOUNT-ID\n           AND FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-NEW-CUST-PRI-HOLDER-IND))=\n               FUNCTION UPPER-CASE (\n               FUNCTION TRIM (ACUP-OLD-CUST-PRI-HOLDER-IND))\n           AND ACUP-NEW-CUST-FICO-SCORE-X\n                                     = ACUP-OLD-CUST-FICO-SCORE-X\n               SET NO-CHANGES-DETECTED   TO TRUE\n           ELSE\n               SET CHANGE-HAS-OCCURRED   TO TRUE\n               GO TO 1205-COMPARE-OLD-NEW-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1205-COMPARE-OLD-NEW-EXIT",
+    "paragraph": "       1205-COMPARE-OLD-NEW-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1210-EDIT-ACCOUNT",
+    "paragraph": "       1210-EDIT-ACCOUNT.\n           SET FLG-ACCTFILTER-NOT-OK    TO TRUE\n           IF CC-ACCT-ID   EQUAL LOW-VALUES\n           OR CC-ACCT-ID   EQUAL SPACES\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-ACCTFILTER-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET WS-PROMPT-FOR-ACCT TO TRUE\n              END-IF\n              MOVE ZEROES               TO CDEMO-ACCT-ID\n                                           ACUP-NEW-ACCT-ID\n              GO TO  1210-EDIT-ACCOUNT-EXIT\n           END-IF\n           MOVE CC-ACCT-ID              TO ACUP-NEW-ACCT-ID\n           IF CC-ACCT-ID   IS NOT NUMERIC\n           OR CC-ACCT-ID-N EQUAL ZEROS\n              SET INPUT-ERROR TO TRUE\n              IF WS-RETURN-MSG-OFF\n                STRING\n                 'Account Number if supplied must be a 11 digit'\n                 ' Non-Zero Number'\n                DELIMITED BY SIZE\n                INTO WS-RETURN-MSG\n              END-IF\n              MOVE ZEROES               TO CDEMO-ACCT-ID\n              GO TO 1210-EDIT-ACCOUNT-EXIT\n           ELSE\n              MOVE CC-ACCT-ID TO CDEMO-ACCT-ID\n              SET FLG-ACCTFILTER-ISVALID TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1210-EDIT-ACCOUNT-EXIT",
+    "paragraph": "       1210-EDIT-ACCOUNT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1215-EDIT-MANDATORY",
+    "paragraph": "       1215-EDIT-MANDATORY.\n           SET FLG-MANDATORY-NOT-OK    TO TRUE\n           IF WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                                       EQUAL LOW-VALUES\n           OR WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                                       EQUAL SPACES\n           OR FUNCTION LENGTH(FUNCTION TRIM(\n              WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH))) = 0\n              SET INPUT-ERROR          TO TRUE\n              SET FLG-MANDATORY-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1215-EDIT-MANDATORY-EXIT\n           END-IF\n           SET FLG-MANDATORY-ISVALID   TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1215-EDIT-MANDATORY-EXIT",
+    "paragraph": "       1215-EDIT-MANDATORY-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1220-EDIT-YESNO",
+    "paragraph": "       1220-EDIT-YESNO.\n           IF WS-EDIT-YES-NO             EQUAL LOW-VALUES\n           OR WS-EDIT-YES-NO             EQUAL SPACES\n           OR WS-EDIT-YES-NO             EQUAL ZEROS\n              SET INPUT-ERROR            TO TRUE\n              SET FLG-YES-NO-BLANK       TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1220-EDIT-YESNO-EXIT\n           END-IF\n           IF FLG-YES-NO-ISVALID\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR             TO TRUE\n              SET FLG-YES-NO-NOT-OK       TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be Y or N.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1220-EDIT-YESNO-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1220-EDIT-YESNO-EXIT",
+    "paragraph": "       1220-EDIT-YESNO-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1225-EDIT-ALPHA-REQD",
+    "paragraph": "       1225-EDIT-ALPHA-REQD.\n           SET FLG-ALPHA-NOT-OK              TO TRUE\n           IF WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                                             EQUAL LOW-VALUES\n           OR WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n               EQUAL SPACES\n           OR FUNCTION LENGTH(FUNCTION TRIM(\n              WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH))) = 0\n              SET INPUT-ERROR                TO TRUE\n              SET FLG-ALPHA-BLANK            TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1225-EDIT-ALPHA-REQD-EXIT\n           END-IF\n           MOVE LIT-ALL-ALPHA-FROM-X   TO LIT-ALL-ALPHA-FROM\n           INSPECT WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n             CONVERTING LIT-ALL-ALPHA-FROM\n                     TO LIT-ALPHA-SPACES-TO\n           IF FUNCTION LENGTH(\n                   FUNCTION TRIM(\n                   WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                                  )) = 0\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-ALPHA-NOT-OK      TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' can have alphabets only.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1225-EDIT-ALPHA-REQD-EXIT\n           END-IF\n           SET FLG-ALPHA-ISVALID        TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1225-EDIT-ALPHA-REQD-EXIT",
+    "paragraph": "       1225-EDIT-ALPHA-REQD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1235-EDIT-ALPHA-OPT",
+    "paragraph": "       1235-EDIT-ALPHA-OPT.\n           SET FLG-ALPHA-NOT-OK              TO TRUE\n           IF WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                                             EQUAL LOW-VALUES\n           OR WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n               EQUAL SPACES\n           OR FUNCTION LENGTH(FUNCTION TRIM(\n              WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH))) = 0\n              SET FLG-ALPHA-ISVALID          TO TRUE\n              GO TO  1235-EDIT-ALPHA-OPT-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           MOVE LIT-ALL-ALPHA-FROM-X    TO LIT-ALL-ALPHA-FROM\n           INSPECT WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n             CONVERTING LIT-ALL-ALPHA-FROM\n                     TO LIT-ALPHA-SPACES-TO\n           IF FUNCTION LENGTH(\n                   FUNCTION TRIM(\n                   WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                                  )) = 0\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-ALPHA-NOT-OK      TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' can have alphabets only.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1235-EDIT-ALPHA-OPT-EXIT\n           END-IF\n           SET FLG-ALPHA-ISVALID        TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1235-EDIT-ALPHA-OPT-EXIT",
+    "paragraph": "       1235-EDIT-ALPHA-OPT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1245-EDIT-NUM-REQD",
+    "paragraph": "       1245-EDIT-NUM-REQD.\n           SET FLG-ALPHNANUM-NOT-OK          TO TRUE\n           IF WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                                             EQUAL LOW-VALUES\n           OR WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n               EQUAL SPACES\n           OR FUNCTION LENGTH(FUNCTION TRIM(\n              WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH))) = 0\n              SET INPUT-ERROR                TO TRUE\n              SET FLG-ALPHNANUM-BLANK        TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1245-EDIT-NUM-REQD-EXIT\n           END-IF\n           IF WS-EDIT-ALPHANUM-ONLY(1:WS-EDIT-ALPHANUM-LENGTH)\n                  IS NUMERIC\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-ALPHNANUM-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be all numeric.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1245-EDIT-NUM-REQD-EXIT\n           END-IF\n           IF FUNCTION NUMVAL(WS-EDIT-ALPHANUM-ONLY(1:\n                              WS-EDIT-ALPHANUM-LENGTH)) = 0\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-ALPHNANUM-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must not be zero.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1245-EDIT-NUM-REQD-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           SET FLG-ALPHNANUM-ISVALID    TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1245-EDIT-NUM-REQD-EXIT",
+    "paragraph": "       1245-EDIT-NUM-REQD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1250-EDIT-SIGNED-9V2",
+    "paragraph": "       1250-EDIT-SIGNED-9V2.\n           SET FLG-SIGNED-NUMBER-NOT-OK    TO TRUE\n           IF WS-EDIT-SIGNED-NUMBER-9V2-X  EQUAL LOW-VALUES\n           OR WS-EDIT-SIGNED-NUMBER-9V2-X  EQUAL SPACES\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-SIGNED-NUMBER-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1250-EDIT-SIGNED-9V2-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           IF FUNCTION TEST-NUMVAL-C(WS-EDIT-SIGNED-NUMBER-9V2-X) = 0\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR             TO TRUE\n              SET FLG-SIGNED-NUMBER-NOT-OK   TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' is not valid'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO  1250-EDIT-SIGNED-9V2-EXIT\n           END-IF\n           SET FLG-SIGNED-NUMBER-ISVALID  TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1250-EDIT-SIGNED-9V2-EXIT",
+    "paragraph": "       1250-EDIT-SIGNED-9V2-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1260-EDIT-US-PHONE-NUM",
+    "paragraph": "       1260-EDIT-US-PHONE-NUM.\n           SET WS-EDIT-US-PHONE-IS-INVALID TO TRUE\n           IF  (WS-EDIT-US-PHONE-NUMA EQUAL SPACES\n           OR   WS-EDIT-US-PHONE-NUMA EQUAL LOW-VALUES)\n           AND (WS-EDIT-US-PHONE-NUMB EQUAL SPACES\n           OR   WS-EDIT-US-PHONE-NUMB EQUAL LOW-VALUES)\n           AND (WS-EDIT-US-PHONE-NUMA EQUAL SPACES\n           OR   WS-EDIT-US-PHONE-NUMC EQUAL LOW-VALUES)\n                SET WS-EDIT-US-PHONE-IS-VALID TO TRUE\n                GO TO EDIT-US-PHONE-EXIT\n           ELSE\n                CONTINUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-AREA-CODE",
+    "paragraph": "       EDIT-AREA-CODE.\n           IF WS-EDIT-US-PHONE-NUMA EQUAL SPACES\n           OR WS-EDIT-US-PHONE-NUMA EQUAL LOW-VALUES\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-EDIT-US-PHONEA-BLANK    TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Area code must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-PREFIX\n           ELSE\n              CONTINUE\n           END-IF\n           IF  WS-EDIT-US-PHONE-NUMA       IS NUMERIC\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                 TO TRUE\n              SET  FLG-EDIT-US-PHONEA-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Area code must be A 3 digit number.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-PREFIX\n           END-IF\n           IF  WS-EDIT-US-PHONE-NUMA-N = 0\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-EDIT-US-PHONEA-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Area code cannot be zero'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-PREFIX\n           ELSE\n              CONTINUE\n           END-IF\n           MOVE FUNCTION TRIM (WS-EDIT-US-PHONE-NUMA)\n             TO WS-US-PHONE-AREA-CODE-TO-EDIT\n           IF VALID-GENERAL-PURP-CODE\n               CONTINUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-EDIT-US-PHONEA-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Not valid North America general purpose area code'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-PREFIX\n           END-IF\n           SET FLG-EDIT-US-PHONEA-ISVALID    TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-US-PHONE-PREFIX",
+    "paragraph": "       EDIT-US-PHONE-PREFIX.\n           IF WS-EDIT-US-PHONE-NUMB EQUAL SPACES\n           OR WS-EDIT-US-PHONE-NUMB EQUAL LOW-VALUES\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-EDIT-US-PHONEB-BLANK    TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Prefix code must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-LINENUM\n           ELSE\n              CONTINUE\n           END-IF\n           IF  WS-EDIT-US-PHONE-NUMB          IS NUMERIC\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                 TO TRUE\n              SET  FLG-EDIT-US-PHONEB-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Prefix code must be A 3 digit number.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-LINENUM\n           END-IF\n           IF  WS-EDIT-US-PHONE-NUMB-N = 0\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-EDIT-US-PHONEB-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Prefix code cannot be zero'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-LINENUM\n           ELSE\n              CONTINUE\n           END-IF\n           SET FLG-EDIT-US-PHONEB-ISVALID    TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-US-PHONE-LINENUM",
+    "paragraph": "       EDIT-US-PHONE-LINENUM.\n           IF WS-EDIT-US-PHONE-NUMC EQUAL SPACES\n           OR WS-EDIT-US-PHONE-NUMC EQUAL LOW-VALUES\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-EDIT-US-PHONEC-BLANK    TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Line number code must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO EDIT-US-PHONE-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           IF  WS-EDIT-US-PHONE-NUMC          IS NUMERIC\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                 TO TRUE\n              SET  FLG-EDIT-US-PHONEC-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Line number code must be A 4 digit number.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-EXIT\n           END-IF\n           IF  WS-EDIT-US-PHONE-NUMC-N = 0\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-EDIT-US-PHONEC-NOT-OK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Line number code cannot be zero'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  EDIT-US-PHONE-EXIT\n           ELSE\n               CONTINUE\n           END-IF\n           SET FLG-EDIT-US-PHONEC-ISVALID    TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-US-PHONE-EXIT",
+    "paragraph": "       EDIT-US-PHONE-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1260-EDIT-US-PHONE-NUM-EXIT",
+    "paragraph": "       1260-EDIT-US-PHONE-NUM-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1265-EDIT-US-SSN",
+    "paragraph": "       1265-EDIT-US-SSN.\n           MOVE 'SSN: First 3 chars'     TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-SSN-1      TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 3                        TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1245-EDIT-NUM-REQD\n              THRU 1245-EDIT-NUM-REQD-EXIT\n           MOVE WS-EDIT-ALPHANUM-ONLY-FLAGS\n                                         TO WS-EDIT-US-SSN-PART1-FLGS\n           IF FLG-EDIT-US-SSN-PART1-ISVALID\n              MOVE ACUP-NEW-CUST-SSN-1   TO WS-EDIT-US-SSN-PART1\n              IF INVALID-SSN-PART1\n              SET INPUT-ERROR            TO TRUE\n              SET FLG-EDIT-US-SSN-PART1-NOT-OK\n                                 TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': should not be 000, 666, or between 900 and 999'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              ELSE\n                CONTINUE\n              END-IF\n           END-IF\n           MOVE 'SSN 4th & 5th chars'    TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-SSN-2      TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 2                        TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1245-EDIT-NUM-REQD\n              THRU 1245-EDIT-NUM-REQD-EXIT\n           MOVE WS-EDIT-ALPHANUM-ONLY-FLAGS\n                                         TO WS-EDIT-US-SSN-PART2-FLGS\n           MOVE 'SSN Last 4 chars'       TO WS-EDIT-VARIABLE-NAME\n           MOVE ACUP-NEW-CUST-SSN-3      TO WS-EDIT-ALPHANUM-ONLY\n           MOVE 4                        TO WS-EDIT-ALPHANUM-LENGTH\n           PERFORM 1245-EDIT-NUM-REQD\n              THRU 1245-EDIT-NUM-REQD-EXIT\n           MOVE WS-EDIT-ALPHANUM-ONLY-FLAGS\n                                         TO WS-EDIT-US-SSN-PART3-FLGS\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1265-EDIT-US-SSN-EXIT",
+    "paragraph": "       1265-EDIT-US-SSN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1270-EDIT-US-STATE-CD",
+    "paragraph": "       1270-EDIT-US-STATE-CD.\n           MOVE ACUP-NEW-CUST-ADDR-STATE-CD TO US-STATE-CODE-TO-EDIT\n           IF VALID-US-STATE-CODE\n               CONTINUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-STATE-NOT-OK         TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': is not a valid state code'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1270-EDIT-US-STATE-CD-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1270-EDIT-US-STATE-CD-EXIT",
+    "paragraph": "       1270-EDIT-US-STATE-CD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1275-EDIT-FICO-SCORE",
+    "paragraph": "       1275-EDIT-FICO-SCORE.\n           IF FICO-RANGE-IS-VALID\n               CONTINUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-FICO-SCORE-NOT-OK    TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': should be between 300 and 850'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1275-EDIT-FICO-SCORE-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1275-EDIT-FICO-SCORE-EXIT",
+    "paragraph": "       1275-EDIT-FICO-SCORE-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "1280-EDIT-US-STATE-ZIP-CD",
+    "paragraph": "       1280-EDIT-US-STATE-ZIP-CD.\n           STRING ACUP-NEW-CUST-ADDR-STATE-CD\n                  ACUP-NEW-CUST-ADDR-ZIP(1:2)\n             DELIMITED BY SIZE\n             INTO US-STATE-AND-FIRST-ZIP2\n           IF VALID-US-STATE-ZIP-CD2-COMBO\n               CONTINUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-STATE-NOT-OK         TO TRUE\n              SET FLG-ZIPCODE-NOT-OK       TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   'Invalid zip code for state'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                 END-STRING\n              END-IF\n              GO TO  1280-EDIT-US-STATE-ZIP-CD-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1280-EDIT-US-STATE-ZIP-CD-EXIT",
+    "paragraph": "       1280-EDIT-US-STATE-ZIP-CD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "2000-DECIDE-ACTION",
+    "paragraph": "       2000-DECIDE-ACTION.\n           EVALUATE TRUE\n              WHEN ACUP-DETAILS-NOT-FETCHED\n              WHEN CCARD-AID-PFK12\n                 IF  FLG-ACCTFILTER-ISVALID\n                     SET WS-RETURN-MSG-OFF       TO TRUE\n                     PERFORM 9000-READ-ACCT\n                        THRU 9000-READ-ACCT-EXIT\n                     IF FOUND-CUST-IN-MASTER\n                        SET ACUP-SHOW-DETAILS    TO TRUE\n                     END-IF\n                 END-IF\n              WHEN ACUP-SHOW-DETAILS\n                 IF INPUT-ERROR\n                 OR NO-CHANGES-DETECTED\n                    CONTINUE\n                 ELSE\n                    SET ACUP-CHANGES-OK-NOT-CONFIRMED TO TRUE\n                 END-IF\n              WHEN ACUP-CHANGES-NOT-OK\n                  CONTINUE\n              WHEN ACUP-CHANGES-OK-NOT-CONFIRMED\n               AND CCARD-AID-PFK05\n                 PERFORM 9600-WRITE-PROCESSING\n                    THRU 9600-WRITE-PROCESSING-EXIT\n                 EVALUATE TRUE\n                    WHEN COULD-NOT-LOCK-ACCT-FOR-UPDATE\n                         SET ACUP-CHANGES-OKAYED-LOCK-ERROR TO TRUE\n                    WHEN LOCKED-BUT-UPDATE-FAILED\n                       SET ACUP-CHANGES-OKAYED-BUT-FAILED TO TRUE\n                    WHEN DATA-WAS-CHANGED-BEFORE-UPDATE\n                        SET ACUP-SHOW-DETAILS            TO TRUE\n                    WHEN OTHER\n                       SET ACUP-CHANGES-OKAYED-AND-DONE   TO TRUE\n                 END-EVALUATE\n              WHEN ACUP-CHANGES-OK-NOT-CONFIRMED\n                  CONTINUE\n              WHEN ACUP-CHANGES-OKAYED-AND-DONE\n                  SET ACUP-SHOW-DETAILS TO TRUE\n                  IF CDEMO-FROM-TRANID    EQUAL LOW-VALUES\n                  OR CDEMO-FROM-TRANID    EQUAL SPACES\n                     MOVE ZEROES       TO CDEMO-ACCT-ID\n                                          CDEMO-CARD-NUM\n                     MOVE LOW-VALUES   TO CDEMO-ACCT-STATUS\n                  END-IF\n              WHEN OTHER\n                   MOVE LIT-THISPGM    TO ABEND-CULPRIT\n                   MOVE '0001'         TO ABEND-CODE\n                   MOVE SPACES         TO ABEND-REASON\n                   MOVE 'UNEXPECTED DATA SCENARIO'\n                                       TO ABEND-MSG\n                   PERFORM ABEND-ROUTINE\n                      THRU ABEND-ROUTINE-EXIT\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "2000-DECIDE-ACTION-EXIT",
+    "paragraph": "       2000-DECIDE-ACTION-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3000-SEND-MAP",
+    "paragraph": "       3000-SEND-MAP.\n           PERFORM 3100-SCREEN-INIT\n              THRU 3100-SCREEN-INIT-EXIT\n           PERFORM 3200-SETUP-SCREEN-VARS\n              THRU 3200-SETUP-SCREEN-VARS-EXIT\n           PERFORM 3250-SETUP-INFOMSG\n              THRU 3250-SETUP-INFOMSG-EXIT\n           PERFORM 3300-SETUP-SCREEN-ATTRS\n              THRU 3300-SETUP-SCREEN-ATTRS-EXIT\n           PERFORM 3390-SETUP-INFOMSG-ATTRS\n              THRU 3390-SETUP-INFOMSG-ATTRS-EXIT\n           PERFORM 3400-SEND-SCREEN\n              THRU 3400-SEND-SCREEN-EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3000-SEND-MAP-EXIT",
+    "paragraph": "       3000-SEND-MAP-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3100-SCREEN-INIT",
+    "paragraph": "       3100-SCREEN-INIT.\n           MOVE LOW-VALUES TO CACTUPAO\n           MOVE FUNCTION CURRENT-DATE     TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01              TO TITLE01O OF CACTUPAO\n           MOVE CCDA-TITLE02              TO TITLE02O OF CACTUPAO\n           MOVE LIT-THISTRANID            TO TRNNAMEO OF CACTUPAO\n           MOVE LIT-THISPGM               TO PGMNAMEO OF CACTUPAO\n           MOVE FUNCTION CURRENT-DATE     TO WS-CURDATE-DATA\n           MOVE WS-CURDATE-MONTH          TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY            TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)      TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY       TO CURDATEO OF CACTUPAO\n           MOVE WS-CURTIME-HOURS          TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE         TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND         TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS       TO CURTIMEO OF CACTUPAO\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3100-SCREEN-INIT-EXIT",
+    "paragraph": "       3100-SCREEN-INIT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3200-SETUP-SCREEN-VARS",
+    "paragraph": "       3200-SETUP-SCREEN-VARS.\n           IF CDEMO-PGM-ENTER\n              CONTINUE\n           ELSE\n              IF CC-ACCT-ID-N = 0\n              AND FLG-ACCTFILTER-ISVALID\n                 MOVE LOW-VALUES                TO ACCTSIDO OF CACTUPAO\n              ELSE\n                 MOVE CC-ACCT-ID                TO ACCTSIDO OF CACTUPAO\n              END-IF\n              EVALUATE TRUE\n                WHEN ACUP-DETAILS-NOT-FETCHED\n                WHEN CC-ACCT-ID-N =  0\n                  PERFORM 3201-SHOW-INITIAL-VALUES\n                     THRU 3201-SHOW-INITIAL-VALUES-EXIT\n               WHEN ACUP-SHOW-DETAILS\n                  PERFORM 3202-SHOW-ORIGINAL-VALUES\n                     THRU 3202-SHOW-ORIGINAL-VALUES-EXIT\n               WHEN ACUP-CHANGES-MADE\n                  PERFORM 3203-SHOW-UPDATED-VALUES\n                     THRU 3203-SHOW-UPDATED-VALUES-EXIT\n               WHEN OTHER\n                  PERFORM 3202-SHOW-ORIGINAL-VALUES\n                     THRU 3202-SHOW-ORIGINAL-VALUES-EXIT\n              END-EVALUATE\n            END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3200-SETUP-SCREEN-VARS-EXIT",
+    "paragraph": "       3200-SETUP-SCREEN-VARS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3201-SHOW-INITIAL-VALUES",
+    "paragraph": "       3201-SHOW-INITIAL-VALUES.\n           MOVE LOW-VALUES                     TO  ACSTTUSO OF CACTUPAO\n                                                   ACRDLIMO OF CACTUPAO\n                                                   ACURBALO OF CACTUPAO\n                                                   ACSHLIMO OF CACTUPAO\n                                                   ACRCYCRO OF CACTUPAO\n                                                   ACRCYDBO OF CACTUPAO\n                                                   OPNYEARO OF CACTUPAO\n                                                   OPNMONO  OF CACTUPAO\n                                                   OPNDAYO  OF CACTUPAO\n                                                   EXPYEARO OF CACTUPAO\n                                                   EXPMONO  OF CACTUPAO\n                                                   EXPDAYO  OF CACTUPAO\n                                                   RISYEARO OF CACTUPAO\n                                                   RISMONO  OF CACTUPAO\n                                                   RISDAYO  OF CACTUPAO\n                                                   AADDGRPO OF CACTUPAO\n                                                   ACSTNUMO OF CACTUPAO\n                                                   ACTSSN1O OF CACTUPAO\n                                                   ACTSSN2O OF CACTUPAO\n                                                   ACTSSN3O OF CACTUPAO\n                                                   ACSTFCOO OF CACTUPAO\n                                                   DOBYEARO OF CACTUPAO\n                                                   DOBMONO  OF CACTUPAO\n                                                   DOBDAYO  OF CACTUPAO\n                                                   ACSFNAMO OF CACTUPAO\n                                                   ACSMNAMO OF CACTUPAO\n                                                   ACSLNAMO OF CACTUPAO\n                                                   ACSADL1O OF CACTUPAO\n                                                   ACSADL2O OF CACTUPAO\n                                                   ACSCITYO OF CACTUPAO\n                                                   ACSSTTEO OF CACTUPAO\n                                                   ACSZIPCO OF CACTUPAO\n                                                   ACSCTRYO OF CACTUPAO\n                                                   ACSPH1AO OF CACTUPAO\n                                                   ACSPH1BO OF CACTUPAO\n                                                   ACSPH1CO OF CACTUPAO\n                                                   ACSPH2AO OF CACTUPAO\n                                                   ACSPH2BO OF CACTUPAO\n                                                   ACSPH2CO OF CACTUPAO\n                                                   ACSGOVTO OF CACTUPAO\n                                                   ACSEFTCO OF CACTUPAO\n                                                   ACSPFLGO OF CACTUPAO\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3201-SHOW-INITIAL-VALUES-EXIT",
+    "paragraph": "       3201-SHOW-INITIAL-VALUES-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3202-SHOW-ORIGINAL-VALUES",
+    "paragraph": "       3202-SHOW-ORIGINAL-VALUES.\n           MOVE LOW-VALUES                     TO WS-NON-KEY-FLAGS\n           SET PROMPT-FOR-CHANGES              TO TRUE\n           IF FOUND-ACCT-IN-MASTER\n           OR FOUND-CUST-IN-MASTER\n              MOVE ACUP-OLD-ACTIVE-STATUS      TO ACSTTUSO OF CACTUPAO\n              MOVE ACUP-OLD-CURR-BAL-N         TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACURBALO OF CACTUPAO\n              MOVE ACUP-OLD-CREDIT-LIMIT-N     TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACRDLIMO OF CACTUPAO\n              MOVE ACUP-OLD-CASH-CREDIT-LIMIT-N\n                                               TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACSHLIMO OF CACTUPAO\n              MOVE ACUP-OLD-CURR-CYC-CREDIT-N  TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACRCYCRO OF CACTUPAO\n              MOVE ACUP-OLD-CURR-CYC-DEBIT-N   TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACRCYDBO OF CACTUPAO\n              MOVE ACUP-OLD-OPEN-YEAR          TO OPNYEARO OF CACTUPAO\n              MOVE ACUP-OLD-OPEN-MON           TO OPNMONO  OF CACTUPAO\n              MOVE ACUP-OLD-OPEN-DAY           TO OPNDAYO  OF CACTUPAO\n              MOVE ACUP-OLD-EXP-YEAR           TO EXPYEARO OF CACTUPAO\n              MOVE ACUP-OLD-EXP-MON            TO EXPMONO  OF CACTUPAO\n              MOVE ACUP-OLD-EXP-DAY            TO EXPDAYO  OF CACTUPAO\n              MOVE ACUP-OLD-REISSUE-YEAR       TO RISYEARO OF CACTUPAO\n              MOVE ACUP-OLD-REISSUE-MON        TO RISMONO  OF CACTUPAO\n              MOVE ACUP-OLD-REISSUE-DAY        TO RISDAYO  OF CACTUPAO\n              MOVE ACUP-OLD-GROUP-ID           TO AADDGRPO OF CACTUPAO\n           END-IF\n           IF FOUND-CUST-IN-MASTER\n              MOVE ACUP-OLD-CUST-ID-X          TO ACSTNUMO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-SSN-X(1:3)    TO ACTSSN1O OF CACTUPAO\n              MOVE ACUP-OLD-CUST-SSN-X(4:2)    TO ACTSSN2O OF CACTUPAO\n              MOVE ACUP-OLD-CUST-SSN-X(6:4)    TO ACTSSN3O OF CACTUPAO\n              MOVE ACUP-OLD-CUST-FICO-SCORE-X  TO ACSTFCOO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-DOB-YEAR      TO DOBYEARO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-DOB-MON       TO DOBMONO  OF CACTUPAO\n              MOVE ACUP-OLD-CUST-DOB-DAY       TO DOBDAYO  OF CACTUPAO\n              MOVE ACUP-OLD-CUST-FIRST-NAME    TO ACSFNAMO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-MIDDLE-NAME   TO ACSMNAMO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-LAST-NAME     TO ACSLNAMO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-ADDR-LINE-1   TO ACSADL1O OF CACTUPAO\n              MOVE ACUP-OLD-CUST-ADDR-LINE-2   TO ACSADL2O OF CACTUPAO\n              MOVE ACUP-OLD-CUST-ADDR-LINE-3   TO ACSCITYO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-ADDR-STATE-CD TO ACSSTTEO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-ADDR-ZIP      TO ACSZIPCO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-ADDR-COUNTRY-CD\n                                               TO ACSCTRYO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-PHONE-NUM-1(2:3)\n                                               TO ACSPH1AO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-PHONE-NUM-1(6:3)\n                                               TO ACSPH1BO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-PHONE-NUM-1(10:4)\n                                               TO ACSPH1CO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-PHONE-NUM-2(2:3)\n                                               TO ACSPH2AO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-PHONE-NUM-2(6:3)\n                                               TO ACSPH2BO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-PHONE-NUM-2(10:4)\n                                               TO ACSPH2CO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-GOVT-ISSUED-ID\n                                               TO ACSGOVTO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-EFT-ACCOUNT-ID\n                                               TO ACSEFTCO OF CACTUPAO\n              MOVE ACUP-OLD-CUST-PRI-HOLDER-IND\n                                               TO ACSPFLGO OF CACTUPAO\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3202-SHOW-ORIGINAL-VALUES-EXIT",
+    "paragraph": "       3202-SHOW-ORIGINAL-VALUES-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3203-SHOW-UPDATED-VALUES",
+    "paragraph": "       3203-SHOW-UPDATED-VALUES.\n           MOVE ACUP-NEW-ACTIVE-STATUS         TO ACSTTUSO OF CACTUPAO\n           IF FLG-CRED-LIMIT-ISVALID\n              MOVE ACUP-NEW-CREDIT-LIMIT-N     TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACRDLIMO OF CACTUPAO\n           ELSE\n              MOVE ACUP-NEW-CREDIT-LIMIT-X     TO ACRDLIMO OF CACTUPAO\n           END-IF\n           IF FLG-CASH-CREDIT-LIMIT-ISVALID\n              MOVE ACUP-NEW-CASH-CREDIT-LIMIT-N\n                                               TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACSHLIMO OF CACTUPAO\n           ELSE\n              MOVE ACUP-NEW-CASH-CREDIT-LIMIT-X\n                                               TO ACSHLIMO OF CACTUPAO\n           END-IF\n           IF FLG-CURR-BAL-ISVALID\n              MOVE ACUP-NEW-CURR-BAL-N         TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACURBALO OF CACTUPAO\n           ELSE\n              MOVE ACUP-NEW-CURR-BAL-X         TO ACURBALO OF CACTUPAO\n           END-IF\n           IF FLG-CURR-CYC-CREDIT-ISVALID\n              MOVE ACUP-NEW-CURR-CYC-CREDIT-N  TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACRCYCRO OF CACTUPAO\n           ELSE\n              MOVE ACUP-NEW-CURR-CYC-CREDIT-X  TO ACRCYCRO OF CACTUPAO\n           END-IF\n           IF FLG-CURR-CYC-DEBIT-ISVALID\n              MOVE ACUP-NEW-CURR-CYC-DEBIT-N   TO WS-EDIT-CURRENCY-9-2-F\n              MOVE WS-EDIT-CURRENCY-9-2-F      TO ACRCYDBO OF CACTUPAO\n           ELSE\n              MOVE ACUP-NEW-CURR-CYC-DEBIT-X   TO ACRCYDBO OF CACTUPAO\n           END-IF\n           MOVE ACUP-NEW-OPEN-YEAR             TO OPNYEARO OF CACTUPAO\n           MOVE ACUP-NEW-OPEN-MON              TO OPNMONO  OF CACTUPAO\n           MOVE ACUP-NEW-OPEN-DAY              TO OPNDAYO  OF CACTUPAO\n           MOVE ACUP-NEW-EXP-YEAR              TO EXPYEARO OF CACTUPAO\n           MOVE ACUP-NEW-EXP-MON               TO EXPMONO  OF CACTUPAO\n           MOVE ACUP-NEW-EXP-DAY               TO EXPDAYO  OF CACTUPAO\n           MOVE ACUP-NEW-REISSUE-YEAR          TO RISYEARO OF CACTUPAO\n           MOVE ACUP-NEW-REISSUE-MON           TO RISMONO  OF CACTUPAO\n           MOVE ACUP-NEW-REISSUE-DAY           TO RISDAYO  OF CACTUPAO\n           MOVE ACUP-NEW-GROUP-ID              TO AADDGRPO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-ID-X             TO ACSTNUMO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-SSN-1            TO ACTSSN1O OF CACTUPAO\n           MOVE ACUP-NEW-CUST-SSN-2            TO ACTSSN2O OF CACTUPAO\n           MOVE ACUP-NEW-CUST-SSN-3            TO ACTSSN3O OF CACTUPAO\n           MOVE ACUP-NEW-CUST-FICO-SCORE-X     TO ACSTFCOO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-DOB-YEAR         TO DOBYEARO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-DOB-MON          TO DOBMONO  OF CACTUPAO\n           MOVE ACUP-NEW-CUST-DOB-DAY          TO DOBDAYO  OF CACTUPAO\n           MOVE ACUP-NEW-CUST-FIRST-NAME       TO ACSFNAMO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-MIDDLE-NAME      TO ACSMNAMO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-LAST-NAME        TO ACSLNAMO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-ADDR-LINE-1      TO ACSADL1O OF CACTUPAO\n           MOVE ACUP-NEW-CUST-ADDR-LINE-2      TO ACSADL2O OF CACTUPAO\n           MOVE ACUP-NEW-CUST-ADDR-LINE-3      TO ACSCITYO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-ADDR-STATE-CD    TO ACSSTTEO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-ADDR-ZIP         TO ACSZIPCO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-ADDR-COUNTRY-CD  TO ACSCTRYO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-PHONE-NUM-1A     TO ACSPH1AO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-PHONE-NUM-1B     TO ACSPH1BO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-PHONE-NUM-1C     TO ACSPH1CO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-PHONE-NUM-2A     TO ACSPH2AO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-PHONE-NUM-2B     TO ACSPH2BO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-PHONE-NUM-2C     TO ACSPH2CO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-GOVT-ISSUED-ID   TO ACSGOVTO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-EFT-ACCOUNT-ID   TO ACSEFTCO OF CACTUPAO\n           MOVE ACUP-NEW-CUST-PRI-HOLDER-IND   TO ACSPFLGO OF CACTUPAO\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3203-SHOW-UPDATED-VALUES-EXIT",
+    "paragraph": "       3203-SHOW-UPDATED-VALUES-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3250-SETUP-INFOMSG",
+    "paragraph": "       3250-SETUP-INFOMSG.\n           EVALUATE TRUE\n               WHEN CDEMO-PGM-ENTER\n                    SET  PROMPT-FOR-SEARCH-KEYS TO TRUE\n               WHEN ACUP-DETAILS-NOT-FETCHED\n                   SET PROMPT-FOR-SEARCH-KEYS      TO TRUE\n               WHEN ACUP-SHOW-DETAILS\n                    SET PROMPT-FOR-CHANGES         TO TRUE\n               WHEN ACUP-CHANGES-NOT-OK\n                    SET PROMPT-FOR-CHANGES         TO TRUE\n               WHEN ACUP-CHANGES-OK-NOT-CONFIRMED\n                    SET PROMPT-FOR-CONFIRMATION    TO TRUE\n               WHEN ACUP-CHANGES-OKAYED-AND-DONE\n                    SET CONFIRM-UPDATE-SUCCESS     TO TRUE\n               WHEN ACUP-CHANGES-OKAYED-LOCK-ERROR\n                    SET INFORM-FAILURE             TO TRUE\n               WHEN ACUP-CHANGES-OKAYED-BUT-FAILED\n                    SET INFORM-FAILURE             TO TRUE\n               WHEN WS-NO-INFO-MESSAGE\n                   SET PROMPT-FOR-SEARCH-KEYS      TO TRUE\n           END-EVALUATE\n           MOVE WS-INFO-MSG                    TO INFOMSGO OF CACTUPAO\n           MOVE WS-RETURN-MSG                  TO ERRMSGO OF CACTUPAO\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3250-SETUP-INFOMSG-EXIT",
+    "paragraph": "       3250-SETUP-INFOMSG-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3300-SETUP-SCREEN-ATTRS",
+    "paragraph": "       3300-SETUP-SCREEN-ATTRS.\n           PERFORM 3310-PROTECT-ALL-ATTRS\n              THRU 3310-PROTECT-ALL-ATTRS-EXIT\n           EVALUATE TRUE\n              WHEN ACUP-DETAILS-NOT-FETCHED\n                   MOVE DFHBMFSE      TO ACCTSIDA OF CACTUPAI\n              WHEN  ACUP-SHOW-DETAILS\n              WHEN  ACUP-CHANGES-NOT-OK\n                   PERFORM 3320-UNPROTECT-FEW-ATTRS\n                      THRU 3320-UNPROTECT-FEW-ATTRS-EXIT\n              WHEN ACUP-CHANGES-OK-NOT-CONFIRMED\n              WHEN ACUP-CHANGES-OKAYED-AND-DONE\n                   CONTINUE\n              WHEN OTHER\n                   MOVE DFHBMFSE      TO ACCTSIDA OF CACTUPAI\n           END-EVALUATE\n           EVALUATE TRUE\n              WHEN FOUND-ACCOUNT-DATA\n              WHEN NO-CHANGES-DETECTED\n                  MOVE -1              TO ACSTTUSL OF CACTUPAI\n              WHEN FLG-ACCTFILTER-NOT-OK\n              WHEN FLG-ACCTFILTER-BLANK\n                   MOVE -1             TO ACCTSIDL OF CACTUPAI\n              WHEN FLG-ACCT-STATUS-NOT-OK\n              WHEN FLG-ACCT-STATUS-BLANK\n                  MOVE -1              TO ACSTTUSL OF CACTUPAI\n              WHEN FLG-OPEN-YEAR-NOT-OK\n              WHEN FLG-OPEN-YEAR-BLANK\n                  MOVE -1              TO OPNYEARL OF CACTUPAI\n              WHEN FLG-OPEN-MONTH-NOT-OK\n              WHEN FLG-OPEN-MONTH-BLANK\n                  MOVE -1              TO OPNMONL  OF CACTUPAI\n              WHEN FLG-OPEN-DAY-NOT-OK\n              WHEN FLG-OPEN-DAY-BLANK\n                  MOVE -1              TO OPNDAYL  OF CACTUPAI\n              WHEN FLG-CRED-LIMIT-NOT-OK\n              WHEN FLG-CRED-LIMIT-BLANK\n                  MOVE -1              TO ACRDLIML OF CACTUPAI\n              WHEN FLG-EXPIRY-YEAR-NOT-OK\n              WHEN FLG-EXPIRY-YEAR-BLANK\n                  MOVE -1              TO EXPYEARL OF CACTUPAI\n              WHEN FLG-EXPIRY-MONTH-NOT-OK\n              WHEN FLG-EXPIRY-MONTH-BLANK\n                  MOVE -1              TO EXPMONL  OF CACTUPAI\n              WHEN FLG-EXPIRY-DAY-NOT-OK\n              WHEN FLG-EXPIRY-DAY-BLANK\n                  MOVE -1              TO EXPDAYL  OF CACTUPAI\n              WHEN FLG-CASH-CREDIT-LIMIT-NOT-OK\n              WHEN FLG-CASH-CREDIT-LIMIT-BLANK\n                  MOVE -1              TO ACSHLIML OF CACTUPAI\n              WHEN FLG-REISSUE-YEAR-NOT-OK\n              WHEN FLG-REISSUE-YEAR-BLANK\n                  MOVE -1              TO RISYEARL OF CACTUPAI\n              WHEN FLG-REISSUE-MONTH-NOT-OK\n              WHEN FLG-REISSUE-MONTH-BLANK\n                  MOVE -1              TO RISMONL  OF CACTUPAI\n              WHEN FLG-REISSUE-DAY-NOT-OK\n              WHEN FLG-REISSUE-DAY-BLANK\n                  MOVE -1              TO RISDAYL  OF CACTUPAI\n              WHEN FLG-CURR-BAL-NOT-OK\n              WHEN FLG-CURR-BAL-BLANK\n                  MOVE -1              TO ACURBALL OF CACTUPAI\n              WHEN FLG-CURR-CYC-CREDIT-NOT-OK\n              WHEN FLG-CURR-CYC-CREDIT-BLANK\n                  MOVE -1              TO ACRCYCRL OF CACTUPAI\n              WHEN FLG-CURR-CYC-DEBIT-NOT-OK\n              WHEN FLG-CURR-CYC-DEBIT-BLANK\n                  MOVE -1              TO ACRCYDBL OF CACTUPAI\n              WHEN FLG-EDIT-US-SSN-PART1-NOT-OK\n              WHEN FLG-EDIT-US-SSN-PART1-BLANK\n                  MOVE -1              TO ACTSSN1L OF CACTUPAI\n              WHEN FLG-EDIT-US-SSN-PART2-NOT-OK\n              WHEN FLG-EDIT-US-SSN-PART2-BLANK\n                  MOVE -1              TO ACTSSN2L  OF CACTUPAI\n              WHEN FLG-EDIT-US-SSN-PART3-NOT-OK\n              WHEN FLG-EDIT-US-SSN-PART3-BLANK\n                  MOVE -1              TO ACTSSN3L  OF CACTUPAI\n              WHEN FLG-DT-OF-BIRTH-YEAR-NOT-OK\n              WHEN FLG-DT-OF-BIRTH-YEAR-BLANK\n                  MOVE -1              TO DOBYEARL OF CACTUPAI\n              WHEN FLG-DT-OF-BIRTH-MONTH-NOT-OK\n              WHEN FLG-DT-OF-BIRTH-MONTH-BLANK\n                  MOVE -1              TO DOBMONL  OF CACTUPAI\n              WHEN FLG-DT-OF-BIRTH-DAY-NOT-OK\n              WHEN FLG-DT-OF-BIRTH-DAY-BLANK\n                  MOVE -1              TO DOBDAYL  OF CACTUPAI\n              WHEN FLG-FICO-SCORE-NOT-OK\n              WHEN FLG-FICO-SCORE-BLANK\n                  MOVE -1              TO ACSTFCOL OF CACTUPAI\n              WHEN FLG-FIRST-NAME-NOT-OK\n              WHEN FLG-FIRST-NAME-BLANK\n                  MOVE -1              TO ACSFNAML OF CACTUPAI\n              WHEN FLG-MIDDLE-NAME-NOT-OK\n                  MOVE -1              TO ACSMNAML OF CACTUPAI\n              WHEN FLG-LAST-NAME-NOT-OK\n              WHEN FLG-LAST-NAME-BLANK\n                  MOVE -1              TO ACSLNAML OF CACTUPAI\n              WHEN FLG-ADDRESS-LINE-1-NOT-OK\n              WHEN FLG-ADDRESS-LINE-1-BLANK\n                  MOVE -1              TO ACSADL1L OF CACTUPAI\n              WHEN FLG-STATE-NOT-OK\n              WHEN FLG-STATE-BLANK\n                  MOVE -1              TO ACSSTTEL OF CACTUPAI\n              WHEN FLG-ZIPCODE-NOT-OK\n              WHEN FLG-ZIPCODE-BLANK\n                  MOVE -1              TO ACSZIPCL OF CACTUPAI\n              WHEN FLG-CITY-NOT-OK\n              WHEN FLG-CITY-BLANK\n                  MOVE -1              TO ACSCITYL OF CACTUPAI\n              WHEN FLG-COUNTRY-NOT-OK\n              WHEN FLG-COUNTRY-BLANK\n                  MOVE -1              TO ACSCTRYL OF CACTUPAI\n              WHEN FLG-PHONE-NUM-1A-NOT-OK\n              WHEN FLG-PHONE-NUM-1A-BLANK\n                  MOVE -1              TO ACSPH1AL OF CACTUPAI\n              WHEN FLG-PHONE-NUM-1B-NOT-OK\n              WHEN FLG-PHONE-NUM-1B-BLANK\n                  MOVE -1              TO ACSPH1BL OF CACTUPAI\n              WHEN FLG-PHONE-NUM-1C-NOT-OK\n              WHEN FLG-PHONE-NUM-1C-BLANK\n                  MOVE -1              TO ACSPH1CL OF CACTUPAI\n              WHEN FLG-PHONE-NUM-2A-NOT-OK\n              WHEN FLG-PHONE-NUM-2A-BLANK\n                  MOVE -1              TO ACSPH2AL OF CACTUPAI\n              WHEN FLG-PHONE-NUM-2B-NOT-OK\n              WHEN FLG-PHONE-NUM-2B-BLANK\n                  MOVE -1              TO ACSPH2BL OF CACTUPAI\n              WHEN FLG-PHONE-NUM-2C-NOT-OK\n              WHEN FLG-PHONE-NUM-2C-BLANK\n                  MOVE -1              TO ACSPH2CL OF CACTUPAI\n              WHEN FLG-EFT-ACCOUNT-ID-NOT-OK\n              WHEN FLG-EFT-ACCOUNT-ID-BLANK\n                  MOVE -1              TO ACSEFTCL OF CACTUPAI\n              WHEN FLG-PRI-CARDHOLDER-NOT-OK\n              WHEN FLG-PRI-CARDHOLDER-BLANK\n                  MOVE -1              TO ACSPFLGL OF CACTUPAI\n              WHEN OTHER\n                  MOVE -1              TO ACCTSIDL OF CACTUPAI\n            END-EVALUATE\n           IF CDEMO-LAST-MAPSET   EQUAL LIT-CCLISTMAPSET\n              MOVE DFHDFCOL            TO ACCTSIDC OF CACTUPAO\n           END-IF\n           IF FLG-ACCTFILTER-NOT-OK\n              MOVE DFHRED              TO ACCTSIDC OF CACTUPAO\n           END-IF\n           IF  FLG-ACCTFILTER-BLANK\n           AND CDEMO-PGM-REENTER\n               MOVE '*'                TO ACCTSIDO OF CACTUPAO\n               MOVE DFHRED             TO ACCTSIDC OF CACTUPAO\n           END-IF\n           IF ACUP-DETAILS-NOT-FETCHED\n           OR FLG-ACCTFILTER-BLANK\n           OR FLG-ACCTFILTER-NOT-OK\n              GO TO 3300-SETUP-SCREEN-ATTRS-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           IF (FLG-ACCT-STATUS-NOT-OK\n           OR  FLG-ACCT-STATUS-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSTTUSC OF CACTUPAO\n               IF  FLG-ACCT-STATUS-BLANK\n                   MOVE '*'            TO\n                    ACSTTUSO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-OPEN-YEAR-NOT-OK\n           OR  FLG-OPEN-YEAR-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    OPNYEARC OF CACTUPAO\n               IF  FLG-OPEN-YEAR-BLANK\n                   MOVE '*'            TO\n                    OPNYEARO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-OPEN-MONTH-NOT-OK\n           OR  FLG-OPEN-MONTH-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    OPNMONC OF CACTUPAO\n               IF  FLG-OPEN-MONTH-BLANK\n                   MOVE '*'            TO\n                    OPNMONO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-OPEN-DAY-NOT-OK\n           OR  FLG-OPEN-DAY-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    OPNDAYC OF CACTUPAO\n               IF  FLG-OPEN-DAY-BLANK\n                   MOVE '*'            TO\n                    OPNDAYO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-CRED-LIMIT-NOT-OK\n           OR  FLG-CRED-LIMIT-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACRDLIMC OF CACTUPAO\n               IF  FLG-CRED-LIMIT-BLANK\n                   MOVE '*'            TO\n                    ACRDLIMO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-EXPIRY-YEAR-NOT-OK\n           OR  FLG-EXPIRY-YEAR-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    EXPYEARC OF CACTUPAO\n               IF  FLG-EXPIRY-YEAR-BLANK\n                   MOVE '*'            TO\n                    EXPYEARO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-EXPIRY-MONTH-NOT-OK\n           OR  FLG-EXPIRY-MONTH-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    EXPMONC OF CACTUPAO\n               IF  FLG-EXPIRY-MONTH-BLANK\n                   MOVE '*'            TO\n                    EXPMONO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-EXPIRY-DAY-NOT-OK\n           OR  FLG-EXPIRY-DAY-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    EXPDAYC OF CACTUPAO\n               IF  FLG-EXPIRY-DAY-BLANK\n                   MOVE '*'            TO\n                    EXPDAYO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-CASH-CREDIT-LIMIT-NOT-OK\n           OR  FLG-CASH-CREDIT-LIMIT-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSHLIMC OF CACTUPAO\n               IF  FLG-CASH-CREDIT-LIMIT-BLANK\n                   MOVE '*'            TO\n                    ACSHLIMO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-REISSUE-YEAR-NOT-OK\n           OR  FLG-REISSUE-YEAR-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    RISYEARC OF CACTUPAO\n               IF  FLG-REISSUE-YEAR-BLANK\n                   MOVE '*'            TO\n                    RISYEARO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-REISSUE-MONTH-NOT-OK\n           OR  FLG-REISSUE-MONTH-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    RISMONC OF CACTUPAO\n               IF  FLG-REISSUE-MONTH-BLANK\n                   MOVE '*'            TO\n                    RISMONO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-REISSUE-DAY-NOT-OK\n           OR  FLG-REISSUE-DAY-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    RISDAYC OF CACTUPAO\n               IF  FLG-REISSUE-DAY-BLANK\n                   MOVE '*'            TO\n                    RISDAYO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-CURR-BAL-NOT-OK\n           OR  FLG-CURR-BAL-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACURBALC OF CACTUPAO\n               IF  FLG-CURR-BAL-BLANK\n                   MOVE '*'            TO\n                    ACURBALO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-CURR-CYC-CREDIT-NOT-OK\n           OR  FLG-CURR-CYC-CREDIT-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACRCYCRC OF CACTUPAO\n               IF  FLG-CURR-CYC-CREDIT-BLANK\n                   MOVE '*'            TO\n                    ACRCYCRO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-CURR-CYC-DEBIT-NOT-OK\n           OR  FLG-CURR-CYC-DEBIT-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACRCYDBC OF CACTUPAO\n               IF  FLG-CURR-CYC-DEBIT-BLANK\n                   MOVE '*'            TO\n                    ACRCYDBO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-EDIT-US-SSN-PART1-NOT-OK\n           OR  FLG-EDIT-US-SSN-PART1-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACTSSN1C OF CACTUPAO\n               IF  FLG-EDIT-US-SSN-PART1-BLANK\n                   MOVE '*'            TO\n                    ACTSSN1O OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-EDIT-US-SSN-PART2-NOT-OK\n           OR  FLG-EDIT-US-SSN-PART2-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACTSSN2C OF CACTUPAO\n               IF  FLG-EDIT-US-SSN-PART2-BLANK\n                   MOVE '*'            TO\n                    ACTSSN2O OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-EDIT-US-SSN-PART3-NOT-OK\n           OR  FLG-EDIT-US-SSN-PART3-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACTSSN3C OF CACTUPAO\n               IF  FLG-EDIT-US-SSN-PART3-BLANK\n                   MOVE '*'            TO\n                    ACTSSN3O OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-DT-OF-BIRTH-YEAR-NOT-OK\n           OR  FLG-DT-OF-BIRTH-YEAR-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    DOBYEARC OF CACTUPAO\n               IF  FLG-DT-OF-BIRTH-YEAR-BLANK\n                   MOVE '*'            TO\n                    DOBYEARO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-DT-OF-BIRTH-MONTH-NOT-OK\n           OR  FLG-DT-OF-BIRTH-MONTH-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    DOBMONC OF CACTUPAO\n               IF  FLG-DT-OF-BIRTH-MONTH-BLANK\n                   MOVE '*'            TO\n                    DOBMONO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-DT-OF-BIRTH-DAY-NOT-OK\n           OR  FLG-DT-OF-BIRTH-DAY-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    DOBDAYC OF CACTUPAO\n               IF  FLG-DT-OF-BIRTH-DAY-BLANK\n                   MOVE '*'            TO\n                    DOBDAYO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-FICO-SCORE-NOT-OK\n           OR  FLG-FICO-SCORE-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSTFCOC OF CACTUPAO\n               IF  FLG-FICO-SCORE-BLANK\n                   MOVE '*'            TO\n                    ACSTFCOO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-FIRST-NAME-NOT-OK\n           OR  FLG-FIRST-NAME-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSFNAMC OF CACTUPAO\n               IF  FLG-FIRST-NAME-BLANK\n                   MOVE '*'            TO\n                    ACSFNAMO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-MIDDLE-NAME-NOT-OK\n           OR  FLG-MIDDLE-NAME-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSMNAMC OF CACTUPAO\n               IF  FLG-MIDDLE-NAME-BLANK\n                   MOVE '*'            TO\n                    ACSMNAMO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-LAST-NAME-NOT-OK\n           OR  FLG-LAST-NAME-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSLNAMC OF CACTUPAO\n               IF  FLG-LAST-NAME-BLANK\n                   MOVE '*'            TO\n                    ACSLNAMO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-ADDRESS-LINE-1-NOT-OK\n           OR  FLG-ADDRESS-LINE-1-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSADL1C OF CACTUPAO\n               IF  FLG-ADDRESS-LINE-1-BLANK\n                   MOVE '*'            TO\n                    ACSADL1O OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-STATE-NOT-OK\n           OR  FLG-STATE-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSSTTEC OF CACTUPAO\n               IF  FLG-STATE-BLANK\n                   MOVE '*'            TO\n                    ACSSTTEO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-ADDRESS-LINE-2-NOT-OK\n           OR  FLG-ADDRESS-LINE-2-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSADL2C OF CACTUPAO\n               IF  FLG-ADDRESS-LINE-2-BLANK\n                   MOVE '*'            TO\n                    ACSADL2O OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-ZIPCODE-NOT-OK\n           OR  FLG-ZIPCODE-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSZIPCC OF CACTUPAO\n               IF  FLG-ZIPCODE-BLANK\n                   MOVE '*'            TO\n                    ACSZIPCO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-CITY-NOT-OK\n           OR  FLG-CITY-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSCITYC OF CACTUPAO\n               IF  FLG-CITY-BLANK\n                   MOVE '*'            TO\n                    ACSCITYO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-COUNTRY-NOT-OK\n           OR  FLG-COUNTRY-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSCTRYC OF CACTUPAO\n               IF  FLG-COUNTRY-BLANK\n                   MOVE '*'            TO\n                    ACSCTRYO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-PHONE-NUM-1A-NOT-OK\n           OR  FLG-PHONE-NUM-1A-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSPH1AC OF CACTUPAO\n               IF  FLG-PHONE-NUM-1A-BLANK\n                   MOVE '*'            TO\n                    ACSPH1AO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-PHONE-NUM-1B-NOT-OK\n           OR  FLG-PHONE-NUM-1B-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSPH1BC OF CACTUPAO\n               IF  FLG-PHONE-NUM-1B-BLANK\n                   MOVE '*'            TO\n                    ACSPH1BO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-PHONE-NUM-1C-NOT-OK\n           OR  FLG-PHONE-NUM-1C-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSPH1CC OF CACTUPAO\n               IF  FLG-PHONE-NUM-1C-BLANK\n                   MOVE '*'            TO\n                    ACSPH1CO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-PHONE-NUM-2A-NOT-OK\n           OR  FLG-PHONE-NUM-2A-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSPH2AC OF CACTUPAO\n               IF  FLG-PHONE-NUM-2A-BLANK\n                   MOVE '*'            TO\n                    ACSPH2AO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-PHONE-NUM-2B-NOT-OK\n           OR  FLG-PHONE-NUM-2B-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSPH2BC OF CACTUPAO\n               IF  FLG-PHONE-NUM-2B-BLANK\n                   MOVE '*'            TO\n                    ACSPH2BO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-PHONE-NUM-2C-NOT-OK\n           OR  FLG-PHONE-NUM-2C-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSPH2CC OF CACTUPAO\n               IF  FLG-PHONE-NUM-2C-BLANK\n                   MOVE '*'            TO\n                    ACSPH2CO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-PRI-CARDHOLDER-NOT-OK\n           OR  FLG-PRI-CARDHOLDER-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSPFLGC OF CACTUPAO\n               IF  FLG-PRI-CARDHOLDER-BLANK\n                   MOVE '*'            TO\n                    ACSPFLGO OF CACTUPAO\n               END-IF\n           END-IF\n           IF (FLG-EFT-ACCOUNT-ID-NOT-OK\n           OR  FLG-EFT-ACCOUNT-ID-BLANK)\n           AND CDEMO-PGM-REENTER\n               MOVE DFHRED             TO\n                    ACSEFTCC OF CACTUPAO\n               IF  FLG-EFT-ACCOUNT-ID-BLANK\n                   MOVE '*'            TO\n                    ACSEFTCO OF CACTUPAO\n               END-IF\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3300-SETUP-SCREEN-ATTRS-EXIT",
+    "paragraph": "       3300-SETUP-SCREEN-ATTRS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3310-PROTECT-ALL-ATTRS",
+    "paragraph": "       3310-PROTECT-ALL-ATTRS.\n           MOVE DFHBMPRF              TO ACCTSIDA OF CACTUPAI\n                                         ACSTTUSA OF CACTUPAI\n                                         ACRDLIMA OF CACTUPAI\n                                         ACSHLIMA OF CACTUPAI\n                                         ACURBALA OF CACTUPAI\n                                         ACRCYCRA OF CACTUPAI\n                                         ACRCYDBA OF CACTUPAI\n                                         OPNYEARA OF CACTUPAI\n                                         OPNMONA  OF CACTUPAI\n                                         OPNDAYA  OF CACTUPAI\n                                         EXPYEARA OF CACTUPAI\n                                         EXPMONA  OF CACTUPAI\n                                         EXPDAYA  OF CACTUPAI\n                                         RISYEARA OF CACTUPAI\n                                         RISMONA  OF CACTUPAI\n                                         RISDAYA  OF CACTUPAI\n                                         AADDGRPA OF CACTUPAI\n                                         ACSTNUMA OF CACTUPAI\n                                         ACTSSN1A OF CACTUPAI\n                                         ACTSSN2A OF CACTUPAI\n                                         ACTSSN3A OF CACTUPAI\n                                         ACSTFCOA OF CACTUPAI\n                                         DOBYEARA OF CACTUPAI\n                                         DOBMONA  OF CACTUPAI\n                                         DOBDAYA  OF CACTUPAI\n                                         ACSFNAMA OF CACTUPAI\n                                         ACSMNAMA OF CACTUPAI\n                                         ACSLNAMA OF CACTUPAI\n                                         ACSADL1A OF CACTUPAI\n                                         ACSADL2A OF CACTUPAI\n                                         ACSCITYA OF CACTUPAI\n                                         ACSSTTEA OF CACTUPAI\n                                         ACSZIPCA OF CACTUPAI\n                                         ACSCTRYA OF CACTUPAI\n                                         ACSPH1AA OF CACTUPAI\n                                         ACSPH1BA OF CACTUPAI\n                                         ACSPH1CA OF CACTUPAI\n                                         ACSPH2AA OF CACTUPAI\n                                         ACSPH2BA OF CACTUPAI\n                                         ACSPH2CA OF CACTUPAI\n                                         ACSGOVTA OF CACTUPAI\n                                         ACSEFTCA OF CACTUPAI\n                                         ACSPFLGA OF CACTUPAI\n                                         INFOMSGA OF CACTUPAI\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3310-PROTECT-ALL-ATTRS-EXIT",
+    "paragraph": "       3310-PROTECT-ALL-ATTRS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3320-UNPROTECT-FEW-ATTRS",
+    "paragraph": "       3320-UNPROTECT-FEW-ATTRS.\n           MOVE DFHBMFSE              TO ACSTTUSA OF CACTUPAI\n                                         ACRDLIMA OF CACTUPAI\n                                         ACSHLIMA OF CACTUPAI\n                                         ACURBALA OF CACTUPAI\n                                         ACRCYCRA OF CACTUPAI\n                                         ACRCYDBA OF CACTUPAI\n                                         OPNYEARA OF CACTUPAI\n                                         OPNMONA  OF CACTUPAI\n                                         OPNDAYA  OF CACTUPAI\n                                         EXPYEARA OF CACTUPAI\n                                         EXPMONA  OF CACTUPAI\n                                         EXPDAYA  OF CACTUPAI\n                                         RISYEARA OF CACTUPAI\n                                         RISMONA  OF CACTUPAI\n                                         RISDAYA  OF CACTUPAI\n                                         DOBYEARA OF CACTUPAI\n                                         DOBMONA  OF CACTUPAI\n                                         DOBDAYA  OF CACTUPAI\n                                         AADDGRPA OF CACTUPAI\n            MOVE DFHBMPRF            TO  ACSTNUMA OF CACTUPAI\n            MOVE DFHBMFSE            TO  ACTSSN1A OF CACTUPAI\n                                         ACTSSN2A OF CACTUPAI\n                                         ACTSSN3A OF CACTUPAI\n                                         ACSTFCOA OF CACTUPAI\n                                         ACSFNAMA OF CACTUPAI\n                                         ACSMNAMA OF CACTUPAI\n                                         ACSLNAMA OF CACTUPAI\n                                         ACSADL1A OF CACTUPAI\n                                         ACSADL2A OF CACTUPAI\n                                         ACSCITYA OF CACTUPAI\n                                         ACSSTTEA OF CACTUPAI\n                                         ACSZIPCA OF CACTUPAI\n           MOVE DFHBMPRF              TO ACSCTRYA OF CACTUPAI\n           MOVE DFHBMFSE              TO ACSPH1AA OF CACTUPAI\n                                         ACSPH1BA OF CACTUPAI\n                                         ACSPH1CA OF CACTUPAI\n           MOVE DFHBMFSE              TO ACSPH2AA OF CACTUPAI\n                                         ACSPH2BA OF CACTUPAI\n                                         ACSPH2CA OF CACTUPAI\n                                         ACSGOVTA OF CACTUPAI\n                                         ACSEFTCA OF CACTUPAI\n                                         ACSPFLGA OF CACTUPAI\n           MOVE DFHBMPRF              TO INFOMSGA OF CACTUPAI\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3320-UNPROTECT-FEW-ATTRS-EXIT",
+    "paragraph": "       3320-UNPROTECT-FEW-ATTRS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3390-SETUP-INFOMSG-ATTRS",
+    "paragraph": "       3390-SETUP-INFOMSG-ATTRS.\n           IF  WS-NO-INFO-MESSAGE\n               MOVE DFHBMDAR           TO INFOMSGA OF CACTUPAI\n           ELSE\n               MOVE DFHBMASB           TO INFOMSGA OF CACTUPAI\n           END-IF\n           IF ACUP-CHANGES-MADE\n           AND NOT ACUP-CHANGES-OKAYED-AND-DONE\n               MOVE DFHBMASB           TO FKEY12A  OF CACTUPAI\n           END-IF\n           IF PROMPT-FOR-CONFIRMATION\n               MOVE DFHBMASB           TO FKEY05A  OF CACTUPAI\n               MOVE DFHBMASB           TO FKEY12A  OF CACTUPAI\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3390-SETUP-INFOMSG-ATTRS-EXIT",
+    "paragraph": "       3390-SETUP-INFOMSG-ATTRS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "3400-SEND-SCREEN",
+    "paragraph": "       3400-SEND-SCREEN.\n           MOVE LIT-THISMAPSET         TO CCARD-NEXT-MAPSET\n           MOVE LIT-THISMAP            TO CCARD-NEXT-MAP\n           EXEC CICS SEND MAP(CCARD-NEXT-MAP)\n                          MAPSET(CCARD-NEXT-MAPSET)\n                          FROM(CACTUPAO)\n                          CURSOR\n                          ERASE\n                          FREEKB\n                          RESP(WS-RESP-CD)\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3400-SEND-SCREEN-EXIT",
+    "paragraph": "       3400-SEND-SCREEN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "9000-READ-ACCT",
+    "paragraph": "       9000-READ-ACCT.\n           INITIALIZE ACUP-OLD-DETAILS\n           SET  WS-NO-INFO-MESSAGE      TO TRUE\n           MOVE CC-ACCT-ID              TO ACUP-OLD-ACCT-ID\n                                           WS-CARD-RID-ACCT-ID\n           PERFORM 9200-GETCARDXREF-BYACCT\n              THRU 9200-GETCARDXREF-BYACCT-EXIT\n           IF FLG-ACCTFILTER-NOT-OK\n              GO TO 9000-READ-ACCT-EXIT\n           END-IF\n           PERFORM 9300-GETACCTDATA-BYACCT\n              THRU 9300-GETACCTDATA-BYACCT-EXIT\n           IF DID-NOT-FIND-ACCT-IN-ACCTDAT\n              GO TO 9000-READ-ACCT-EXIT\n           END-IF\n           MOVE CDEMO-CUST-ID TO WS-CARD-RID-CUST-ID\n           PERFORM 9400-GETCUSTDATA-BYCUST\n              THRU 9400-GETCUSTDATA-BYCUST-EXIT\n           IF DID-NOT-FIND-CUST-IN-CUSTDAT\n              GO TO 9000-READ-ACCT-EXIT\n           END-IF\n           PERFORM 9500-STORE-FETCHED-DATA\n              THRU 9500-STORE-FETCHED-DATA-EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9000-READ-ACCT-EXIT",
+    "paragraph": "       9000-READ-ACCT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "9200-GETACCTXREF-BYACCT",
+    "paragraph": "       9200-GETCARDXREF-BYACCT.\n           EXEC CICS READ\n                DATASET   (LIT-CARDXREFNAME-ACCT-PATH)\n                RIDFLD    (WS-CARD-RID-ACCT-ID-X)\n                KEYLENGTH (LENGTH OF WS-CARD-RID-ACCT-ID-X)\n                INTO      (CARD-XREF-RECORD)\n                LENGTH    (LENGTH OF CARD-XREF-RECORD)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                  MOVE XREF-CUST-ID               TO CDEMO-CUST-ID\n                  MOVE XREF-CARD-NUM              TO CDEMO-CARD-NUM\n               WHEN DFHRESP(NOTFND)\n                  SET INPUT-ERROR                 TO TRUE\n                  SET FLG-ACCTFILTER-NOT-OK       TO TRUE\n                  IF WS-RETURN-MSG-OFF\n                    MOVE WS-RESP-CD               TO ERROR-RESP\n                    MOVE WS-REAS-CD               TO ERROR-RESP2\n                    STRING\n                    'Account:'\n                     WS-CARD-RID-ACCT-ID-X\n                    ' not found in'\n                    ' Cross ref file.  Resp:'\n                    ERROR-RESP\n                    ' Reas:'\n                    ERROR-RESP2\n                    DELIMITED BY SIZE\n                    INTO WS-RETURN-MSG\n                    END-STRING\n                  END-IF\n               WHEN OTHER\n                  SET INPUT-ERROR                 TO TRUE\n                  SET FLG-ACCTFILTER-NOT-OK                TO TRUE\n                  MOVE 'READ'                     TO ERROR-OPNAME\n                  MOVE LIT-CARDXREFNAME-ACCT-PATH TO ERROR-FILE\n                  MOVE WS-RESP-CD                 TO ERROR-RESP\n                  MOVE WS-REAS-CD                 TO ERROR-RESP2\n                  MOVE WS-FILE-ERROR-MESSAGE      TO WS-RETURN-MSG\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9200-GETCARDXREF-BYACCT-EXIT",
+    "paragraph": "       9200-GETCARDXREF-BYACCT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "9300-GETACCTDATA-BYACCT",
+    "paragraph": "       9300-GETACCTDATA-BYACCT.\n           EXEC CICS READ\n                DATASET   (LIT-ACCTFILENAME)\n                RIDFLD    (WS-CARD-RID-ACCT-ID-X)\n                KEYLENGTH (LENGTH OF WS-CARD-RID-ACCT-ID-X)\n                INTO      (ACCOUNT-RECORD)\n                LENGTH    (LENGTH OF ACCOUNT-RECORD)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                  SET FOUND-ACCT-IN-MASTER        TO TRUE\n               WHEN DFHRESP(NOTFND)\n                  SET INPUT-ERROR                 TO TRUE\n                  SET FLG-ACCTFILTER-NOT-OK       TO TRUE\n                  IF WS-RETURN-MSG-OFF\n                    MOVE WS-RESP-CD               TO ERROR-RESP\n                    MOVE WS-REAS-CD               TO ERROR-RESP2\n                    STRING\n                    'Account:'\n                     WS-CARD-RID-ACCT-ID-X\n                    ' not found in'\n                    ' Acct Master file.Resp:'\n                    ERROR-RESP\n                    ' Reas:'\n                    ERROR-RESP2\n                    DELIMITED BY SIZE\n                    INTO WS-RETURN-MSG\n                    END-STRING\n                  END-IF\n               WHEN OTHER\n                  SET INPUT-ERROR                 TO TRUE\n                  SET FLG-ACCTFILTER-NOT-OK                TO TRUE\n                  MOVE 'READ'                     TO ERROR-OPNAME\n                  MOVE LIT-ACCTFILENAME           TO ERROR-FILE\n                  MOVE WS-RESP-CD                 TO ERROR-RESP\n                  MOVE WS-REAS-CD                 TO ERROR-RESP2\n                  MOVE WS-FILE-ERROR-MESSAGE      TO WS-RETURN-MSG\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9300-GETACCTDATA-BYACCT-EXIT",
+    "paragraph": "       9300-GETACCTDATA-BYACCT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "9400-GETCUSTDATA-BYCUST",
+    "paragraph": "       9400-GETCUSTDATA-BYCUST.\n           EXEC CICS READ\n                DATASET   (LIT-CUSTFILENAME)\n                RIDFLD    (WS-CARD-RID-CUST-ID-X)\n                KEYLENGTH (LENGTH OF WS-CARD-RID-CUST-ID-X)\n                INTO      (CUSTOMER-RECORD)\n                LENGTH    (LENGTH OF CUSTOMER-RECORD)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                  SET FOUND-CUST-IN-MASTER        TO TRUE\n               WHEN DFHRESP(NOTFND)\n                  SET INPUT-ERROR                 TO TRUE\n                  SET FLG-CUSTFILTER-NOT-OK       TO TRUE\n                  MOVE WS-RESP-CD               TO ERROR-RESP\n                  MOVE WS-REAS-CD               TO ERROR-RESP2\n                  IF WS-RETURN-MSG-OFF\n                    STRING\n                    'CustId:'\n                     WS-CARD-RID-CUST-ID-X\n                    ' not found'\n                    ' in customer master.Resp: '\n                    ERROR-RESP\n                    ' REAS:'\n                    ERROR-RESP2\n                    DELIMITED BY SIZE\n                    INTO WS-RETURN-MSG\n                    END-STRING\n                  END-IF\n               WHEN OTHER\n                  SET INPUT-ERROR                 TO TRUE\n                  SET FLG-CUSTFILTER-NOT-OK                TO TRUE\n                  MOVE 'READ'                     TO ERROR-OPNAME\n                  MOVE LIT-CUSTFILENAME           TO ERROR-FILE\n                  MOVE WS-RESP-CD                 TO ERROR-RESP\n                  MOVE WS-REAS-CD                 TO ERROR-RESP2\n                  MOVE WS-FILE-ERROR-MESSAGE      TO WS-RETURN-MSG\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9400-GETCUSTDATA-BYCUST-EXIT",
+    "paragraph": "       9400-GETCUSTDATA-BYCUST-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "9500-STORE-FETCHED-DATA",
+    "paragraph": "       9500-STORE-FETCHED-DATA.\n           MOVE ACCT-ID                   TO CDEMO-ACCT-ID\n           MOVE CUST-ID                   TO CDEMO-CUST-ID\n           MOVE CUST-FIRST-NAME           TO CDEMO-CUST-FNAME\n           MOVE CUST-MIDDLE-NAME          TO CDEMO-CUST-MNAME\n           MOVE CUST-LAST-NAME            TO CDEMO-CUST-LNAME\n           MOVE ACCT-ACTIVE-STATUS        TO CDEMO-ACCT-STATUS\n           MOVE XREF-CARD-NUM             TO CDEMO-CARD-NUM\n           INITIALIZE ACUP-OLD-DETAILS\n           MOVE ACCT-ID                  TO ACUP-OLD-ACCT-ID\n           MOVE ACCT-ACTIVE-STATUS       TO ACUP-OLD-ACTIVE-STATUS\n           MOVE ACCT-CURR-BAL            TO ACUP-OLD-CURR-BAL-N\n           MOVE ACCT-CREDIT-LIMIT        TO ACUP-OLD-CREDIT-LIMIT-N\n           MOVE ACCT-CASH-CREDIT-LIMIT   TO ACUP-OLD-CASH-CREDIT-LIMIT-N\n           MOVE ACCT-CURR-CYC-CREDIT     TO ACUP-OLD-CURR-CYC-CREDIT-N\n           MOVE ACCT-CURR-CYC-DEBIT      TO ACUP-OLD-CURR-CYC-DEBIT-N\n           MOVE ACCT-OPEN-DATE(1:4)      TO ACUP-OLD-OPEN-YEAR\n           MOVE ACCT-OPEN-DATE(6:2)      TO ACUP-OLD-OPEN-MON\n           MOVE ACCT-OPEN-DATE(9:2)      TO ACUP-OLD-OPEN-DAY\n           MOVE ACCT-EXPIRAION-DATE(1:4) TO ACUP-OLD-EXP-YEAR\n           MOVE ACCT-EXPIRAION-DATE(6:2) TO ACUP-OLD-EXP-MON\n           MOVE ACCT-EXPIRAION-DATE(9:2) TO ACUP-OLD-EXP-DAY\n           MOVE ACCT-REISSUE-DATE(1:4)   TO ACUP-OLD-REISSUE-YEAR\n           MOVE ACCT-REISSUE-DATE(6:2)   TO ACUP-OLD-REISSUE-MON\n           MOVE ACCT-REISSUE-DATE(9:2)   TO ACUP-OLD-REISSUE-DAY\n           MOVE ACCT-GROUP-ID            TO ACUP-OLD-GROUP-ID\n           MOVE CUST-ID                  TO ACUP-OLD-CUST-ID\n           MOVE CUST-SSN                 TO ACUP-OLD-CUST-SSN\n           MOVE CUST-DOB-YYYY-MM-DD(1:4) TO ACUP-OLD-CUST-DOB-YEAR\n           MOVE CUST-DOB-YYYY-MM-DD(6:2) TO ACUP-OLD-CUST-DOB-MON\n           MOVE CUST-DOB-YYYY-MM-DD(9:2) TO ACUP-OLD-CUST-DOB-DAY\n           MOVE CUST-FICO-CREDIT-SCORE   TO ACUP-OLD-CUST-FICO-SCORE\n           MOVE CUST-FIRST-NAME          TO ACUP-OLD-CUST-FIRST-NAME\n           MOVE CUST-MIDDLE-NAME         TO ACUP-OLD-CUST-MIDDLE-NAME\n           MOVE CUST-LAST-NAME           TO ACUP-OLD-CUST-LAST-NAME\n           MOVE CUST-ADDR-LINE-1         TO ACUP-OLD-CUST-ADDR-LINE-1\n           MOVE CUST-ADDR-LINE-2         TO ACUP-OLD-CUST-ADDR-LINE-2\n           MOVE CUST-ADDR-LINE-3         TO ACUP-OLD-CUST-ADDR-LINE-3\n           MOVE CUST-ADDR-STATE-CD       TO ACUP-OLD-CUST-ADDR-STATE-CD\n           MOVE CUST-ADDR-COUNTRY-CD     TO\n                                          ACUP-OLD-CUST-ADDR-COUNTRY-CD\n           MOVE CUST-ADDR-ZIP            TO ACUP-OLD-CUST-ADDR-ZIP\n           MOVE CUST-PHONE-NUM-1         TO ACUP-OLD-CUST-PHONE-NUM-1\n           MOVE CUST-PHONE-NUM-2         TO ACUP-OLD-CUST-PHONE-NUM-2\n           MOVE CUST-GOVT-ISSUED-ID      TO ACUP-OLD-CUST-GOVT-ISSUED-ID\n           MOVE CUST-EFT-ACCOUNT-ID      TO ACUP-OLD-CUST-EFT-ACCOUNT-ID\n           MOVE CUST-PRI-CARD-HOLDER-IND TO ACUP-OLD-CUST-PRI-HOLDER-IND\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9500-STORE-FETCHED-DATA-EXIT",
+    "paragraph": "       9500-STORE-FETCHED-DATA-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "9600-WRITE-PROCESSING",
+    "paragraph": "       9600-WRITE-PROCESSING.\n           MOVE CC-ACCT-ID              TO WS-CARD-RID-ACCT-ID\n           EXEC CICS READ\n                FILE      (LIT-ACCTFILENAME)\n                UPDATE\n                RIDFLD    (WS-CARD-RID-ACCT-ID-X)\n                KEYLENGTH (LENGTH OF WS-CARD-RID-ACCT-ID-X)\n                INTO      (ACCOUNT-RECORD)\n                LENGTH    (LENGTH OF ACCOUNT-RECORD)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                    TO TRUE\n              IF  WS-RETURN-MSG-OFF\n                  SET COULD-NOT-LOCK-ACCT-FOR-UPDATE  TO TRUE\n              END-IF\n              GO TO 9600-WRITE-PROCESSING-EXIT\n           END-IF\n           MOVE CDEMO-CUST-ID                   TO WS-CARD-RID-CUST-ID\n           EXEC CICS READ\n                FILE      (LIT-CUSTFILENAME)\n                UPDATE\n                RIDFLD    (WS-CARD-RID-CUST-ID-X)\n                KEYLENGTH (LENGTH OF WS-CARD-RID-CUST-ID-X)\n                INTO      (CUSTOMER-RECORD)\n                LENGTH    (LENGTH OF CUSTOMER-RECORD)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                    TO TRUE\n              IF  WS-RETURN-MSG-OFF\n                  SET COULD-NOT-LOCK-CUST-FOR-UPDATE  TO TRUE\n              END-IF\n              GO TO 9600-WRITE-PROCESSING-EXIT\n           END-IF\n           PERFORM 9700-CHECK-CHANGE-IN-REC\n              THRU 9700-CHECK-CHANGE-IN-REC-EXIT\n           IF DATA-WAS-CHANGED-BEFORE-UPDATE\n              GO TO 9600-WRITE-PROCESSING-EXIT\n           END-IF\n           INITIALIZE ACCT-UPDATE-RECORD\n           MOVE ACUP-NEW-ACCT-ID         TO ACCT-UPDATE-ID\n           MOVE ACUP-NEW-ACTIVE-STATUS   TO ACCT-UPDATE-ACTIVE-STATUS\n           MOVE ACUP-NEW-CURR-BAL-N      TO ACCT-UPDATE-CURR-BAL\n           MOVE ACUP-NEW-CREDIT-LIMIT-N  TO ACCT-UPDATE-CREDIT-LIMIT\n           MOVE ACUP-NEW-CASH-CREDIT-LIMIT-N\n                                      TO ACCT-UPDATE-CASH-CREDIT-LIMIT\n           MOVE ACUP-NEW-CURR-CYC-CREDIT-N\n                                          TO ACCT-UPDATE-CURR-CYC-CREDIT\n           MOVE ACUP-NEW-CURR-CYC-DEBIT-N TO ACCT-UPDATE-CURR-CYC-DEBIT\n           STRING ACUP-NEW-OPEN-YEAR\n                  '-'\n                  ACUP-NEW-OPEN-MON\n                  '-'\n                  ACUP-NEW-OPEN-DAY\n           DELIMITED BY SIZE\n                                       INTO ACCT-UPDATE-OPEN-DATE\n           STRING ACUP-NEW-EXP-YEAR\n                  '-'\n                  ACUP-NEW-EXP-MON\n                  '-'\n                  ACUP-NEW-EXP-DAY\n           DELIMITED BY SIZE\n                                       INTO ACCT-UPDATE-EXPIRAION-DATE\n           MOVE ACCT-REISSUE-DATE        TO ACCT-UPDATE-REISSUE-DATE\n           STRING ACUP-NEW-REISSUE-YEAR\n                  '-'\n                  ACUP-NEW-REISSUE-MON\n                  '-'\n                  ACUP-NEW-REISSUE-DAY\n           DELIMITED BY SIZE\n                                       INTO ACCT-UPDATE-REISSUE-DATE\n           MOVE ACUP-NEW-GROUP-ID        TO ACCT-UPDATE-GROUP-ID\n           INITIALIZE CUST-UPDATE-RECORD\n           MOVE  ACUP-NEW-CUST-ID        TO CUST-UPDATE-ID\n           MOVE  ACUP-NEW-CUST-FIRST-NAME\n                                   TO CUST-UPDATE-FIRST-NAME\n           MOVE  ACUP-NEW-CUST-MIDDLE-NAME\n                                   TO CUST-UPDATE-MIDDLE-NAME\n           MOVE  ACUP-NEW-CUST-LAST-NAME TO CUST-UPDATE-LAST-NAME\n           MOVE  ACUP-NEW-CUST-ADDR-LINE-1\n                                   TO CUST-UPDATE-ADDR-LINE-1\n           MOVE  ACUP-NEW-CUST-ADDR-LINE-2\n                                   TO CUST-UPDATE-ADDR-LINE-2\n           MOVE  ACUP-NEW-CUST-ADDR-LINE-3\n                                   TO CUST-UPDATE-ADDR-LINE-3\n           MOVE  ACUP-NEW-CUST-ADDR-STATE-CD\n                                   TO CUST-UPDATE-ADDR-STATE-CD\n           MOVE  ACUP-NEW-CUST-ADDR-COUNTRY-CD\n                                   TO CUST-UPDATE-ADDR-COUNTRY-CD\n           MOVE  ACUP-NEW-CUST-ADDR-ZIP  TO CUST-UPDATE-ADDR-ZIP\n           STRING '(',\n                  ACUP-NEW-CUST-PHONE-NUM-1A,\n                  ')',\n                  ACUP-NEW-CUST-PHONE-NUM-1B,\n                  '-',\n                  ACUP-NEW-CUST-PHONE-NUM-1C\n           DELIMITED BY SIZE    INTO CUST-UPDATE-PHONE-NUM-1\n           STRING '(',\n                  ACUP-NEW-CUST-PHONE-NUM-2A,\n                  ')',\n                  ACUP-NEW-CUST-PHONE-NUM-2B,\n                  '-',\n                  ACUP-NEW-CUST-PHONE-NUM-2C\n           DELIMITED BY SIZE    INTO CUST-UPDATE-PHONE-NUM-2\n           MOVE  ACUP-NEW-CUST-SSN       TO CUST-UPDATE-SSN\n           MOVE  ACUP-NEW-CUST-GOVT-ISSUED-ID\n                                   TO CUST-UPDATE-GOVT-ISSUED-ID\n           STRING ACUP-NEW-CUST-DOB-YEAR\n                  '-'\n                  ACUP-NEW-CUST-DOB-MON\n                  '-'\n                  ACUP-NEW-CUST-DOB-DAY\n           DELIMITED BY SIZE           INTO CUST-UPDATE-DOB-YYYY-MM-DD\n           MOVE ACUP-NEW-CUST-EFT-ACCOUNT-ID\n                                         TO CUST-UPDATE-EFT-ACCOUNT-ID\n           MOVE ACUP-NEW-CUST-PRI-HOLDER-IND\n                                         TO CUST-UPDATE-PRI-CARD-IND\n           MOVE ACUP-NEW-CUST-FICO-SCORE TO\n                                   CUST-UPDATE-FICO-CREDIT-SCORE\n           EXEC CICS\n                REWRITE FILE(LIT-ACCTFILENAME)\n                        FROM(ACCT-UPDATE-RECORD)\n                        LENGTH(LENGTH OF ACCT-UPDATE-RECORD)\n                        RESP      (WS-RESP-CD)\n                        RESP2     (WS-REAS-CD)\n           END-EXEC.\n           IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)\n             CONTINUE\n           ELSE\n             SET LOCKED-BUT-UPDATE-FAILED    TO TRUE\n             GO TO 9600-WRITE-PROCESSING-EXIT\n           END-IF\n           EXEC CICS\n                        REWRITE FILE(LIT-CUSTFILENAME)\n                        FROM(CUST-UPDATE-RECORD)\n                        LENGTH(LENGTH OF CUST-UPDATE-RECORD)\n                        RESP      (WS-RESP-CD)\n                        RESP2     (WS-REAS-CD)\n           END-EXEC.\n           IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)\n             CONTINUE\n           ELSE\n             SET LOCKED-BUT-UPDATE-FAILED    TO TRUE\n             EXEC CICS\n                SYNCPOINT ROLLBACK\n             END-EXEC\n             GO TO 9600-WRITE-PROCESSING-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9600-WRITE-PROCESSING-EXIT",
+    "paragraph": "       9600-WRITE-PROCESSING-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "9700-CHECK-CHANGE-IN-REC",
+    "paragraph": "       9700-CHECK-CHANGE-IN-REC.\n           IF  ACCT-ACTIVE-STATUS      EQUAL ACUP-OLD-ACTIVE-STATUS\n           AND ACCT-CURR-BAL           EQUAL ACUP-OLD-CURR-BAL-N\n           AND ACCT-CREDIT-LIMIT       EQUAL ACUP-OLD-CREDIT-LIMIT-N\n           AND ACCT-CASH-CREDIT-LIMIT EQUAL ACUP-OLD-CASH-CREDIT-LIMIT-N\n           AND ACCT-CURR-CYC-CREDIT    EQUAL ACUP-OLD-CURR-CYC-CREDIT-N\n           AND ACCT-CURR-CYC-DEBIT     EQUAL ACUP-OLD-CURR-CYC-DEBIT-N\n           AND ACCT-OPEN-DATE(1:4)     EQUAL ACUP-OLD-OPEN-YEAR\n           AND ACCT-OPEN-DATE(6:2)     EQUAL ACUP-OLD-OPEN-MON\n           AND ACCT-OPEN-DATE(9:2)     EQUAL ACUP-OLD-OPEN-DAY\n           AND ACCT-EXPIRAION-DATE(1:4)EQUAL ACUP-OLD-EXP-YEAR\n           AND ACCT-EXPIRAION-DATE(6:2)EQUAL ACUP-OLD-EXP-MON\n           AND ACCT-EXPIRAION-DATE(9:2)EQUAL ACUP-OLD-EXP-DAY\n           AND ACCT-REISSUE-DATE(1:4)  EQUAL ACUP-OLD-REISSUE-YEAR\n           AND ACCT-REISSUE-DATE(6:2)  EQUAL ACUP-OLD-REISSUE-MON\n           AND ACCT-REISSUE-DATE(9:2)  EQUAL ACUP-OLD-REISSUE-DAY\n           AND FUNCTION LOWER-CASE (ACCT-GROUP-ID)           EQUAL\n               FUNCTION LOWER-CASE (ACUP-OLD-GROUP-ID)\n               CONTINUE\n           ELSE\n              SET DATA-WAS-CHANGED-BEFORE-UPDATE TO TRUE\n              GO TO 9600-WRITE-PROCESSING-EXIT\n           END-IF\n           IF  FUNCTION UPPER-CASE (CUST-FIRST-NAME          ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-FIRST-NAME )\n           AND FUNCTION UPPER-CASE (CUST-MIDDLE-NAME         ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-MIDDLE-NAME)\n           AND FUNCTION UPPER-CASE (CUST-LAST-NAME           ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-LAST-NAME  )\n           AND FUNCTION UPPER-CASE (CUST-ADDR-LINE-1         ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-ADDR-LINE-1)\n           AND FUNCTION UPPER-CASE (CUST-ADDR-LINE-2         ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-ADDR-LINE-2)\n           AND FUNCTION UPPER-CASE (CUST-ADDR-LINE-3         ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-ADDR-LINE-3)\n           AND FUNCTION UPPER-CASE (CUST-ADDR-STATE-CD       ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-ADDR-STATE-CD)\n           AND FUNCTION UPPER-CASE (CUST-ADDR-COUNTRY-CD     ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-ADDR-COUNTRY-CD )\n           AND CUST-ADDR-ZIP           EQUAL ACUP-OLD-CUST-ADDR-ZIP\n           AND CUST-PHONE-NUM-1        EQUAL ACUP-OLD-CUST-PHONE-NUM-1\n           AND CUST-PHONE-NUM-2        EQUAL ACUP-OLD-CUST-PHONE-NUM-2\n           AND CUST-SSN                EQUAL ACUP-OLD-CUST-SSN\n           AND FUNCTION UPPER-CASE (CUST-GOVT-ISSUED-ID      ) EQUAL\n               FUNCTION UPPER-CASE (ACUP-OLD-CUST-GOVT-ISSUED-ID )\n           AND CUST-DOB-YYYY-MM-DD (1:4)                       EQUAL\n               ACUP-OLD-CUST-DOB-YYYY-MM-DD (1:4)\n           AND CUST-DOB-YYYY-MM-DD (6:2)                       EQUAL\n               ACUP-OLD-CUST-DOB-YYYY-MM-DD (5:2)\n           AND CUST-DOB-YYYY-MM-DD (9:2)                       EQUAL\n               ACUP-OLD-CUST-DOB-YYYY-MM-DD (7:2)\n           AND CUST-EFT-ACCOUNT-ID     EQUAL\n                                            ACUP-OLD-CUST-EFT-ACCOUNT-ID\n           AND CUST-PRI-CARD-HOLDER-IND\n                                       EQUAL\n                                            ACUP-OLD-CUST-PRI-HOLDER-IND\n           AND CUST-FICO-CREDIT-SCORE  EQUAL ACUP-OLD-CUST-FICO-SCORE\n               CONTINUE\n           ELSE\n              SET DATA-WAS-CHANGED-BEFORE-UPDATE TO TRUE\n              GO TO 9600-WRITE-PROCESSING-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9700-CHECK-CHANGE-IN-REC-EXIT",
+    "paragraph": "       9700-CHECK-CHANGE-IN-REC-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "YYYY-STORE-PFKEY",
+    "paragraph": "       YYYY-STORE-PFKEY.\n           EVALUATE TRUE\n             WHEN EIBAID IS EQUAL TO DFHENTER\n               SET CCARD-AID-ENTER TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHCLEAR\n               SET CCARD-AID-CLEAR TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPA1\n               SET CCARD-AID-PA1  TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPA2\n               SET CCARD-AID-PA2  TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF1\n               SET CCARD-AID-PFK01 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF2\n               SET CCARD-AID-PFK02 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF3\n               SET CCARD-AID-PFK03 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF4\n               SET CCARD-AID-PFK04 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF5\n               SET CCARD-AID-PFK05 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF6\n               SET CCARD-AID-PFK06 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF7\n               SET CCARD-AID-PFK07 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF8\n               SET CCARD-AID-PFK08 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF9\n               SET CCARD-AID-PFK09 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF10\n               SET CCARD-AID-PFK10 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF11\n               SET CCARD-AID-PFK11 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF12\n               SET CCARD-AID-PFK12 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF13\n               SET CCARD-AID-PFK01 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF14\n               SET CCARD-AID-PFK02 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF15\n               SET CCARD-AID-PFK03 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF16\n               SET CCARD-AID-PFK04 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF17\n               SET CCARD-AID-PFK05 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF18\n               SET CCARD-AID-PFK06 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF19\n               SET CCARD-AID-PFK07 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF20\n               SET CCARD-AID-PFK08 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF21\n               SET CCARD-AID-PFK09 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF22\n               SET CCARD-AID-PFK10 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF23\n               SET CCARD-AID-PFK11 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF24\n               SET CCARD-AID-PFK12 TO TRUE\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "YYYY-STORE-PFKEY-EXIT",
+    "paragraph": "       YYYY-STORE-PFKEY-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "ABEND-ROUTINE",
+    "paragraph": "       ABEND-ROUTINE.\n           IF ABEND-MSG EQUAL LOW-VALUES\n              MOVE 'UNEXPECTED ABEND OCCURRED.' TO ABEND-MSG\n           END-IF\n           MOVE LIT-THISPGM       TO ABEND-CULPRIT\n           EXEC CICS SEND\n                            FROM (ABEND-DATA)\n                            LENGTH(LENGTH OF ABEND-DATA)\n                            NOHANDLE\n                            ERASE\n           END-EXEC\n           EXEC CICS HANDLE ABEND\n                CANCEL\n           END-EXEC\n           EXEC CICS ABEND\n                ABCODE('9999')\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "ABEND-ROUTINE-EXIT",
+    "paragraph": "       ABEND-ROUTINE-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-DATE-CCYYMMDD",
+    "paragraph": "       EDIT-DATE-CCYYMMDD.\n           SET WS-EDIT-DATE-IS-INVALID   TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-YEAR-CCYY",
+    "paragraph": "       EDIT-YEAR-CCYY.\n           SET FLG-YEAR-NOT-OK             TO TRUE\n           IF WS-EDIT-DATE-CCYY            EQUAL LOW-VALUES\n           OR WS-EDIT-DATE-CCYY            EQUAL SPACES\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-YEAR-BLANK          TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' : Year must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-YEAR-CCYY-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           IF WS-EDIT-DATE-CCYY            IS NOT NUMERIC\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-YEAR-NOT-OK         TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' must be 4 digit number.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-YEAR-CCYY-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           IF THIS-CENTURY\n           OR LAST-CENTURY\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-YEAR-NOT-OK         TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' : Century is not valid.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-YEAR-CCYY-EXIT\n           END-IF\n           SET FLG-YEAR-ISVALID            TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-YEAR-CCYY-EXIT",
+    "paragraph": "       EDIT-YEAR-CCYY-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-MONTH",
+    "paragraph": "       EDIT-MONTH.\n           SET FLG-MONTH-NOT-OK            TO TRUE\n           IF WS-EDIT-DATE-MM              EQUAL LOW-VALUES\n           OR WS-EDIT-DATE-MM              EQUAL SPACES\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-MONTH-BLANK         TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' : Month must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-MONTH-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           IF WS-VALID-MONTH\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-MONTH-NOT-OK        TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Month must be a number between 1 and 12.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-MONTH-EXIT\n           END-IF\n           IF FUNCTION TEST-NUMVAL (WS-EDIT-DATE-MM) = 0\n              COMPUTE WS-EDIT-DATE-MM-N\n                          = FUNCTION NUMVAL (WS-EDIT-DATE-MM)\n              END-COMPUTE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-MONTH-NOT-OK        TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ': Month must be a number between 1 and 12.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-MONTH-EXIT\n           END-IF\n           SET FLG-MONTH-ISVALID           TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-MONTH-EXIT",
+    "paragraph": "       EDIT-MONTH-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-DAY",
+    "paragraph": "       EDIT-DAY.\n           SET FLG-DAY-ISVALID             TO TRUE\n           IF WS-EDIT-DATE-DD              EQUAL LOW-VALUES\n           OR WS-EDIT-DATE-DD              EQUAL SPACES\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-DAY-BLANK           TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ' : Day must be supplied.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-DAY-EXIT\n           ELSE\n              CONTINUE\n           END-IF\n           IF FUNCTION TEST-NUMVAL (WS-EDIT-DATE-DD) = 0\n              COMPUTE WS-EDIT-DATE-DD-N\n                          = FUNCTION NUMVAL (WS-EDIT-DATE-DD)\n              END-COMPUTE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET  FLG-DAY-NOT-OK          TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ':day must be a number between 1 and 31.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-DAY-EXIT\n           END-IF\n           IF WS-VALID-DAY\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-DAY-NOT-OK          TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ':day must be a number between 1 and 31.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-DAY-EXIT\n           END-IF\n           .\n           SET FLG-DAY-ISVALID           TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-DAY-EXIT",
+    "paragraph": "       EDIT-DAY-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-DAY-MONTH-YEAR",
+    "paragraph": "       EDIT-DAY-MONTH-YEAR.\n           IF  NOT WS-31-DAY-MONTH\n           AND WS-DAY-31\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-DAY-NOT-OK           TO TRUE\n              SET FLG-MONTH-NOT-OK         TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ':Cannot have 31 days in this month.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-DATE-CCYYMMDD-EXIT\n           END-IF\n           IF  WS-FEBRUARY\n           AND WS-DAY-30\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-DAY-NOT-OK           TO TRUE\n              SET FLG-MONTH-NOT-OK         TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 STRING\n                   FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ':Cannot have 30 days in this month.'\n                   DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-DATE-CCYYMMDD-EXIT\n           END-IF\n           IF  WS-FEBRUARY\n           AND WS-DAY-29\n               IF WS-EDIT-DATE-YY-N = 0\n                  MOVE 400                TO  WS-DIV-BY\n               ELSE\n                  MOVE 4                  TO  WS-DIV-BY\n               END-IF\n               DIVIDE WS-EDIT-DATE-CCYY-N\n                   BY WS-DIV-BY\n               GIVING WS-DIVIDEND\n               REMAINDER WS-REMAINDER\n               IF WS-REMAINDER = ZEROES\n                  CONTINUE\n               ELSE\n                  SET INPUT-ERROR          TO TRUE\n                  SET FLG-DAY-NOT-OK       TO TRUE\n                  SET FLG-MONTH-NOT-OK     TO TRUE\n                  SET FLG-YEAR-NOT-OK      TO TRUE\n                  IF WS-RETURN-MSG-OFF\n                  STRING\n                    FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                   ':Not a leap year.Cannot have 29 days in this month.'\n                    DELIMITED BY SIZE\n                   INTO WS-RETURN-MSG\n                  END-IF\n                  GO TO EDIT-DATE-CCYYMMDD-EXIT\n               END-IF\n           END-IF\n           IF WS-EDIT-DATE-IS-VALID\n              CONTINUE\n           ELSE\n              GO TO EDIT-DATE-CCYYMMDD-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-DAY-MONTH-YEAR-EXIT",
+    "paragraph": "       EDIT-DAY-MONTH-YEAR-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-DATE-LE",
+    "paragraph": "       EDIT-DATE-LE.\n           INITIALIZE WS-DATE-VALIDATION-RESULT\n           MOVE 'YYYYMMDD'                   TO WS-DATE-FORMAT\n           CALL 'CSUTLDTC'\n           USING WS-EDIT-DATE-CCYYMMDD\n               , WS-DATE-FORMAT\n               , WS-DATE-VALIDATION-RESULT\n           IF WS-SEVERITY-N = 0\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                TO TRUE\n              SET FLG-DAY-NOT-OK             TO TRUE\n              SET FLG-MONTH-NOT-OK           TO TRUE\n              SET FLG-YEAR-NOT-OK            TO TRUE\n              IF WS-RETURN-MSG-OFF\n              STRING\n                FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                ' validation error Sev code: '\n                WS-SEVERITY\n                ' Message code: '\n                WS-MSG-NO\n                DELIMITED BY SIZE\n               INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-DATE-LE-EXIT\n           END-IF\n           IF NOT INPUT-ERROR\n              SET FLG-DAY-ISVALID           TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-DATE-LE-EXIT",
+    "paragraph": "       EDIT-DATE-LE-EXIT.\n           EXIT\n           .\n           SET WS-EDIT-DATE-IS-VALID        TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-DATE-CCYYMMDD-EXIT",
+    "paragraph": "       EDIT-DATE-CCYYMMDD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "RULE",
+    "name": "EDIT-DATE-OF-BIRTH",
+    "paragraph": "       EDIT-DATE-OF-BIRTH.\n           MOVE FUNCTION CURRENT-DATE TO WS-CURRENT-DATE-YYYYMMDD\n           COMPUTE WS-EDIT-DATE-BINARY =\n               FUNCTION INTEGER-OF-DATE (WS-EDIT-DATE-CCYYMMDD-N)\n           COMPUTE WS-CURRENT-DATE-BINARY =\n               FUNCTION INTEGER-OF-DATE (WS-CURRENT-DATE-YYYYMMDD-N)\n           IF WS-CURRENT-DATE-BINARY > WS-EDIT-DATE-BINARY\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                TO TRUE\n              SET FLG-DAY-NOT-OK             TO TRUE\n              SET FLG-MONTH-NOT-OK           TO TRUE\n              SET FLG-YEAR-NOT-OK            TO TRUE\n              IF WS-RETURN-MSG-OFF\n              STRING\n                FUNCTION TRIM(WS-EDIT-VARIABLE-NAME)\n                ':cannot be in the future '\n                DELIMITED BY SIZE\n               INTO WS-RETURN-MSG\n              END-IF\n              GO TO EDIT-DATE-OF-BIRTH-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COACTUPC.COB",
+    "kind": "NON-RULE",
+    "name": "EDIT-DATE-OF-BIRTH-EXIT",
+    "paragraph": "       EDIT-DATE-OF-BIRTH-EXIT.\n           EXIT\n"
+}]

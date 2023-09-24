@@ -1,0 +1,3386 @@
+[{
+    "APP:CARDDEMO": [
+      {
+        "component": "PGM",
+        "type": "BAT",
+        "name": "CBACT01C.cbl",
+        "children": [
+          {
+            "component": "UTL",
+            "name": "CEE3ABD",
+            "type": "BAT"
+          },
+          {
+            "component": "CODE",
+            "name": "PROC_DIV",
+            "type": "NON-RULE",
+            "children": [
+                {
+                    "component": "CODE",
+                    "name": "OOOO-ACCTFILE-OPEN",
+                    "type": "NON-RULE",
+                    "children": [
+                        {
+                            "component": "CODE",
+                            "name": "9910-DISPLAY-IO-STATUS",
+                            "type": "RULE"
+                        }
+                    ] 
+                },
+                {
+                    "component": "CODE",
+                    "name": "1000-ACCTFILE-GET-NEXT",
+                    "type": "RULE",
+                    "children": [
+                        {
+                            "component": "CODE",
+                            "name": "1100-DISPLAY-ACCT-RECORD",
+                            "type": "RULE"
+                        },
+                        {
+                            "component": "CODE",
+                            "name": "9910-DISPLAY-IO-STATUS",
+                            "type": "RULE"
+                        }
+                    ] 
+                },
+                {
+                    "component": "CODE",
+                    "name": "9000-ACCTFILE-CLOSE",
+                    "type": "RULE",
+                    "children": [                        
+                        {
+                            "component": "CODE",
+                            "name": "9910-DISPLAY-IO-STATUS",
+                            "type": "RULE"
+                        }
+                    ] 
+                }]
+           }]
+      },
+      {
+        "component": "PGM",
+        "type": "BAT",
+        "name": "CBACT02C.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "PROC_DIV",
+            "type": "NON-RULE",
+            "children": [
+              {
+                "component": "CODE",
+                "name": "0000-CARDFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1000-CARDFILE-GET-NEXT",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9000-CARDFILE-CLOSE",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "BAT",
+        "name": "CBACT03C.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "PROC_DIV",
+            "type": "NON-RULE",
+            "children": [
+              {
+                "component": "CODE",
+                "name": "0000-XREFFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1000-XREFFILE-GET-NEXT",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9000-XREFFILE-CLOSE",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              }
+            ]
+          }          
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "BAT",
+        "name": "CBACT04C.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "PROC_DIV",
+            "type": "RULE",
+            "children": [
+              {
+                "component": "CODE",
+                "name": "0000-TCATBALF-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0200-DISCGRP-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0300-ACCTFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0400-TRANFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1400-COMPUTE-FEES",
+                "type": "NON-RULE"
+              },
+              {
+                "component": "CODE",
+                "name": "9000-TCATBALF-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9100-XREFFILE-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9200-DISCGRP-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9300-ACCTFILE-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9400-TRANFILE-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0100-XREFFILE-OPEN",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1000-TCATBALF-GET-NEXT",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1050-UPDATE-ACCOUNT",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1100-GET-ACCT-DATA",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1110-GET-XREF-DATA",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1200-GET-INTEREST-RATE",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "1200-A-GET-DEFAULT-INT-RATE",
+                    "type": "NON-RULE",
+                    "children": [
+                      {
+                        "component": "CODE",
+                        "name": "9910-DISPLAY-IO-STATUS",
+                        "type": "RULE"
+                      }
+                    ]
+                  },
+                  {
+                    "component": "CODE",
+                    "name": "9910-DISPLAY-IO-STATUS",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1300-COMPUTE-INTEREST",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "1300-B-WRITE-TX",
+                    "type": "RULE",
+                    "children": [
+                      {
+                        "component": "CODE",
+                        "name": "9910-DISPLAY-IO-STATUS",
+                        "type": "RULE"
+                      },
+                      {
+                        "component": "CODE",
+                        "name": "Z-GET-DB2-FORMAT-TIMESTAMP",
+                        "type": "RULE"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }              
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "CUS",
+        "name": "CBCUS01C.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "PROC_DIV",
+            "type": "NON-RULE",
+            "children": [
+              {
+                "component": "CODE",
+                "name": "0000-CUSTFILE-OPEN",
+                "type": "NON-RULE"
+              },
+              {
+                "component": "CODE",
+                "name": "1000-CUSTFILE-GET-NEXT",
+                "type": "RULE"
+              },
+              {
+                "component": "CODE",
+                "name": "9000-CUSTFILE-CLOSE",
+                "type": "RULE"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "STM",
+        "name": "CBSTM03A.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "0000-START",
+            "type": "NON-RULE",
+            "children": [
+              { "component": "CODE", "name": "8100-FILE-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "8200-XREFFILE-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "8300-CUSTFILE-OPEN", "type": "NON-RULE" },
+              {
+                "component": "CODE",
+                "name": "8400-ACCTFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "1000-MAINLINE", "type": "NON-RULE" }
+                ]
+              },
+              { "component": "CODE", "name": "9999-GOBACK", "type": "NON-RULE" },
+              { "component": "CODE", "name": "8100-TRNXFILE-OPEN", "type": "RULE" },
+              { "component": "CODE", "name": "8500-READTRNX-READ", "type": "RULE" }
+            ]
+          },
+          {
+            "component": "CODE",
+            "name": "1000-MAINLINE",
+            "type": "NON-RULE",
+            "children": [
+              { "component": "CODE", "name": "9100-TRNXFILE-CLOSE", "type": "NON-RULE" },
+              { "component": "CODE", "name": "9200-XREFFILE-CLOSE", "type": "NON-RULE" },
+              { "component": "CODE", "name": "9300-CUSTFILE-CLOSE", "type": "NON-RULE" },
+              { "component": "CODE", "name": "9400-ACCTFILE-CLOSE", "type": "NON-RULE" },
+              { "component": "CODE", "name": "1000-XREFFILE-GET-NEXT", "type": "RULE" },
+              { "component": "CODE", "name": "2000-CUSTFILE-GET", "type": "RULE" },
+              { "component": "CODE", "name": "3000-ACCTFILE-GET", "type": "RULE" },
+              {
+                "component": "CODE",
+                "name": "4000-TRNXFILE-GET",
+                "type": "RULE",
+                "children": [
+                  { "component": "CODE", "name": "6000-WRITE-TRANS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "5000-CREATE-STATEMENT",
+                "type": "RULE",
+                "children": [
+                  { "component": "CODE", "name": "5100-WRITE-HTML-HEADER", "type": "RULE" },
+                  { "component": "CODE", "name": "5200-WRITE-HTML-NMADBS", "type": "RULE" }
+                ]
+              }
+            ]
+          },
+          { "component": "CODE", "name": "9999-GOBACK", "type": "NON-RULE" },
+          { "component": "CODE", "name": "PROC_DIV", "type": "RULE" }
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "STM",
+        "name": "CBSTM03B.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "9999-GOBACK",
+            "type": "NON-RULE"
+          },
+          {
+            "component": "CODE",
+            "name": "0000-START",
+            "type": "RULE",
+            "children": [
+              { "component": "CODE", "name": "1000-TRNXFILE-PROC", "type": "NON-RULE" },
+              { "component": "CODE", "name": "2000-XREFFILE-PROC", "type": "NON-RULE" },
+              { "component": "CODE", "name": "9999-GOBACK", "type": "NON-RULE" },
+              { "component": "CODE", "name": "3000-CUSTFILE-PROC", "type": "RULE" },
+              { "component": "CODE", "name": "4000-ACCTFILE-PROC", "type": "RULE" }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "TRN",
+        "name": "CBTRN01C.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "MAIN-PARA",
+            "type": "RULE",
+            "children": [
+              { "component": "CODE", "name": "0000-DALYTRAN-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "0100-CUSTFILE-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "0200-XREFFILE-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "0300-CARDFILE-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "0400-ACCTFILE-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "0500-TRANFILE-OPEN", "type": "NON-RULE" },
+              { "component": "CODE", "name": "1000-DALYTRAN-GET-NEXT", "type": "RULE" },
+              { "component": "CODE", "name": "2000-LOOKUP-XREF", "type": "RULE" },
+              { "component": "CODE", "name": "3000-READ-ACCOUNT", "type": "RULE" },
+              { "component": "CODE", "name": "9000-DALYTRAN-CLOSE", "type": "RULE" },
+              { "component": "CODE", "name": "9100-CUSTFILE-CLOSE", "type": "RULE" },
+              { "component": "CODE", "name": "9200-XREFFILE-CLOSE", "type": "RULE" },
+              { "component": "CODE", "name": "9300-CARDFILE-CLOSE", "type": "RULE" },
+              { "component": "CODE", "name": "9400-ACCTFILE-CLOSE", "type": "RULE" },
+              { "component": "CODE", "name": "9500-TRANFILE-CLOSE", "type": "RULE" }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "TRN",
+        "name": "CBTRN02C.cbl",
+        "children": [
+          {
+            "component": "CODE",
+            "name": "PROC_DIV",
+            "type": "RULE",
+            "children": [
+              {
+                "component": "CODE",
+                "name": "0000-DALYTRAN-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0100-TRANFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0200-XREFFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0300-DALYREJS-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0400-ACCTFILE-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "0500-TCATBALF-OPEN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },             
+              {
+                "component": "CODE",
+                "name": "1500-VALIDATE-TRAN",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "1500-A-LOOKUP-XREF", "type": "NON-RULE" },
+                  {
+                    "component": "CODE",
+                    "name": "1500-B-LOOKUP-ACCT",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9000-DALYTRAN-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9100-TRANFILE-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9200-XREFFILE-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9300-DALYREJS-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9400-ACCTFILE-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "9500-TCATBALF-CLOSE",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "1000-DALYTRAN-GET-NEXT",
+                "type": "NON-RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              },             
+              {
+                "component": "CODE",
+                "name": "2000-POST-TRANSACTION",
+                "type": "RULE",
+                "children": [
+                  {
+                    "component": "CODE",
+                    "name": "2700-UPDATE-TCATBAL",
+                    "type": "RULE",
+                    "children": [
+                      {
+                        "component": "CODE",
+                        "name": "2700-A-CREATE-TCATBAL-REC",
+                        "type": "RULE",
+                        "children": [
+                          { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                        ]
+                      },
+                      {
+                        "component": "CODE",
+                        "name": "2700-B-UPDATE-TCATBAL-REC",
+                        "type": "RULE",
+                        "children": [
+                          { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                        ]
+                      },
+                      { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                    ]
+                  },
+                  {
+                    "component": "CODE",
+                    "name": "2800-UPDATE-ACCOUNT-REC",
+                    "type": "RULE"
+                  },
+                  {
+                    "component": "CODE",
+                    "name": "2900-WRITE-TRANSACTION-FILE",
+                    "type": "RULE",
+                    "children": [
+                      { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                    ]
+                  },
+                  {
+                    "component": "CODE",
+                    "name": "Z-GET-DB2-FORMAT-TIMESTAMP",
+                    "type": "RULE"
+                  }
+                ]
+              },
+              {
+                "component": "CODE",
+                "name": "2500-WRITE-REJECT-REC",
+                "type": "RULE",
+                "children": [
+                  { "component": "CODE", "name": "9910-DISPLAY-IO-STATUS", "type": "RULE" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "PGM",
+        "type": "BAT",
+        "name": "CBTRN03C.cbl",
+        "children": [
+            {
+                "component": "CODE",
+                "name": "PROC_DIV",
+                "type": "RULE",
+                "children": [
+                    {
+                        "component": "CODE",
+                        "name": "0000-TRANFILE-OPEN",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "0100-REPTFILE-OPEN",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "0200-CARDXREF-OPEN",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "0300-TRANTYPE-OPEN",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "0400-TRANCATG-OPEN",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "0500-DATEPARM-OPEN",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "1110-WRITE-GRAND-TOTALS",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "1111-WRITE-REPORT-REC",
+                                "type": "NON-RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "1500-A-LOOKUP-XREF",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                        "component": "CODE",
+                        "name": "1500-B-LOOKUP-TRANTYPE",
+                        "type": "NON-RULE",
+                        "children": [
+                            {
+                                "component": "CODE",
+                                "name": "9910-DISPLAY-IO-STATUS",
+                                "type": "RULE"
+                            }
+                        ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "1500-C-LOOKUP-TRANCATG",
+                      "type": "NON-RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "9200-CARDXREF-CLOSE",
+                      "type": "NON-RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "9300-TRANTYPE-CLOSE",
+                      "type": "NON-RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "9400-TRANCATG-CLOSE",
+                      "type": "NON-RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "9500-DATAPARM-CLOSE",
+                      "type": "NON-RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "0550-DATAPARM-READ",
+                      "type": "RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "1000-TRANFILE-GET-NEXT",
+                      "type": "RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "1100-WRITE-TRANSACTION-REPORT",
+                      "type": "RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "1110-WRITE-PAGE-TOTALS",
+                              "type": "RULE",
+                              "children": [
+                                {
+                                  "component": "CODE",
+                                  "name": "1111-WRITE-REPORT-REC",
+                                  "type": "NON-RULE"
+                                }
+                              ]
+                          },
+                          {
+                            "component": "CODE",
+                            "name": "1120-WRITE-DETAIL",
+                            "type": "RULE",
+                            "children": [
+                              {
+                                "component": "CODE",
+                                "name": "1111-WRITE-REPORT-REC",
+                                "type": "NON-RULE"
+                              }
+                            ]
+                          },
+                          {
+                            "component": "CODE",
+                            "name": "1110-WRITE-HEADERS",
+                            "type": "RULE",
+                            "children": [
+                              {
+                                "component": "CODE",
+                                "name": "1111-WRITE-REPORT-REC",
+                                "type": "NON-RULE",
+                                "children": [
+                                  {
+                                      "component": "CODE",
+                                      "name": "9910-DISPLAY-IO-STATUS",
+                                      "type": "RULE"
+                                  }
+                              ]
+                              }
+                            ]
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "1110-WRITE-PAGE-TOTALS",
+                      "type": "RULE"
+                      
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "1120-WRITE-ACCOUNT-TOTALS",
+                      "type": "RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "1111-WRITE-REPORT-REC",
+                              "type": "NON-RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "9000-TRANFILE-CLOSE",
+                      "type": "RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    },
+                    {
+                      "component": "CODE",
+                      "name": "9100-REPTFILE-CLOSE",
+                      "type": "RULE",
+                      "children": [
+                          {
+                              "component": "CODE",
+                              "name": "9910-DISPLAY-IO-STATUS",
+                              "type": "RULE"
+                          }
+                      ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+      "component": "PGM",
+      "type": "BAT",
+      "name": "COACTUPC.cbl",
+      "children": [
+          {   
+              "component": "CODE",
+              "type": "NON-RULE",
+              "name": "ABEND-ROUTINE"
+          },
+          {
+              "type": "RULE",
+              "name": "0000-MAIN",
+              "children": [
+                  {"component": "CODE", "type": "RULE", "name": "1000-PROCESS-INPUTS" },
+                  {"component": "CODE", "type": "RULE", "name": "2000-DECIDE-ACTION" },
+                  {"component": "CODE", "type": "RULE", "name": "3000-SEND-MAP" },
+                  {"component": "CODE", "type": "RULE", "name": "COMMON-RETURN" },
+                  {"component": "CODE", "type": "RULE", "name": "YYYY-STORE-PFKEY" }
+              ]
+          },
+          {
+              "component": "CODE",
+              "type": "RULE",
+              "name": "1000-PROCESS-INPUTS",
+              "children": [
+                  {"component": "CODE", "type": "RULE", "name": "1100-RECEIVE-MAP" },
+                  {"component": "CODE", "type": "RULE", "name": "1200-EDIT-MAP-INPUTS" }
+              ]
+          },
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "1100-RECEIVE-MAP"
+          },
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "1200-EDIT-MAP-INPUTS",
+            "children": [
+              {"component": "CODE", "type": "RULE", "name": "1205-COMPARE-OLD-NEW"},
+              {"component": "CODE", "type": "RULE", "name": "1210-EDIT-ACCOUNT"},
+              {"component": "CODE", "type": "RULE", "name": "1215-EDIT-MANDATORY"},
+              {"component": "CODE", "type": "RULE", "name": "1220-EDIT-YESNO"},
+              {"component": "CODE", "type": "RULE", "name": "1225-EDIT-ALPHA-REQD"},
+              {"component": "CODE", "type": "RULE", "name": "1235-EDIT-ALPHA-OPT"},
+              {"component": "CODE", "type": "RULE", "name": "1245-EDIT-NUM-REQD"},
+              {"component": "CODE", "type": "RULE", "name": "1250-EDIT-SIGNED-9V2"},
+              {"component": "CODE", "type": "RULE", "name": "1260-EDIT-US-PHONE-NUM"},
+              {"component": "CODE", "type": "RULE", "name": "1265-EDIT-US-SSN"},
+              {"component": "CODE", "type": "RULE", "name": "1270-EDIT-US-STATE-CD"},
+              {"component": "CODE", "type": "RULE", "name": "1275-EDIT-FICO-SCORE"},
+              {"component": "CODE", "type": "RULE", "name": "1280-EDIT-US-STATE-ZIP-CD"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-AREA-CODE"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-DATE-CCYYMMDD"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-DATE-LE"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-DATE-OF-BIRTH"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-DAY"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-DAY-MONTH-YEAR"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-MONTH"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-US-PHONE-LINENUM"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-US-PHONE-PREFIX"},
+              {"component": "CODE", "type": "RULE", "name": "EDIT-YEAR-CCYY"}
+            ]
+          },
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "1265-EDIT-US-SSN",
+            "children": [
+              {"component": "CODE", "type": "RULE", "name": "1245-EDIT-NUM-REQD"}
+            ]
+          },
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "2000-DECIDE-ACTION",
+            "children": [
+              {"component": "CODE", "type": "NON-RULE", "name": "ABEND-ROUTINE"},
+              {"component": "CODE", "type": "RULE", "name": "9000-READ-ACCT"},
+              {"component": "CODE", "type": "RULE", "name": "9600-WRITE-PROCESSING"}
+            ]
+          },
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "3000-SEND-MAP",
+            "children": [
+              {"component": "CODE", "type": "RULE", "name": "3100-SCREEN-INIT"},
+              {"component": "CODE", "type": "RULE", "name": "3200-SETUP-SCREEN-VARS"},
+              {"component": "CODE", "type": "RULE", "name": "3250-SETUP-INFOMSG"},
+              {"component": "CODE", "type": "RULE", "name": "3300-SETUP-SCREEN-ATTRS"},
+              {"component": "CODE", "type": "RULE", "name": "3390-SETUP-INFOMSG-ATTRS"},
+              {"component": "CODE", "type": "RULE", "name": "3400-SEND-SCREEN"}
+            ]
+          },
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "3200-SETUP-SCREEN-VARS",
+            "children": [
+              {"component": "CODE", "type": "RULE", "name": "3201-SHOW-INITIAL-VALUES"},
+              {"component": "CODE", "type": "RULE", "name": "3202-SHOW-ORIGINAL-VALUES"},
+              {"component": "CODE", "type": "RULE", "name": "3203-SHOW-UPDATED-VALUES"}
+            ]
+          },
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "3300-SETUP-SCREEN-ATTRS",
+            "children": [
+              {"component": "CODE", "type": "RULE", "name": "3310-PROTECT-ALL-ATTRS"},
+              {"component": "CODE", "type": "RULE", "name": "3320-UNPROTECT-FEW-ATTRS"}
+            ]
+          },
+          {"component": "CODE", "type": "RULE", "name": "3310-PROTECT-ALL-ATTRS"},
+          {"component": "CODE", "type": "RULE", "name": "3320-UNPROTECT-ALL-ATTRS"},
+          {"component": "CODE", "type": "RULE", "name": "3390-SETUP-INFOMSG-ATTRS"},
+          {"component": "CODE", "type": "RULE", "name": "3400-SEND-SCREEN"},
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "9000-READ-ACCT",
+            "children": [
+              {"component": "CODE", "type": "RULE", "name": "9200-GETACCTXREF-BYACCT"},
+              {"component": "CODE", "type": "RULE", "name": "9300-GETACCTDATA-BYACCT"},
+              {"component": "CODE", "type": "RULE", "name": "9400-GETCUSTDATA-BYCUST"},
+              {"component": "CODE", "type": "RULE", "name": "9500-STORE-FETCHED-DATA"}
+            ]
+          },
+          {"component": "CODE", "type": "RULE", "name": "9200-GETACCTXREF-BYACCT"},
+          {"component": "CODE", "type": "RULE", "name": "9300-GETACCTDATA-BYACCT"},
+          {"component": "CODE", "type": "RULE", "name": "9400-GETCUSTDATA-BYCUST"},
+          {"component": "CODE", "type": "RULE", "name": "9500-STORE-FETCHED-DATA"},
+          {
+            "component": "CODE",
+            "type": "RULE",
+            "name": "9600-WRITE-PROCESSING",
+            "children": [
+              {"component": "CODE", "type": "RULE", "name": "9700-CHECK-CHANGE-IN-REC"}
+            ]
+          },
+          {"component": "CODE", "type": "RULE", "name": "9700-CHECK-CHANGE-IN-REC"},
+          {"component": "CODE", "type": "RULE", "name": "COMMON-RETURN"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-AREA-CODE"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-DATE-CCYYMMDD"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-DATE-LE"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-DATE-OF-BIRTH"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-DAY"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-DAY-MONTH-YEAR"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-MONTH"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-US-PHONE-LINENUM"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-US-PHONE-PREFIX"},
+          {"component": "CODE", "type": "RULE", "name": "EDIT-YEAR-CCYY"},
+          {"component": "CODE", "type": "RULE", "name": "YYYY-STORE-PFKEY"}
+      ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COACTVWC.cbl",
+    "children": [
+      {
+        "component": "CODE",
+        "type": "NON-RULE",
+        "name": "1000-SEND-MAP",
+        "children": [
+          {"component": "CODE", "type": "NON-RULE", "name": "1100-SCREEN-INIT"},
+          {"component": "CODE", "type": "NON-RULE", "name": "1300-SETUP-SCREEN-ATTRS"},
+          {"component": "CODE", "type": "NON-RULE", "name": "1400-SEND-SCREEN"},
+          {"component": "CODE", "type": "RULE", "name": "1200-SETUP-SCREEN-VARS"}
+        ]
+      },
+      {"component": "CODE", "type": "NON-RULE", "name": "1100-SCREEN-INIT"},
+      {"component": "CODE", "type": "NON-RULE", "name": "1300-SETUP-SCREEN-ATTRS"},
+      {"component": "CODE", "type": "NON-RULE", "name": "1400-SEND-SCREEN"},
+      {
+        "component": "CODE",
+        "type": "NON-RULE",
+        "name": "2000-PROCESS-INPUTS",
+        "children": [
+          {"component": "CODE", "type": "NON-RULE", "name": "2100-RECEIVE-MAP"},
+          {
+            "component": "CODE",
+            "type": "NON-RULE",
+            "name": "2200-EDIT-MAP-INPUTS",
+            "children": [
+              {"component": "CODE", "type": "NON-RULE", "name": "2210-EDIT-ACCOUNT"}
+            ]
+          }
+        ]
+      },
+      {"component": "CODE", "type": "NON-RULE", "name": "2100-RECEIVE-MAP"},
+      {"component": "CODE", "type": "NON-RULE", "name": "2210-EDIT-ACCOUNT"},
+      {
+        "type": "NON-RULE",
+        "name": "9000-READ-ACCT",
+        "children": [
+          {"component": "CODE", "type": "RULE", "name": "9200-GETCARDXREF-BYACCT"},
+          {"component": "CODE", "type": "RULE", "name": "9300-GETACCTDATA-BYACCT"},
+          {"component": "CODE", "type": "RULE", "name": "9400-GETCUSTDATA-BYCUST"}
+        ]
+      },
+      {"component": "CODE", "type": "NON-RULE", "name": "ABEND-ROUTINE"},
+      {
+        "component": "CODE",
+        "type": "RULE",
+        "name": "0000-MAIN",
+        "children": [
+          {"component": "CODE", "type": "NON-RULE", "name": "1000-SEND-MAP"},
+          {"component": "CODE", "type": "NON-RULE", "name": "2000-PROCESS-INPUTS"},
+          {"component": "CODE", "type": "NON-RULE", "name": "9000-READ-ACCT"},
+          {"component": "CODE", "type": "RULE", "name": "COMMON-RETURN"},
+          {"component": "CODE", "type": "RULE", "name": "SEND-PLAIN-TEXT"},
+          {"component": "CODE", "type": "RULE", "name": "YYYY-STORE-PFKEY"}
+        ]
+      },
+      {"component": "CODE", "type": "RULE", "name": "1200-SETUP-SCREEN-VARS"},
+      {"component": "CODE", "type": "RULE", "name": "9200-GETCARDXREF-BYACCT"},
+      {"component": "CODE", "type": "RULE", "name": "9300-GETACCTDATA-BYACCT"},
+      {"component": "CODE", "type": "RULE", "name": "9400-GETCUSTDATA-BYCUST"},
+      {"component": "CODE", "type": "RULE", "name": "COMMON-RETURN"},
+      {"component": "CODE", "type": "RULE", "name": "SEND-PLAIN-TEXT"},
+      {"component": "CODE", "type": "RULE", "name": "YYYY-STORE-PFKEY"}
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COADM01C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-MENU-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RETURN-TO-SIGNON-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "SEND-MENU-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          },
+          {
+            "type": "RULE",
+            "name": "BUILD-MENU-OPTIONS"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "BUILD-MENU-OPTIONS"
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-MENU-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RETURN-TO-SIGNON-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "SEND-MENU-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-MENU-SCREEN"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COBIL00C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "CLEAR-CURRENT-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "INITIALIZE-ALL-FIELDS"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "ENDBR-TRANSACT-FILE"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "GET-CURRENT-TIMESTAMP"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "INITIALIZE-ALL-FIELDS"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-BILLPAY-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "SEND-BILLPAY-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "CLEAR-CURRENT-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-BILLPAY-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "RULE",
+            "name": "RETURN-TO-PREV-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "CLEAR-CURRENT-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "ENDBR-TRANSACT-FILE"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "GET-CURRENT-TIMESTAMP"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "READ-ACCTDAT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "READ-CXACAIX-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "READPREV-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "STARTBR-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "UPDATE-ACCTDAT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "WRITE-TRANSACT-FILE"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READ-ACCTDAT-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READ-CXACAIX-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READPREV-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "RETURN-TO-PREV-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "STARTBR-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "UPDATE-ACCTDAT-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "WRITE-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "INITIALIZE-ALL-FIELDS"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "SEND-BILLPAY-SCREEN"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COCRDLIC.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "0000-MAIN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1000-SEND-MAP",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "1100-SCREEN-INIT"
+          },
+          {
+            "type": "RULE",
+            "name": "1200-SCREEN-ARRAY-INIT"
+          },
+          {
+            "type": "RULE",
+            "name": "1250-SETUP-ARRAY-ATTRIBS"
+          },
+          {
+            "type": "RULE",
+            "name": "1300-SETUP-SCREEN-ATTRS"
+          },
+          {
+            "type": "RULE",
+            "name": "1400-SETUP-MESSAGE"
+          },
+          {
+            "type": "RULE",
+            "name": "1500-SEND-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2000-RECEIVE-MAP",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "2200-EDIT-INPUTS"
+          },
+          {
+            "type": "RULE",
+            "name": "2100-RECEIVE-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2200-EDIT-INPUTS",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "2210-EDIT-ACCOUNT"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "2220-EDIT-CARD"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "2250-EDIT-ARRAY"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2210-EDIT-ACCOUNT"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2220-EDIT-CARD"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2250-EDIT-ARRAY"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "9500-FILTER-RECORDS"
+      },
+      {
+        "type": "RULE",
+        "name": "1100-SCREEN-INIT"
+      },
+      {
+        "type": "RULE",
+        "name": "1200-SCREEN-ARRAY-INIT"
+      },
+      {
+        "type": "RULE",
+        "name": "1250-SETUP-ARRAY-ATTRIBS"
+      },
+      {
+        "type": "RULE",
+        "name": "1300-SETUP-SCREEN-ATTRS"
+      },
+      {
+        "type": "RULE",
+        "name": "1400-SETUP-MESSAGE"
+      },
+      {
+        "type": "RULE",
+        "name": "1500-SEND-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "2100-RECEIVE-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "9000-READ-FORWARD",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "9500-FILTER-RECORDS"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "9100-READ-BACKWARDS",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "9500-FILTER-RECORDS"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "COMMON-RETURN"
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-LONG-TEXT"
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-PLAIN-TEXT"
+      },
+      {
+        "type": "RULE",
+        "name": "YYYY-STORE-PFKEY"
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COCRDSLC.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "1000-SEND-MAP",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "1100-SCREEN-INIT"
+          },
+          {
+            "type": "RULE",
+            "name": "1200-SETUP-SCREEN-VARS"
+          },
+          {
+            "type": "RULE",
+            "name": "1300-SETUP-SCREEN-ATTRS"
+          },
+          {
+            "type": "RULE",
+            "name": "1400-SEND-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1100-SCREEN-INIT"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2000-PROCESS-INPUTS",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "2100-RECEIVE-MAP"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "2200-EDIT-MAP-INPUTS"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2100-RECEIVE-MAP"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2200-EDIT-MAP-INPUTS",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "2210-EDIT-ACCOUNT"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "2220-EDIT-CARD"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2210-EDIT-ACCOUNT"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "2220-EDIT-CARD"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "9000-READ-DATA",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "9100-GETCARD-BYACCTCARD"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "ABEND-ROUTINE"
+      },
+      {
+        "type": "RULE",
+        "name": "0000-MAIN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "1000-SEND-MAP"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "2000-PROCESS-INPUTS"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "9000-READ-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "COMMON-RETURN"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-PLAIN-TEXT"
+          },
+          {
+            "type": "RULE",
+            "name": "YYYY-STORE-PFKEY"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "1200-SETUP-SCREEN-VARS"
+      },
+      {
+        "type": "RULE",
+        "name": "1300-SETUP-SCREEN-ATTRS"
+      },
+      {
+        "type": "RULE",
+        "name": "1400-SEND-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "9100-GETCARD-BYACCTCARD"
+      },
+      {
+        "type": "RULE",
+        "name": "COMMON-RETURN"
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-PLAIN-TEXT"
+      },
+      {
+        "type": "RULE",
+        "name": "YYYY-STORE-PFKEY"
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COCRDUPC.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "1000-PROCESS-INPUTS",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "1100-RECEIVE-MAP"
+          },
+          {
+            "type": "RULE",
+            "name": "1200-EDIT-MAP-INPUTS"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1210-EDIT-ACCOUNT"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1220-EDIT-CARD"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1230-EDIT-NAME"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1240-EDIT-CARDSTATUS"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1250-EDIT-EXPIRY-MON"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "1260-EDIT-EXPIRY-YEAR"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "3000-SEND-MAP",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "3100-SCREEN-INIT"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "3250-SETUP-INFOMSG"
+          },
+          {
+            "type": "RULE",
+            "name": "3200-SETUP-SCREEN-VARS"
+          },
+          {
+            "type": "RULE",
+            "name": "3300-SETUP-SCREEN-ATTRS"
+          },
+          {
+            "type": "RULE",
+            "name": "3400-SEND-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "3100-SCREEN-INIT"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "3250-SETUP-INFOMSG"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "9000-READ-DATA",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "9100-GETCARD-BYACCTCARD"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "9300-CHECK-CHANGE-IN-REC"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "ABEND-ROUTINE"
+      },
+      {
+        "type": "RULE",
+        "name": "0000-MAIN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "1000-PROCESS-INPUTS"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "3000-SEND-MAP"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "9000-READ-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "2000-DECIDE-ACTION"
+          },
+          {
+            "type": "RULE",
+            "name": "COMMON-RETURN"
+          },
+          {
+            "type": "RULE",
+            "name": "YYYY-STORE-PFKEY"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "1100-RECEIVE-MAP"
+      },
+      {
+        "type": "RULE",
+        "name": "1200-EDIT-MAP-INPUTS",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "1210-EDIT-ACCOUNT"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "1220-EDIT-CARD"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "1230-EDIT-NAME"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "1240-EDIT-CARDSTATUS"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "1250-EDIT-EXPIRY-MON"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "1260-EDIT-EXPIRY-YEAR"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "2000-DECIDE-ACTION",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "9000-READ-DATA"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "ABEND-ROUTINE"
+          },
+          {
+            "type": "RULE",
+            "name": "9200-WRITE-PROCESSING"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "3200-SETUP-SCREEN-VARS"
+      },
+      {
+        "type": "RULE",
+        "name": "3300-SETUP-SCREEN-ATTRS"
+      },
+      {
+        "type": "RULE",
+        "name": "3400-SEND-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "9100-GETCARD-BYACCTCARD"
+      },
+      {
+        "type": "RULE",
+        "name": "9200-WRITE-PROCESSING",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "9300-CHECK-CHANGE-IN-REC"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "COMMON-RETURN"
+      },
+      {
+        "type": "RULE",
+        "name": "YYYY-STORE-PFKEY"
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COMEN01C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-MENU-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RETURN-TO-SIGNON-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "SEND-MENU-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          },
+          {
+            "type": "RULE",
+            "name": "BUILD-MENU-OPTIONS"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "BUILD-MENU-OPTIONS"
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-MENU-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RETURN-TO-SIGNON-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "SEND-MENU-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-MENU-SCREEN"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "CORPT00C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "INITIALIZE-ALL-FIELDS"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-TRNRPT-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RETURN-TO-CICS"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RETURN-TO-PREV-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-TRNRPT-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RETURN-TO-PREV-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNRPT-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "INITIALIZE-ALL-FIELDS"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNRPT-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "SUBMIT-JOB-TO-INTRDR"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-TRNRPT-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RETURN-TO-CICS"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "SUBMIT-JOB-TO-INTRDR",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "INITIALIZE-ALL-FIELDS"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNRPT-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "WIRTE-JOBSUB-TDQ",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNRPT-SCREEN"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COSGN00C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-SIGNON-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-PLAIN-TEXT"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "SEND-SIGNON-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-SIGNON-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "READ-USER-SEC-FILE"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READ-USER-SEC-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "SEND-SIGNON-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-PLAIN-TEXT"
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COTRN00C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "ENDBR-TRANSACT-FILE"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "PROCESS-PF7-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "PROCESS-PAGE-BACKWARD"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "PROCESS-PF8-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "PROCESS-PAGE-FORWARD"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "READNEXT-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "READPREV-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-TRNLST-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RETURN-TO-PREV-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "INITIALIZE-TRAN-DATA"
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "PROCESS-PF7-KEY"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "PROCESS-PF8-KEY"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-TRNLST-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RETURN-TO-PREV-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "POPULATE-TRAN-DATA"
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "PROCESS-PAGE-FORWARD"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-PAGE-BACKWARD",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "ENDBR-TRANSACT-FILE"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "READPREV-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "INITIALIZE-TRAN-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "POPULATE-TRAN-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "STARTBR-TRANSACT-FILE"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-PAGE-FORWARD",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "ENDBR-TRANSACT-FILE"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "READNEXT-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "INITIALIZE-TRAN-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "POPULATE-TRAN-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "STARTBR-TRANSACT-FILE"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-TRNLST-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "STARTBR-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNLST-SCREEN"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COTRN01C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "CLEAR-CURRENT-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "INITIALIZE-ALL-FIELDS"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNVIEW-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "INITIALIZE-ALL-FIELDS"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-TRNVIEW-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "CLEAR-CURRENT-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-TRNVIEW-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "RULE",
+            "name": "RETURN-TO-PREV-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNVIEW-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "READ-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNVIEW-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READ-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNVIEW-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "RETURN-TO-PREV-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-TRNVIEW-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COTRN02C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "CLEAR-CURRENT-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "INITIALIZE-ALL-FIELDS"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "COPY-LAST-TRAN-DATA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "ENDBR-TRANSACT-FILE"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "RULE",
+            "name": "READPREV-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "STARTBR-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "VALIDATE-INPUT-KEY-FIELDS"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "ENDBR-TRANSACT-FILE"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "INITIALIZE-ALL-FIELDS"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "ADD-TRANSACTION"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "VALIDATE-INPUT-DATA-FIELDS"
+          },
+          {
+            "type": "RULE",
+            "name": "VALIDATE-INPUT-KEY-FIELDS"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-TRNADD-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RETURN-TO-PREV-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "ADD-TRANSACTION",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "ENDBR-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "READPREV-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "STARTBR-TRANSACT-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "WRITE-TRANSACT-FILE"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "CLEAR-CURRENT-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "COPY-LAST-TRAN-DATA"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-TRNADD-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RETURN-TO-PREV-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READ-CCXREF-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READ-CXACAIX-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "READPREV-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-TRNADD-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "STARTBR-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "VALIDATE-INPUT-DATA-FIELDS",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "VALIDATE-INPUT-KEY-FIELDS",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "READ-CCXREF-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "READ-CXACAIX-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "WRITE-TRANSACT-FILE",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "INITIALIZE-ALL-FIELDS"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-TRNADD-SCREEN"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "component": "PGM",
+    "type": "BAT",
+    "name": "COUSR00C.cbl",
+    "children": [
+      {
+        "type": "NON-RULE",
+        "name": "ENDBR-USER-SEC-FILE"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "POPULATE-HEADER-INFO"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "PROCESS-PF7-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "PROCESS-PAGE-BACKWARD"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "PROCESS-PF8-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "PROCESS-PAGE-FORWARD"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "READNEXT-USER-SEC-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "READPREV-USER-SEC-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RECEIVE-USRLST-SCREEN"
+      },
+      {
+        "type": "NON-RULE",
+        "name": "RETURN-TO-PREV-SCREEN"
+      },
+      {
+        "type": "RULE",
+        "name": "INITIALIZE-USER-DATA"
+      },
+      {
+        "type": "RULE",
+        "name": "MAIN-PARA",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "PROCESS-PF7-KEY"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "PROCESS-PF8-KEY"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RECEIVE-USRLST-SCREEN"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "RETURN-TO-PREV-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "PROCESS-ENTER-KEY"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "POPULATE-USER-DATA"
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-ENTER-KEY",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "PROCESS-PAGE-FORWARD"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-PAGE-BACKWARD",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "ENDBR-USER-SEC-FILE"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "READPREV-USER-SEC-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "INITIALIZE-USER-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "POPULATE-USER-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "STARTBR-USER-SEC-FILE"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "PROCESS-PAGE-FORWARD",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "ENDBR-USER-SEC-FILE"
+          },
+          {
+            "type": "NON-RULE",
+            "name": "READNEXT-USER-SEC-FILE"
+          },
+          {
+            "type": "RULE",
+            "name": "INITIALIZE-USER-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "POPULATE-USER-DATA"
+          },
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          },
+          {
+            "type": "RULE",
+            "name": "STARTBR-USER-SEC-FILE"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "SEND-USRLST-SCREEN",
+        "children": [
+          {
+            "type": "NON-RULE",
+            "name": "POPULATE-HEADER-INFO"
+          }
+        ]
+      },
+      {
+        "type": "RULE",
+        "name": "STARTBR-USER-SEC-FILE",
+        "children": [
+          {
+            "type": "RULE",
+            "name": "SEND-USRLST-SCREEN"
+          }
+        ]
+      }
+      ]
+    },
+    {
+      "component": "PGM",
+      "type": "BAT",
+      "name": "COUSR01C.cbl",
+      "children": [
+        {
+          "type": "NON-RULE",
+          "name": "CLEAR-CURRENT-SCREEN",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "INITIALIZE-ALL-FIELDS"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRADD-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "NON-RULE",
+          "name": "INITIALIZE-ALL-FIELDS"
+        },
+        {
+          "type": "NON-RULE",
+          "name": "POPULATE-HEADER-INFO"
+        },
+        {
+          "type": "NON-RULE",
+          "name": "RECEIVE-USRADD-SCREEN"
+        },
+        {
+          "type": "RULE",
+          "name": "MAIN-PARA",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "CLEAR-CURRENT-SCREEN"
+            },
+            {
+              "type": "NON-RULE",
+              "name": "RECEIVE-USRADD-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "PROCESS-ENTER-KEY"
+            },
+            {
+              "type": "RULE",
+              "name": "RETURN-TO-PREV-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRADD-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "PROCESS-ENTER-KEY",
+          "children": [
+            {
+              "type": "RULE",
+              "name": "SEND-USRADD-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "WRITE-USER-SEC-FILE"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "RETURN-TO-PREV-SCREEN"
+        },
+        {
+          "type": "RULE",
+          "name": "SEND-USRADD-SCREEN",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "POPULATE-HEADER-INFO"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "WRITE-USER-SEC-FILE",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "INITIALIZE-ALL-FIELDS"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRADD-SCREEN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "PGM",
+      "type": "BAT",
+      "name": "COUSR02C.cbl",
+      "children": [
+        {
+          "type": "NON-RULE",
+          "name": "CLEAR-CURRENT-SCREEN",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "INITIALIZE-ALL-FIELDS"
+            },
+            {
+              "type": "NON-RULE",
+              "name": "SEND-USRUPD-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "NON-RULE",
+          "name": "INITIALIZE-ALL-FIELDS"
+        },
+        {
+          "type": "NON-RULE",
+          "name": "POPULATE-HEADER-INFO"
+        },
+        {
+          "type": "NON-RULE",
+          "name": "PROCESS-ENTER-KEY",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "SEND-USRUPD-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "READ-USER-SEC-FILE"
+            }
+          ]
+        },
+        {
+          "type": "NON-RULE",
+          "name": "RECEIVE-USRUPD-SCREEN"
+        },
+        {
+          "type": "NON-RULE",
+          "name": "SEND-USRUPD-SCREEN",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "POPULATE-HEADER-INFO"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "MAIN-PARA",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "CLEAR-CURRENT-SCREEN"
+            },
+            {
+              "type": "NON-RULE",
+              "name": "PROCESS-ENTER-KEY"
+            },
+            {
+              "type": "NON-RULE",
+              "name": "RECEIVE-USRUPD-SCREEN"
+            },
+            {
+              "type": "NON-RULE",
+              "name": "SEND-USRUPD-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "RETURN-TO-PREV-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "UPDATE-USER-INFO"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "READ-USER-SEC-FILE",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "SEND-USRUPD-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "RETURN-TO-PREV-SCREEN"
+        },
+        {
+          "type": "RULE",
+          "name": "UPDATE-USER-INFO",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "SEND-USRUPD-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "READ-USER-SEC-FILE"
+            },
+            {
+              "type": "RULE",
+              "name": "UPDATE-USER-SEC-FILE"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "UPDATE-USER-SEC-FILE",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "SEND-USRUPD-SCREEN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "PGM",
+      "type": "BAT",
+      "name": "COUSR03C.cbl",
+      "children": [
+        {
+          "type": "NON-RULE",
+          "name": "CLEAR-CURRENT-SCREEN",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "INITIALIZE-ALL-FIELDS"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRDEL-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "NON-RULE",
+          "name": "DELETE-USER-INFO",
+          "children": [
+            {
+              "type": "RULE",
+              "name": "DELETE-USER-SEC-FILE"
+            },
+            {
+              "type": "RULE",
+              "name": "READ-USER-SEC-FILE"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRDEL-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "NON-RULE",
+          "name": "INITIALIZE-ALL-FIELDS"
+        },
+        {
+          "type": "NON-RULE",
+          "name": "POPULATE-HEADER-INFO"
+        },
+        {
+          "type": "NON-RULE",
+          "name": "PROCESS-ENTER-KEY",
+          "children": [
+            {
+              "type": "RULE",
+              "name": "READ-USER-SEC-FILE"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRDEL-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "DELETE-USER-SEC-FILE",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "INITIALIZE-ALL-FIELDS"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRDEL-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "MAIN-PARA",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "CLEAR-CURRENT-SCREEN"
+            },
+            {
+              "type": "NON-RULE",
+              "name": "DELETE-USER-INFO"
+            },
+            {
+              "type": "NON-RULE",
+              "name": "PROCESS-ENTER-KEY"
+            },
+            {
+              "type": "RULE",
+              "name": "RECEIVE-USRDEL-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "RETURN-TO-PREV-SCREEN"
+            },
+            {
+              "type": "RULE",
+              "name": "SEND-USRDEL-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "READ-USER-SEC-FILE",
+          "children": [
+            {
+              "type": "RULE",
+              "name": "SEND-USRDEL-SCREEN"
+            }
+          ]
+        },
+        {
+          "type": "RULE",
+          "name": "RECEIVE-USRDEL-SCREEN"
+        },
+        {
+          "type": "RULE",
+          "name": "RETURN-TO-PREV-SCREEN"
+        },
+        {
+          "type": "RULE",
+          "name": "SEND-USRDEL-SCREEN",
+          "children": [
+            {
+              "type": "NON-RULE",
+              "name": "POPULATE-HEADER-INFO"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "PGM",
+      "type": "BAT",
+      "name": "CSUTLDTC.cbl",
+      "children": [
+        {
+          "type": "RULE",
+          "name": "A000-MAIN"
+        },
+        {
+          "type": "RULE",
+          "name": "PROC_DIV",
+          "children": [
+            {
+              "type": "RULE",
+              "name": "A000-MAIN"
+            }
+          ]
+        }
+      ]
+    }
+
+
+
+    ]
+  }
+]
+    
+      

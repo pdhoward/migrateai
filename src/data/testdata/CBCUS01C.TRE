@@ -1,0 +1,10 @@
+APP:CARDDEMO
+└── PGM:CBCUS01C
+    └── NON-RULE:PROC_DIV
+        ├── NON-RULE:0000-CUSTFILE-OPEN
+        ├── RULE:1000-CUSTFILE-GET-NEXT
+        └── RULE:9000-CUSTFILE-CLOSE
+Nodes omitted:
+Z-ABEND-PROGRAM (3 occurrences)
+Z-DISPLAY-IO-STATUS (3 occurrences)
+

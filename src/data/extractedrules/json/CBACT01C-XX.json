@@ -1,0 +1,56 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBACT01C.COB",
+    "kind": "NON-RULE",
+    "name": "PROC_DIV",
+    "paragraph": "       PROC_DIV.\n           PERFORM 0000-ACCTFILE-OPEN.\n           PERFORM UNTIL END-OF-FILE = 'Y'\n               IF  END-OF-FILE = 'N'\n                   PERFORM 1000-ACCTFILE-GET-NEXT\n                   IF  END-OF-FILE = 'N'\n                       DISPLAY ACCOUNT-RECORD\n                   END-IF\n               END-IF\n           END-PERFORM.\n           PERFORM 9000-ACCTFILE-CLOSE.\n           DISPLAY 'END OF EXECUTION OF PROGRAM CBACT01C'.\n           GOBACK.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBACT01C.COB",
+    "kind": "RULE",
+    "name": "1000-ACCTFILE-GET-NEXT",
+    "paragraph": "       1000-ACCTFILE-GET-NEXT.\n           READ ACCTFILE-FILE INTO ACCOUNT-RECORD.\n           IF  ACCTFILE-STATUS = '00'\n               MOVE 0 TO APPL-RESULT\n               PERFORM 1100-DISPLAY-ACCT-RECORD\n           ELSE\n               IF  ACCTFILE-STATUS = '10'\n                   MOVE 16 TO APPL-RESULT\n               ELSE\n                   MOVE 12 TO APPL-RESULT\n               END-IF\n           END-IF\n           IF  APPL-AOK\n               CONTINUE\n           ELSE\n               IF  APPL-EOF\n                   MOVE 'Y' TO END-OF-FILE\n               ELSE\n                   DISPLAY 'ERROR READING ACCOUNT FILE'\n                   MOVE ACCTFILE-STATUS TO IO-STATUS\n                   PERFORM 9910-DISPLAY-IO-STATUS\n                   PERFORM 9999-ABEND-PROGRAM\n               END-IF\n           END-IF\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBACT01C.COB",
+    "kind": "RULE",
+    "name": "1100-DISPLAY-ACCT-RECORD",
+    "paragraph": "       1100-DISPLAY-ACCT-RECORD.\n           DISPLAY 'ACCT-ID                 :'   ACCT-ID\n           DISPLAY 'ACCT-ACTIVE-STATUS      :'   ACCT-ACTIVE-STATUS\n           DISPLAY 'ACCT-CURR-BAL           :'   ACCT-CURR-BAL\n           DISPLAY 'ACCT-CREDIT-LIMIT       :'   ACCT-CREDIT-LIMIT\n           DISPLAY 'ACCT-CASH-CREDIT-LIMIT  :'   ACCT-CASH-CREDIT-LIMIT\n           DISPLAY 'ACCT-OPEN-DATE          :'   ACCT-OPEN-DATE\n           DISPLAY 'ACCT-EXPIRAION-DATE     :'   ACCT-EXPIRAION-DATE\n           DISPLAY 'ACCT-REISSUE-DATE       :'   ACCT-REISSUE-DATE\n           DISPLAY 'ACCT-CURR-CYC-CREDIT    :'   ACCT-CURR-CYC-CREDIT\n           DISPLAY 'ACCT-CURR-CYC-DEBIT     :'   ACCT-CURR-CYC-DEBIT\n           DISPLAY 'ACCT-GROUP-ID           :'   ACCT-GROUP-ID\n           DISPLAY '-------------------------------------------------'\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBACT01C.COB",
+    "kind": "NON-RULE",
+    "name": "0000-ACCTFILE-OPEN",
+    "paragraph": "       0000-ACCTFILE-OPEN.\n           MOVE 8 TO APPL-RESULT.\n           OPEN INPUT ACCTFILE-FILE\n           IF  ACCTFILE-STATUS = '00'\n               MOVE 0 TO APPL-RESULT\n           ELSE\n               MOVE 12 TO APPL-RESULT\n           END-IF\n           IF  APPL-AOK\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR OPENING ACCTFILE'\n               MOVE ACCTFILE-STATUS TO IO-STATUS\n               PERFORM 9910-DISPLAY-IO-STATUS\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBACT01C.COB",
+    "kind": "RULE",
+    "name": "9000-ACCTFILE-CLOSE",
+    "paragraph": "       9000-ACCTFILE-CLOSE.\n           ADD 8 TO ZERO GIVING APPL-RESULT.\n           CLOSE ACCTFILE-FILE\n           IF  ACCTFILE-STATUS = '00'\n               SUBTRACT APPL-RESULT FROM APPL-RESULT\n           ELSE\n               ADD 12 TO ZERO GIVING APPL-RESULT\n           END-IF\n           IF  APPL-AOK\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR CLOSING ACCOUNT FILE'\n               MOVE ACCTFILE-STATUS TO IO-STATUS\n               PERFORM 9910-DISPLAY-IO-STATUS\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBACT01C.COB",
+    "kind": "NON-RULE",
+    "name": "9999-ABEND-PROGRAM",
+    "paragraph": "       9999-ABEND-PROGRAM.\n           DISPLAY 'ABENDING PROGRAM'\n           MOVE 0 TO TIMING\n           MOVE 999 TO ABCODE\n           CALL 'CEE3ABD'.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBACT01C.COB",
+    "kind": "RULE",
+    "name": "9910-DISPLAY-IO-STATUS",
+    "paragraph": "       9910-DISPLAY-IO-STATUS.\n           IF  IO-STATUS NOT NUMERIC\n           OR  IO-STAT1 = '9'\n               MOVE IO-STAT1 TO IO-STATUS-04(1:1)\n               MOVE 0        TO TWO-BYTES-BINARY\n               MOVE IO-STAT2 TO TWO-BYTES-RIGHT\n               MOVE TWO-BYTES-BINARY TO IO-STATUS-0403\n               DISPLAY 'FILE STATUS IS: NNNN' IO-STATUS-04\n           ELSE\n               MOVE '0000' TO IO-STATUS-04\n               MOVE IO-STATUS TO IO-STATUS-04(3:2)\n               DISPLAY 'FILE STATUS IS: NNNN' IO-STATUS-04\n           END-IF\n"
+}]

@@ -1,0 +1,208 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "PROC_DIV",
+    "paragraph": "       PROC_DIV.\n           SET ADDRESS OF TCB-BLOCK   TO TCB-POINT.\n           SET ADDRESS OF TIOT-BLOCK  TO TIOT-POINT.\n           SET TIOT-INDEX             TO TIOT-POINT.\n           DISPLAY 'Running JCL : ' TIOTNJOB ' Step ' TIOTJSTP.\n           COMPUTE BUMP-TIOT = BUMP-TIOT + LENGTH OF TIOT-BLOCK.\n           SET ADDRESS OF TIOT-ENTRY  TO TIOT-INDEX.\n           DISPLAY 'DD Names from TIOT: '.\n           PERFORM UNTIL END-OF-TIOT\n                      OR TIO-LEN = LOW-VALUES\n               IF NOT NULL-UCB\n                   DISPLAY ': ' TIOCDDNM ' -- valid UCB'\n               ELSE\n                   DISPLAY ': ' TIOCDDNM ' --  null UCB'\n               END-IF\n               COMPUTE BUMP-TIOT = BUMP-TIOT + LENGTH OF TIOT-SEG\n               SET ADDRESS OF TIOT-ENTRY TO TIOT-INDEX\n           END-PERFORM.\n           IF NOT NULL-UCB\n               DISPLAY ': ' TIOCDDNM ' -- valid UCB'\n           ELSE\n               DISPLAY ': ' TIOCDDNM ' -- null  UCB'\n           END-IF.\n           OPEN OUTPUT STMT-FILE HTML-FILE.\n           INITIALIZE WS-TRNX-TABLE WS-TRN-TBL-CNTR.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "0000-START",
+    "paragraph": "       0000-START.\n           EVALUATE WS-FL-DD\n             WHEN 'TRNXFILE'\n               ALTER 8100-FILE-OPEN TO PROCEED TO 8100-TRNXFILE-OPEN\n               GO TO 8100-FILE-OPEN\n             WHEN 'XREFFILE'\n               ALTER 8100-FILE-OPEN TO PROCEED TO 8200-XREFFILE-OPEN\n               GO TO 8100-FILE-OPEN\n             WHEN 'CUSTFILE'\n               ALTER 8100-FILE-OPEN TO PROCEED TO 8300-CUSTFILE-OPEN\n               GO TO 8100-FILE-OPEN\n             WHEN 'ACCTFILE'\n               ALTER 8100-FILE-OPEN TO PROCEED TO 8400-ACCTFILE-OPEN\n               GO TO 8100-FILE-OPEN\n             WHEN 'READTRNX'\n               GO TO 8500-READTRNX-READ\n             WHEN OTHER\n               GO TO 9999-GOBACK.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "1000-MAINLINE",
+    "paragraph": "       1000-MAINLINE.\n           PERFORM UNTIL END-OF-FILE = 'Y'\n               IF  END-OF-FILE = 'N'\n                   PERFORM 1000-XREFFILE-GET-NEXT\n                   IF  END-OF-FILE = 'N'\n                       PERFORM 2000-CUSTFILE-GET\n                       PERFORM 3000-ACCTFILE-GET\n                       PERFORM 5000-CREATE-STATEMENT\n                       MOVE 1 TO CR-JMP\n                       MOVE ZERO TO WS-TOTAL-AMT\n                       PERFORM 4000-TRNXFILE-GET\n                   END-IF\n               END-IF\n           END-PERFORM.\n           PERFORM 9100-TRNXFILE-CLOSE.\n           PERFORM 9200-XREFFILE-CLOSE.\n           PERFORM 9300-CUSTFILE-CLOSE.\n           PERFORM 9400-ACCTFILE-CLOSE.\n           CLOSE STMT-FILE HTML-FILE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "9999-GOBACK",
+    "paragraph": "       9999-GOBACK.\n           GOBACK.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "1000-XREFFILE-GET-NEXT",
+    "paragraph": "       1000-XREFFILE-GET-NEXT.\n           MOVE 'XREFFILE' TO WS-M03B-DD.\n           SET M03B-READ TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           MOVE SPACES TO WS-M03B-FLDT.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           EVALUATE WS-M03B-RC\n             WHEN '00'\n               CONTINUE\n             WHEN '10'\n               MOVE 'Y' TO END-OF-FILE\n             WHEN OTHER\n               DISPLAY 'ERROR READING XREFFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-EVALUATE.\n           MOVE WS-M03B-FLDT TO CARD-XREF-RECORD.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "2000-CUSTFILE-GET",
+    "paragraph": "       2000-CUSTFILE-GET.\n           MOVE 'CUSTFILE' TO WS-M03B-DD.\n           SET M03B-READ-K TO TRUE.\n           MOVE XREF-CUST-ID TO WS-M03B-KEY.\n           MOVE ZERO TO WS-M03B-KEY-LN.\n           COMPUTE WS-M03B-KEY-LN = LENGTH OF XREF-CUST-ID.\n           MOVE ZERO TO WS-M03B-RC.\n           MOVE SPACES TO WS-M03B-FLDT.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           EVALUATE WS-M03B-RC\n             WHEN '00'\n               CONTINUE\n             WHEN OTHER\n               DISPLAY 'ERROR READING CUSTFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-EVALUATE.\n           MOVE WS-M03B-FLDT TO CUSTOMER-RECORD.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "3000-ACCTFILE-GET",
+    "paragraph": "       3000-ACCTFILE-GET.\n           MOVE 'ACCTFILE' TO WS-M03B-DD.\n           SET M03B-READ-K TO TRUE.\n           MOVE XREF-ACCT-ID TO WS-M03B-KEY.\n           MOVE ZERO TO WS-M03B-KEY-LN.\n           COMPUTE WS-M03B-KEY-LN = LENGTH OF XREF-ACCT-ID.\n           MOVE ZERO TO WS-M03B-RC.\n           MOVE SPACES TO WS-M03B-FLDT.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           EVALUATE WS-M03B-RC\n             WHEN '00'\n               CONTINUE\n             WHEN OTHER\n               DISPLAY 'ERROR READING ACCTFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-EVALUATE.\n           MOVE WS-M03B-FLDT TO ACCOUNT-RECORD.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "4000-TRNXFILE-GET",
+    "paragraph": "       4000-TRNXFILE-GET.\n           PERFORM VARYING CR-JMP FROM 1 BY 1\n             UNTIL CR-JMP > CR-CNT\n             OR (WS-CARD-NUM (CR-JMP) > XREF-CARD-NUM)\n               IF XREF-CARD-NUM = WS-CARD-NUM (CR-JMP)\n                   MOVE WS-CARD-NUM (CR-JMP) TO TRNX-CARD-NUM\n                   PERFORM VARYING TR-JMP FROM 1 BY 1\n                     UNTIL (TR-JMP > WS-TRCT (CR-JMP))\n                       MOVE WS-TRAN-NUM (CR-JMP, TR-JMP)\n                         TO TRNX-ID\n                       MOVE WS-TRAN-REST (CR-JMP, TR-JMP)\n                         TO TRNX-REST\n                       PERFORM 6000-WRITE-TRANS\n                       ADD TRNX-AMT TO WS-TOTAL-AMT\n                   END-PERFORM\n               END-IF\n           END-PERFORM.\n           MOVE WS-TOTAL-AMT TO WS-TRN-AMT.\n           MOVE WS-TRN-AMT TO ST-TOTAL-TRAMT.\n           WRITE FD-STMTFILE-REC FROM ST-LINE12.\n           WRITE FD-STMTFILE-REC FROM ST-LINE14A.\n           WRITE FD-STMTFILE-REC FROM ST-LINE15.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L10 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L75 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L78 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L79 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L80 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "5000-CREATE-STATEMENT",
+    "paragraph": "       5000-CREATE-STATEMENT.\n           INITIALIZE STATEMENT-LINES.\n           WRITE FD-STMTFILE-REC FROM ST-LINE0.\n           PERFORM 5100-WRITE-HTML-HEADER THRU 5100-EXIT.\n           STRING CUST-FIRST-NAME DELIMITED BY ' '\n                  ' ' DELIMITED BY SIZE\n                  CUST-MIDDLE-NAME DELIMITED BY ' '\n                  ' ' DELIMITED BY SIZE\n                  CUST-LAST-NAME DELIMITED BY ' '\n                  ' ' DELIMITED BY SIZE\n                  INTO ST-NAME\n           END-STRING.\n           MOVE CUST-ADDR-LINE-1 TO ST-ADD1.\n           MOVE CUST-ADDR-LINE-2 TO ST-ADD2.\n           STRING CUST-ADDR-LINE-3 DELIMITED BY ' '\n                  ' ' DELIMITED BY SIZE\n                  CUST-ADDR-STATE-CD DELIMITED BY ' '\n                  ' ' DELIMITED BY SIZE\n                  CUST-ADDR-COUNTRY-CD DELIMITED BY ' '\n                  ' ' DELIMITED BY SIZE\n                  CUST-ADDR-ZIP DELIMITED BY ' '\n                  ' ' DELIMITED BY SIZE\n                  INTO ST-ADD3\n           END-STRING.\n           MOVE ACCT-ID TO ST-ACCT-ID.\n           MOVE ACCT-CURR-BAL TO ST-CURR-BAL.\n           MOVE CUST-FICO-CREDIT-SCORE TO ST-FICO-SCORE.\n           PERFORM 5200-WRITE-HTML-NMADBS THRU 5200-EXIT.\n           WRITE FD-STMTFILE-REC FROM ST-LINE1.\n           WRITE FD-STMTFILE-REC FROM ST-LINE2.\n           WRITE FD-STMTFILE-REC FROM ST-LINE3.\n           WRITE FD-STMTFILE-REC FROM ST-LINE4.\n           WRITE FD-STMTFILE-REC FROM ST-LINE5.\n           WRITE FD-STMTFILE-REC FROM ST-LINE6.\n           WRITE FD-STMTFILE-REC FROM ST-LINE5.\n           WRITE FD-STMTFILE-REC FROM ST-LINE7.\n           WRITE FD-STMTFILE-REC FROM ST-LINE8.\n           WRITE FD-STMTFILE-REC FROM ST-LINE9.\n           WRITE FD-STMTFILE-REC FROM ST-LINE10.\n           WRITE FD-STMTFILE-REC FROM ST-LINE11.\n           WRITE FD-STMTFILE-REC FROM ST-LINE12.\n           WRITE FD-STMTFILE-REC FROM ST-LINE13.\n           WRITE FD-STMTFILE-REC FROM ST-LINE12.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "5100-WRITE-HTML-HEADER",
+    "paragraph": "       5100-WRITE-HTML-HEADER.\n           SET HTML-L01 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L02 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L03 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L04 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L05 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L06 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L07 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L08 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L10 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           MOVE ACCT-ID TO L11-ACCT.\n           WRITE FD-HTMLFILE-REC FROM HTML-L11.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L15 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L16 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L17 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L18 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L22-35 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "5100-EXIT",
+    "paragraph": "       5100-EXIT.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "5200-WRITE-HTML-NMADBS",
+    "paragraph": "       5200-WRITE-HTML-NMADBS.\n           MOVE ST-NAME TO L23-NAME.\n           MOVE SPACES TO FD-HTMLFILE-REC\n           STRING '<p style=\"font-size:16px\">' DELIMITED BY '*'\n                  L23-NAME DELIMITED BY '  '\n                  '  ' DELIMITED BY SIZE\n                  '</p>' DELIMITED BY '*'\n                  INTO FD-HTMLFILE-REC\n           END-STRING.\n           WRITE FD-HTMLFILE-REC.\n           MOVE SPACES TO HTML-ADDR-LN.\n           STRING '<p>' DELIMITED BY '*'\n                  ST-ADD1 DELIMITED BY '  '\n                  '  ' DELIMITED BY SIZE\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-ADDR-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-ADDR-LN.\n           MOVE SPACES TO HTML-ADDR-LN.\n           STRING '<p>' DELIMITED BY '*'\n                  ST-ADD2 DELIMITED BY '  '\n                  '  ' DELIMITED BY SIZE\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-ADDR-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-ADDR-LN.\n           MOVE SPACES TO HTML-ADDR-LN.\n           STRING '<p>' DELIMITED BY '*'\n                  ST-ADD3 DELIMITED BY '  '\n                  '  ' DELIMITED BY SIZE\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-ADDR-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-ADDR-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L30-42 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L31 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L22-35 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           MOVE SPACES TO HTML-BSIC-LN.\n           STRING '<p>Account ID         : ' DELIMITED BY '*'\n                  ST-ACCT-ID DELIMITED BY '*'\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-BSIC-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-BSIC-LN.\n           MOVE SPACES TO HTML-BSIC-LN.\n           STRING '<p>Current Balance    : ' DELIMITED BY '*'\n                  ST-CURR-BAL DELIMITED BY '*'\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-BSIC-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-BSIC-LN.\n           MOVE SPACES TO HTML-BSIC-LN.\n           STRING '<p>FICO Score         : ' DELIMITED BY '*'\n                  ST-FICO-SCORE DELIMITED BY '*'\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-BSIC-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-BSIC-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L30-42 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L43 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L47 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L48 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L50 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L51 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L53 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L54 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "5200-EXIT",
+    "paragraph": "       5200-EXIT.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "6000-WRITE-TRANS",
+    "paragraph": "       6000-WRITE-TRANS.\n           MOVE TRNX-ID TO ST-TRANID.\n           MOVE TRNX-DESC TO ST-TRANDT.\n           MOVE TRNX-AMT TO ST-TRANAMT.\n           WRITE FD-STMTFILE-REC FROM ST-LINE14.\n           SET HTML-LTRS TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L58 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           MOVE SPACES TO HTML-TRAN-LN.\n           STRING '<p>' DELIMITED BY '*'\n                  ST-TRANID DELIMITED BY '*'\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-TRAN-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-TRAN-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L61 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           MOVE SPACES TO HTML-TRAN-LN.\n           STRING '<p>' DELIMITED BY '*'\n                  ST-TRANDT DELIMITED BY '*'\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-TRAN-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-TRAN-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-L64 TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           MOVE SPACES TO HTML-TRAN-LN.\n           STRING '<p>' DELIMITED BY '*'\n                  ST-TRANAMT DELIMITED BY '*'\n                  '</p>' DELIMITED BY '*'\n                  INTO HTML-TRAN-LN\n           END-STRING.\n           WRITE FD-HTMLFILE-REC FROM HTML-TRAN-LN.\n           SET HTML-LTDE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           SET HTML-LTRE TO TRUE.\n           WRITE FD-HTMLFILE-REC FROM HTML-FIXED-LN.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "8100-FILE-OPEN",
+    "paragraph": "       8100-FILE-OPEN.\n           GO TO 8100-TRNXFILE-OPEN\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "8100-TRNXFILE-OPEN",
+    "paragraph": "       8100-TRNXFILE-OPEN.\n           MOVE 'TRNXFILE' TO WS-M03B-DD.\n           SET M03B-OPEN TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR OPENING TRNXFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           SET M03B-READ TO TRUE.\n           MOVE SPACES TO WS-M03B-FLDT.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR READING TRNXFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           MOVE WS-M03B-FLDT TO TRNX-RECORD.\n           MOVE TRNX-CARD-NUM TO WS-SAVE-CARD.\n           MOVE 1 TO CR-CNT.\n           MOVE 0 TO TR-CNT.\n           MOVE 'READTRNX' TO WS-FL-DD.\n           GO TO 0000-START.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "8200-XREFFILE-OPEN",
+    "paragraph": "       8200-XREFFILE-OPEN.\n           MOVE 'XREFFILE' TO WS-M03B-DD.\n           SET M03B-OPEN TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR OPENING XREFFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           MOVE 'CUSTFILE' TO WS-FL-DD.\n           GO TO 0000-START.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "8300-CUSTFILE-OPEN",
+    "paragraph": "       8300-CUSTFILE-OPEN.\n           MOVE 'CUSTFILE' TO WS-M03B-DD.\n           SET M03B-OPEN TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR OPENING CUSTFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           MOVE 'ACCTFILE' TO WS-FL-DD.\n           GO TO 0000-START.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "8400-ACCTFILE-OPEN",
+    "paragraph": "       8400-ACCTFILE-OPEN.\n           MOVE 'ACCTFILE' TO WS-M03B-DD.\n           SET M03B-OPEN TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR OPENING ACCTFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           GO TO 1000-MAINLINE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "RULE",
+    "name": "8500-READTRNX-READ",
+    "paragraph": "       8500-READTRNX-READ.\n           IF WS-SAVE-CARD = TRNX-CARD-NUM\n               ADD 1 TO TR-CNT\n           ELSE\n               MOVE TR-CNT TO WS-TRCT (CR-CNT)\n               ADD 1 TO CR-CNT\n               MOVE 1 TO TR-CNT\n           END-IF.\n           MOVE TRNX-CARD-NUM TO WS-CARD-NUM (CR-CNT).\n           MOVE TRNX-ID TO WS-TRAN-NUM (CR-CNT, TR-CNT).\n           MOVE TRNX-REST TO WS-TRAN-REST (CR-CNT, TR-CNT).\n           MOVE TRNX-CARD-NUM TO WS-SAVE-CARD.\n           MOVE 'TRNXFILE' TO WS-M03B-DD.\n           SET M03B-READ TO TRUE.\n           MOVE SPACES TO WS-M03B-FLDT.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           EVALUATE WS-M03B-RC\n             WHEN '00'\n               MOVE WS-M03B-FLDT TO TRNX-RECORD\n               GO TO 8500-READTRNX-READ\n             WHEN '10'\n               GO TO 8599-EXIT\n             WHEN OTHER\n               DISPLAY 'ERROR READING TRNXFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-EVALUATE.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "8599-EXIT",
+    "paragraph": "       8599-EXIT.\n           MOVE TR-CNT TO WS-TRCT (CR-CNT).\n           MOVE 'XREFFILE' TO WS-FL-DD.\n           GO TO 0000-START.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "9100-TRNXFILE-CLOSE",
+    "paragraph": "       9100-TRNXFILE-CLOSE.\n           MOVE 'TRNXFILE' TO WS-M03B-DD.\n           SET M03B-CLOSE TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR CLOSING TRNXFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "9200-XREFFILE-CLOSE",
+    "paragraph": "       9200-XREFFILE-CLOSE.\n           MOVE 'XREFFILE' TO WS-M03B-DD.\n           SET M03B-CLOSE TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR CLOSING XREFFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "9300-CUSTFILE-CLOSE",
+    "paragraph": "       9300-CUSTFILE-CLOSE.\n           MOVE 'CUSTFILE' TO WS-M03B-DD.\n           SET M03B-CLOSE TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR CLOSING CUSTFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "9400-ACCTFILE-CLOSE",
+    "paragraph": "       9400-ACCTFILE-CLOSE.\n           MOVE 'ACCTFILE' TO WS-M03B-DD.\n           SET M03B-CLOSE TO TRUE.\n           MOVE ZERO TO WS-M03B-RC.\n           CALL 'CBSTM03B' USING WS-M03B-AREA.\n           IF WS-M03B-RC = '00' OR '04'\n               CONTINUE\n           ELSE\n               DISPLAY 'ERROR CLOSING ACCTFILE'\n               DISPLAY 'RETURN CODE: ' WS-M03B-RC\n               PERFORM 9999-ABEND-PROGRAM\n           END-IF.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03A.COB",
+    "kind": "NON-RULE",
+    "name": "9999-ABEND-PROGRAM",
+    "paragraph": "       9999-ABEND-PROGRAM.\n           DISPLAY 'ABENDING PROGRAM'\n"
+}]

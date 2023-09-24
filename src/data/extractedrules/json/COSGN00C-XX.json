@@ -1,0 +1,48 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COSGN00C.COB",
+    "kind": "NON-RULE",
+    "name": "MAIN-PARA",
+    "paragraph": "       MAIN-PARA.\n           SET ERR-FLG-OFF TO TRUE\n           MOVE SPACES TO WS-MESSAGE\n                          ERRMSGO OF COSGN0AO\n           IF EIBCALEN = 0\n               MOVE LOW-VALUES TO COSGN0AO\n               MOVE -1       TO USERIDL OF COSGN0AI\n               PERFORM SEND-SIGNON-SCREEN\n           ELSE\n               EVALUATE EIBAID\n                   WHEN DFHENTER\n                       PERFORM PROCESS-ENTER-KEY\n                   WHEN DFHPF3\n                       MOVE CCDA-MSG-THANK-YOU        TO WS-MESSAGE\n                       PERFORM SEND-PLAIN-TEXT\n                   WHEN OTHER\n                       MOVE 'Y'                       TO WS-ERR-FLG\n                       MOVE CCDA-MSG-INVALID-KEY      TO WS-MESSAGE\n                       PERFORM SEND-SIGNON-SCREEN\n               END-EVALUATE\n           END-IF.\n           EXEC CICS RETURN\n                     TRANSID (WS-TRANID)\n                     COMMAREA (CARDDEMO-COMMAREA)\n                     LENGTH(LENGTH OF CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COSGN00C.COB",
+    "kind": "RULE",
+    "name": "PROCESS-ENTER-KEY",
+    "paragraph": "       PROCESS-ENTER-KEY.\n           EXEC CICS RECEIVE\n                     MAP('COSGN0A')\n                     MAPSET('COSGN00')\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC.\n           EVALUATE TRUE\n               WHEN USERIDI OF COSGN0AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'      TO WS-ERR-FLG\n                   MOVE 'Please enter User ID ...' TO WS-MESSAGE\n                   MOVE -1       TO USERIDL OF COSGN0AI\n                   PERFORM SEND-SIGNON-SCREEN\n               WHEN PASSWDI OF COSGN0AI = SPACES OR LOW-VALUES\n                   MOVE 'Y'      TO WS-ERR-FLG\n                   MOVE 'Please enter Password ...' TO WS-MESSAGE\n                   MOVE -1       TO PASSWDL OF COSGN0AI\n                   PERFORM SEND-SIGNON-SCREEN\n               WHEN OTHER\n                   CONTINUE\n           END-EVALUATE.\n           MOVE FUNCTION UPPER-CASE(USERIDI OF COSGN0AI) TO\n                           WS-USER-ID\n                           CDEMO-USER-ID\n           MOVE FUNCTION UPPER-CASE(PASSWDI OF COSGN0AI) TO\n                           WS-USER-PWD\n           IF NOT ERR-FLG-ON\n               PERFORM READ-USER-SEC-FILE\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COSGN00C.COB",
+    "kind": "NON-RULE",
+    "name": "SEND-SIGNON-SCREEN",
+    "paragraph": "       SEND-SIGNON-SCREEN.\n           PERFORM POPULATE-HEADER-INFO\n           MOVE WS-MESSAGE TO ERRMSGO OF COSGN0AO\n           EXEC CICS SEND\n                     MAP('COSGN0A')\n                     MAPSET('COSGN00')\n                     FROM(COSGN0AO)\n                     ERASE\n                     CURSOR\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COSGN00C.COB",
+    "kind": "RULE",
+    "name": "SEND-PLAIN-TEXT",
+    "paragraph": "       SEND-PLAIN-TEXT.\n           EXEC CICS SEND TEXT\n                     FROM(WS-MESSAGE)\n                     LENGTH(LENGTH OF WS-MESSAGE)\n                     ERASE\n                     FREEKB\n           END-EXEC.\n           EXEC CICS RETURN\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COSGN00C.COB",
+    "kind": "NON-RULE",
+    "name": "POPULATE-HEADER-INFO",
+    "paragraph": "       POPULATE-HEADER-INFO.\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01           TO TITLE01O OF COSGN0AO\n           MOVE CCDA-TITLE02           TO TITLE02O OF COSGN0AO\n           MOVE WS-TRANID              TO TRNNAMEO OF COSGN0AO\n           MOVE WS-PGMNAME             TO PGMNAMEO OF COSGN0AO\n           MOVE WS-CURDATE-MONTH       TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY         TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)   TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY    TO CURDATEO OF COSGN0AO\n           MOVE WS-CURTIME-HOURS       TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE      TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND      TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS    TO CURTIMEO OF COSGN0AO\n           EXEC CICS ASSIGN\n               APPLID(APPLIDO OF COSGN0AO)\n           END-EXEC\n           EXEC CICS ASSIGN\n               SYSID(SYSIDO OF COSGN0AO)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COSGN00C.COB",
+    "kind": "RULE",
+    "name": "READ-USER-SEC-FILE",
+    "paragraph": "       READ-USER-SEC-FILE.\n           EXEC CICS READ\n                DATASET   (WS-USRSEC-FILE)\n                INTO      (SEC-USER-DATA)\n                LENGTH    (LENGTH OF SEC-USER-DATA)\n                RIDFLD    (WS-USER-ID)\n                KEYLENGTH (LENGTH OF WS-USER-ID)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC.\n           EVALUATE WS-RESP-CD\n               WHEN 0\n                   IF SEC-USR-PWD = WS-USER-PWD\n                       MOVE WS-TRANID    TO CDEMO-FROM-TRANID\n                       MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM\n                       MOVE WS-USER-ID   TO CDEMO-USER-ID\n                       MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE\n                       MOVE ZEROS        TO CDEMO-PGM-CONTEXT\n                       IF CDEMO-USRTYP-ADMIN\n                            EXEC CICS XCTL\n                              PROGRAM ('COADM01C')\n                              COMMAREA(CARDDEMO-COMMAREA)\n                            END-EXEC\n                       ELSE\n                            EXEC CICS XCTL\n                              PROGRAM ('COMEN01C')\n                              COMMAREA(CARDDEMO-COMMAREA)\n                            END-EXEC\n                       END-IF\n                   ELSE\n                       MOVE 'Wrong Password. Try again ...' TO\n                                                          WS-MESSAGE\n                       MOVE -1       TO PASSWDL OF COSGN0AI\n                       PERFORM SEND-SIGNON-SCREEN\n                   END-IF\n               WHEN 13\n                   MOVE 'Y'      TO WS-ERR-FLG\n                   MOVE 'User not found. Try again ...' TO WS-MESSAGE\n                   MOVE -1       TO USERIDL OF COSGN0AI\n                   PERFORM SEND-SIGNON-SCREEN\n               WHEN OTHER\n                   MOVE 'Y'      TO WS-ERR-FLG\n                   MOVE 'Unable to verify the User ...' TO WS-MESSAGE\n                   MOVE -1       TO USERIDL OF COSGN0AI\n                   PERFORM SEND-SIGNON-SCREEN\n"
+}]

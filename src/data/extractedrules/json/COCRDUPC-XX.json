@@ -1,0 +1,376 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "0000-MAIN",
+    "paragraph": "       0000-MAIN.\n           EXEC CICS HANDLE ABEND\n                     LABEL(ABEND-ROUTINE)\n           END-EXEC\n           INITIALIZE CC-WORK-AREA\n                      WS-MISC-STORAGE\n                      WS-COMMAREA\n           MOVE LIT-THISTRANID       TO WS-TRANID\n           SET WS-RETURN-MSG-OFF  TO TRUE\n           IF EIBCALEN IS EQUAL TO 0\n               OR (CDEMO-FROM-PROGRAM = LIT-MENUPGM\n               AND NOT CDEMO-PGM-REENTER)\n              INITIALIZE CARDDEMO-COMMAREA\n                         WS-THIS-PROGCOMMAREA\n              SET CDEMO-PGM-ENTER TO TRUE\n              SET CCUP-DETAILS-NOT-FETCHED TO TRUE\n           ELSE\n              MOVE DFHCOMMAREA (1:LENGTH OF CARDDEMO-COMMAREA)  TO\n                                CARDDEMO-COMMAREA\n              MOVE DFHCOMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:\n                               LENGTH OF WS-THIS-PROGCOMMAREA ) TO\n                                WS-THIS-PROGCOMMAREA\n           END-IF\n           PERFORM YYYY-STORE-PFKEY\n              THRU YYYY-STORE-PFKEY-EXIT\n           SET PFK-INVALID TO TRUE\n           IF CCARD-AID-ENTER OR\n              CCARD-AID-PFK03 OR\n              (CCARD-AID-PFK05 AND CCUP-CHANGES-OK-NOT-CONFIRMED)\n                              OR\n              (CCARD-AID-PFK12 AND NOT CCUP-DETAILS-NOT-FETCHED)\n              SET PFK-VALID TO TRUE\n           END-IF\n           IF PFK-INVALID\n              SET CCARD-AID-ENTER TO TRUE\n           END-IF\n           EVALUATE TRUE\n              WHEN CCARD-AID-PFK03\n              WHEN (CCUP-CHANGES-OKAYED-AND-DONE\n               AND  CDEMO-LAST-MAPSET   EQUAL LIT-CCLISTMAPSET)\n              WHEN (CCUP-CHANGES-FAILED\n               AND  CDEMO-LAST-MAPSET   EQUAL LIT-CCLISTMAPSET)\n                   SET CCARD-AID-PFK03     TO TRUE\n                   IF CDEMO-FROM-TRANID    EQUAL LOW-VALUES\n                   OR CDEMO-FROM-TRANID    EQUAL SPACES\n                      MOVE LIT-MENUTRANID  TO CDEMO-TO-TRANID\n                   ELSE\n                      MOVE CDEMO-FROM-TRANID  TO CDEMO-TO-TRANID\n                   END-IF\n                   IF CDEMO-FROM-PROGRAM   EQUAL LOW-VALUES\n                   OR CDEMO-FROM-PROGRAM   EQUAL SPACES\n                      MOVE LIT-MENUPGM     TO CDEMO-TO-PROGRAM\n                   ELSE\n                      MOVE CDEMO-FROM-PROGRAM TO CDEMO-TO-PROGRAM\n                   END-IF\n                   MOVE LIT-THISTRANID     TO CDEMO-FROM-TRANID\n                   MOVE LIT-THISPGM        TO CDEMO-FROM-PROGRAM\n                   IF CDEMO-LAST-MAPSET    EQUAL LIT-CCLISTMAPSET\n                       MOVE ZEROS          TO CDEMO-ACCT-ID\n                                              CDEMO-CARD-NUM\n                   END-IF\n                   SET  CDEMO-USRTYP-USER  TO TRUE\n                   SET  CDEMO-PGM-ENTER    TO TRUE\n                   MOVE LIT-THISMAPSET     TO CDEMO-LAST-MAPSET\n                   MOVE LIT-THISMAP        TO CDEMO-LAST-MAP\n                   EXEC CICS\n                        SYNCPOINT\n                   END-EXEC\n                   EXEC CICS XCTL\n                        PROGRAM (CDEMO-TO-PROGRAM)\n                        COMMAREA(CARDDEMO-COMMAREA)\n                   END-EXEC\n              WHEN CDEMO-PGM-ENTER\n               AND CDEMO-FROM-PROGRAM  EQUAL LIT-CCLISTPGM\n              WHEN CCARD-AID-PFK12\n               AND CDEMO-FROM-PROGRAM  EQUAL LIT-CCLISTPGM\n                   SET CDEMO-PGM-REENTER    TO TRUE\n                   SET INPUT-OK             TO TRUE\n                   SET FLG-ACCTFILTER-ISVALID  TO TRUE\n                   SET FLG-CARDFILTER-ISVALID  TO TRUE\n                   MOVE CDEMO-ACCT-ID       TO CC-ACCT-ID-N\n                   MOVE CDEMO-CARD-NUM      TO CC-CARD-NUM-N\n                   PERFORM 9000-READ-DATA\n                      THRU 9000-READ-DATA-EXIT\n                   SET CCUP-SHOW-DETAILS TO TRUE\n                   PERFORM 3000-SEND-MAP\n                      THRU 3000-SEND-MAP-EXIT\n                   GO TO COMMON-RETURN\n              WHEN CCUP-DETAILS-NOT-FETCHED\n               AND CDEMO-PGM-ENTER\n              WHEN CDEMO-FROM-PROGRAM   EQUAL LIT-MENUPGM\n               AND NOT CDEMO-PGM-REENTER\n                   INITIALIZE WS-THIS-PROGCOMMAREA\n                   PERFORM 3000-SEND-MAP THRU\n                           3000-SEND-MAP-EXIT\n                   SET CDEMO-PGM-REENTER        TO TRUE\n                   SET CCUP-DETAILS-NOT-FETCHED TO TRUE\n                   GO TO COMMON-RETURN\n              WHEN CCUP-CHANGES-OKAYED-AND-DONE\n              WHEN CCUP-CHANGES-FAILED\n                   INITIALIZE WS-THIS-PROGCOMMAREA\n                              WS-MISC-STORAGE\n                              CDEMO-ACCT-ID\n                              CDEMO-CARD-NUM\n                   SET CDEMO-PGM-ENTER            TO TRUE\n                   PERFORM 3000-SEND-MAP THRU\n                           3000-SEND-MAP-EXIT\n                   SET CDEMO-PGM-REENTER          TO TRUE\n                   SET CCUP-DETAILS-NOT-FETCHED   TO TRUE\n                   GO TO COMMON-RETURN\n              WHEN OTHER\n                   PERFORM 1000-PROCESS-INPUTS\n                      THRU 1000-PROCESS-INPUTS-EXIT\n                   PERFORM 2000-DECIDE-ACTION\n                      THRU 2000-DECIDE-ACTION-EXIT\n                   PERFORM 3000-SEND-MAP\n                      THRU 3000-SEND-MAP-EXIT\n                   GO TO COMMON-RETURN\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "COMMON-RETURN",
+    "paragraph": "       COMMON-RETURN.\n           MOVE WS-RETURN-MSG     TO CCARD-ERROR-MSG\n           MOVE  CARDDEMO-COMMAREA    TO WS-COMMAREA\n           MOVE  WS-THIS-PROGCOMMAREA TO\n                  WS-COMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:\n                               LENGTH OF WS-THIS-PROGCOMMAREA )\n           EXEC CICS RETURN\n                TRANSID (LIT-THISTRANID)\n                COMMAREA (WS-COMMAREA)\n                LENGTH(LENGTH OF WS-COMMAREA)\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "0000-MAIN-EXIT",
+    "paragraph": "       0000-MAIN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1000-PROCESS-INPUTS",
+    "paragraph": "       1000-PROCESS-INPUTS.\n           PERFORM 1100-RECEIVE-MAP\n              THRU 1100-RECEIVE-MAP-EXIT\n           PERFORM 1200-EDIT-MAP-INPUTS\n              THRU 1200-EDIT-MAP-INPUTS-EXIT\n           MOVE WS-RETURN-MSG  TO CCARD-ERROR-MSG\n           MOVE LIT-THISPGM    TO CCARD-NEXT-PROG\n           MOVE LIT-THISMAPSET TO CCARD-NEXT-MAPSET\n           MOVE LIT-THISMAP    TO CCARD-NEXT-MAP\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1000-PROCESS-INPUTS-EXIT",
+    "paragraph": "       1000-PROCESS-INPUTS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "1100-RECEIVE-MAP",
+    "paragraph": "       1100-RECEIVE-MAP.\n           EXEC CICS RECEIVE MAP(LIT-THISMAP)\n                     MAPSET(LIT-THISMAPSET)\n                     INTO(CCRDUPAI)\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC\n           INITIALIZE CCUP-NEW-DETAILS\n           IF  ACCTSIDI OF CCRDUPAI = '*'\n           OR  ACCTSIDI OF CCRDUPAI = SPACES\n               MOVE LOW-VALUES           TO  CC-ACCT-ID\n                                             CCUP-NEW-ACCTID\n           ELSE\n               MOVE ACCTSIDI OF CCRDUPAI TO  CC-ACCT-ID\n                                             CCUP-NEW-ACCTID\n           END-IF\n           IF  CARDSIDI OF CCRDUPAI = '*'\n           OR  CARDSIDI OF CCRDUPAI = SPACES\n               MOVE LOW-VALUES           TO  CC-CARD-NUM\n                                             CCUP-NEW-CARDID\n           ELSE\n               MOVE CARDSIDI OF CCRDUPAI TO  CC-CARD-NUM\n                                             CCUP-NEW-CARDID\n           END-IF\n           IF  CRDNAMEI OF CCRDUPAI = '*'\n           OR  CRDNAMEI OF CCRDUPAI = SPACES\n               MOVE LOW-VALUES           TO  CCUP-NEW-CRDNAME\n           ELSE\n               MOVE CRDNAMEI OF CCRDUPAI TO  CCUP-NEW-CRDNAME\n           END-IF\n           IF  CRDSTCDI OF CCRDUPAI = '*'\n           OR  CRDSTCDI OF CCRDUPAI = SPACES\n               MOVE LOW-VALUES           TO  CCUP-NEW-CRDSTCD\n           ELSE\n               MOVE CRDSTCDI OF CCRDUPAI TO  CCUP-NEW-CRDSTCD\n           END-IF\n           MOVE EXPDAYI     OF CCRDUPAI  TO  CCUP-NEW-EXPDAY\n           IF  EXPMONI OF CCRDUPAI = '*'\n           OR  EXPMONI OF CCRDUPAI = SPACES\n               MOVE LOW-VALUES           TO  CCUP-NEW-EXPMON\n           ELSE\n               MOVE EXPMONI OF CCRDUPAI  TO  CCUP-NEW-EXPMON\n           END-IF\n           IF  EXPYEARI OF CCRDUPAI = '*'\n           OR  EXPYEARI OF CCRDUPAI = SPACES\n               MOVE LOW-VALUES           TO  CCUP-NEW-EXPYEAR\n           ELSE\n               MOVE EXPYEARI OF CCRDUPAI TO  CCUP-NEW-EXPYEAR\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1100-RECEIVE-MAP-EXIT",
+    "paragraph": "       1100-RECEIVE-MAP-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "1200-EDIT-MAP-INPUTS",
+    "paragraph": "       1200-EDIT-MAP-INPUTS.\n           SET INPUT-OK                  TO TRUE\n           IF  CCUP-DETAILS-NOT-FETCHED\n               PERFORM 1210-EDIT-ACCOUNT\n                  THRU 1210-EDIT-ACCOUNT-EXIT\n               PERFORM 1220-EDIT-CARD\n                  THRU 1220-EDIT-CARD-EXIT\n               MOVE LOW-VALUES                 TO CCUP-NEW-CARDDATA\n               IF  FLG-ACCTFILTER-BLANK\n               AND FLG-CARDFILTER-BLANK\n                   SET NO-SEARCH-CRITERIA-RECEIVED TO TRUE\n               END-IF\n               GO TO 1200-EDIT-MAP-INPUTS-EXIT\n           ELSE\n               CONTINUE\n           END-IF\n           SET FOUND-CARDS-FOR-ACCOUNT TO TRUE\n           SET FLG-ACCTFILTER-ISVALID  TO TRUE\n           SET FLG-CARDFILTER-ISVALID  TO TRUE\n           MOVE CCUP-OLD-ACCTID     TO CDEMO-ACCT-ID\n           MOVE CCUP-OLD-CARDID     TO CDEMO-CARD-NUM\n           MOVE CCUP-OLD-CRDNAME    TO CARD-EMBOSSED-NAME\n           MOVE CCUP-OLD-CRDSTCD    TO CARD-ACTIVE-STATUS\n           MOVE CCUP-OLD-EXPDAY     TO CARD-EXPIRY-DAY\n           MOVE CCUP-OLD-EXPMON     TO CARD-EXPIRY-MONTH\n           MOVE CCUP-OLD-EXPYEAR    TO CARD-EXPIRY-YEAR\n           IF  (FUNCTION UPPER-CASE(CCUP-NEW-CARDDATA) EQUAL\n                FUNCTION UPPER-CASE(CCUP-OLD-CARDDATA))\n               SET NO-CHANGES-DETECTED TO TRUE\n           END-IF\n           IF  NO-CHANGES-DETECTED\n           OR  CCUP-CHANGES-OK-NOT-CONFIRMED\n           OR  CCUP-CHANGES-OKAYED-AND-DONE\n               SET FLG-CARDNAME-ISVALID    TO TRUE\n               SET FLG-CARDSTATUS-ISVALID  TO TRUE\n               SET FLG-CARDEXPMON-ISVALID  TO TRUE\n               SET FLG-CARDEXPYEAR-ISVALID TO TRUE\n               GO TO 1200-EDIT-MAP-INPUTS-EXIT\n           END-IF\n           SET CCUP-CHANGES-NOT-OK    TO TRUE\n           PERFORM 1230-EDIT-NAME\n              THRU 1230-EDIT-NAME-EXIT\n           PERFORM 1240-EDIT-CARDSTATUS\n              THRU 1240-EDIT-CARDSTATUS-EXIT\n           PERFORM 1250-EDIT-EXPIRY-MON\n              THRU 1250-EDIT-EXPIRY-MON-EXIT\n           PERFORM 1260-EDIT-EXPIRY-YEAR\n              THRU 1260-EDIT-EXPIRY-YEAR-EXIT\n           IF INPUT-ERROR\n              CONTINUE\n           ELSE\n              SET CCUP-CHANGES-OK-NOT-CONFIRMED TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1200-EDIT-MAP-INPUTS-EXIT",
+    "paragraph": "       1200-EDIT-MAP-INPUTS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1210-EDIT-ACCOUNT",
+    "paragraph": "       1210-EDIT-ACCOUNT.\n           SET FLG-ACCTFILTER-NOT-OK TO TRUE\n           IF CC-ACCT-ID   EQUAL LOW-VALUES\n           OR CC-ACCT-ID   EQUAL SPACES\n           OR CC-ACCT-ID-N EQUAL ZEROS\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-ACCTFILTER-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET WS-PROMPT-FOR-ACCT TO TRUE\n              END-IF\n              MOVE ZEROES       TO CDEMO-ACCT-ID\n              MOVE LOW-VALUES   TO CCUP-NEW-ACCTID\n              GO TO  1210-EDIT-ACCOUNT-EXIT\n           END-IF\n           IF CC-ACCT-ID  IS NOT NUMERIC\n              SET INPUT-ERROR TO TRUE\n              SET FLG-ACCTFILTER-NOT-OK TO TRUE\n              IF WS-RETURN-MSG-OFF\n                MOVE\n              'ACCOUNT FILTER,IF SUPPLIED MUST BE A 11 DIGIT NUMBER'\n                              TO WS-RETURN-MSG\n              END-IF\n              MOVE ZERO       TO CDEMO-ACCT-ID\n              MOVE LOW-VALUES TO CCUP-NEW-ACCTID\n              GO TO 1210-EDIT-ACCOUNT-EXIT\n           ELSE\n              MOVE CC-ACCT-ID TO CDEMO-ACCT-ID\n                                 CCUP-NEW-ACCTID\n              SET FLG-ACCTFILTER-ISVALID TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1210-EDIT-ACCOUNT-EXIT",
+    "paragraph": "       1210-EDIT-ACCOUNT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1220-EDIT-CARD",
+    "paragraph": "       1220-EDIT-CARD.\n           SET FLG-CARDFILTER-NOT-OK TO TRUE\n           IF CC-CARD-NUM   EQUAL LOW-VALUES\n           OR CC-CARD-NUM   EQUAL SPACES\n           OR CC-CARD-NUM-N EQUAL ZEROS\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-CARDFILTER-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET WS-PROMPT-FOR-CARD TO TRUE\n              END-IF\n              MOVE ZEROES        TO CDEMO-CARD-NUM\n                                   CCUP-NEW-CARDID\n              GO TO  1220-EDIT-CARD-EXIT\n           END-IF\n           IF CC-CARD-NUM  IS NOT NUMERIC\n              SET INPUT-ERROR TO TRUE\n              SET FLG-CARDFILTER-NOT-OK TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 MOVE\n              'CARD ID FILTER,IF SUPPLIED MUST BE A 16 DIGIT NUMBER'\n                                 TO WS-RETURN-MSG\n              END-IF\n              MOVE ZERO          TO CDEMO-CARD-NUM\n              MOVE LOW-VALUES    TO CCUP-NEW-CARDID\n              GO TO 1220-EDIT-CARD-EXIT\n           ELSE\n              MOVE CC-CARD-NUM-N TO CDEMO-CARD-NUM\n              MOVE CC-CARD-NUM   TO CCUP-NEW-CARDID\n              SET FLG-CARDFILTER-ISVALID TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1220-EDIT-CARD-EXIT",
+    "paragraph": "       1220-EDIT-CARD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1230-EDIT-NAME",
+    "paragraph": "       1230-EDIT-NAME.\n           SET FLG-CARDNAME-NOT-OK      TO TRUE\n           IF CCUP-NEW-CRDNAME   EQUAL LOW-VALUES\n           OR CCUP-NEW-CRDNAME   EQUAL SPACES\n           OR CCUP-NEW-CRDNAME   EQUAL ZEROS\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-CARDNAME-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET WS-PROMPT-FOR-NAME TO TRUE\n              END-IF\n              GO TO  1230-EDIT-NAME-EXIT\n           END-IF\n           MOVE CCUP-NEW-CRDNAME        TO CARD-NAME-CHECK\n           INSPECT CARD-NAME-CHECK\n             CONVERTING LIT-ALL-ALPHA-FROM\n                     TO LIT-ALL-SPACES-TO\n           IF FUNCTION LENGTH(FUNCTION TRIM(CARD-NAME-CHECK)) = 0\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-CARDNAME-NOT-OK   TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET WS-NAME-MUST-BE-ALPHA  TO TRUE\n              END-IF\n              GO TO  1230-EDIT-NAME-EXIT\n           END-IF\n           SET FLG-CARDNAME-ISVALID     TO TRUE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1230-EDIT-NAME-EXIT",
+    "paragraph": "       1230-EDIT-NAME-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1240-EDIT-CARDSTATUS",
+    "paragraph": "       1240-EDIT-CARDSTATUS.\n           SET FLG-CARDSTATUS-NOT-OK      TO TRUE\n           IF CCUP-NEW-CRDSTCD   EQUAL LOW-VALUES\n           OR CCUP-NEW-CRDSTCD   EQUAL SPACES\n           OR CCUP-NEW-CRDSTCD   EQUAL ZEROS\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-CARDSTATUS-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET CARD-STATUS-MUST-BE-YES-NO TO TRUE\n              END-IF\n              GO TO  1240-EDIT-CARDSTATUS-EXIT\n           END-IF\n           MOVE CCUP-NEW-CRDSTCD          TO FLG-YES-NO-CHECK\n           IF FLG-YES-NO-VALID\n              SET FLG-CARDSTATUS-ISVALID  TO TRUE\n           ELSE\n              SET INPUT-ERROR             TO TRUE\n              SET FLG-CARDSTATUS-NOT-OK   TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET CARD-STATUS-MUST-BE-YES-NO  TO TRUE\n              END-IF\n              GO TO  1240-EDIT-CARDSTATUS-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1240-EDIT-CARDSTATUS-EXIT",
+    "paragraph": "       1240-EDIT-CARDSTATUS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1250-EDIT-EXPIRY-MON",
+    "paragraph": "       1250-EDIT-EXPIRY-MON.\n           SET FLG-CARDEXPMON-NOT-OK      TO TRUE\n           IF CCUP-NEW-EXPMON   EQUAL LOW-VALUES\n           OR CCUP-NEW-EXPMON   EQUAL SPACES\n           OR CCUP-NEW-EXPMON   EQUAL ZEROS\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-CARDEXPMON-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET CARD-EXPIRY-MONTH-NOT-VALID TO TRUE\n              END-IF\n              GO TO  1250-EDIT-EXPIRY-MON-EXIT\n           END-IF\n           MOVE CCUP-NEW-EXPMON           TO CARD-MONTH-CHECK\n           IF VALID-MONTH\n              SET FLG-CARDEXPMON-ISVALID  TO TRUE\n           ELSE\n              SET INPUT-ERROR             TO TRUE\n              SET FLG-CARDEXPMON-NOT-OK   TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET CARD-EXPIRY-MONTH-NOT-VALID  TO TRUE\n              END-IF\n              GO TO  1250-EDIT-EXPIRY-MON-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1250-EDIT-EXPIRY-MON-EXIT",
+    "paragraph": "       1250-EDIT-EXPIRY-MON-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1260-EDIT-EXPIRY-YEAR",
+    "paragraph": "       1260-EDIT-EXPIRY-YEAR.\n           IF CCUP-NEW-EXPYEAR   EQUAL LOW-VALUES\n           OR CCUP-NEW-EXPYEAR   EQUAL SPACES\n           OR CCUP-NEW-EXPYEAR   EQUAL ZEROS\n              SET INPUT-ERROR           TO TRUE\n              SET FLG-CARDEXPYEAR-BLANK  TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET CARD-EXPIRY-YEAR-NOT-VALID TO TRUE\n              END-IF\n              GO TO  1260-EDIT-EXPIRY-YEAR-EXIT\n           END-IF\n           SET FLG-CARDEXPYEAR-NOT-OK      TO TRUE\n           MOVE CCUP-NEW-EXPYEAR           TO CARD-YEAR-CHECK\n           IF VALID-YEAR\n              SET FLG-CARDEXPYEAR-ISVALID  TO TRUE\n           ELSE\n              SET INPUT-ERROR              TO TRUE\n              SET FLG-CARDEXPYEAR-NOT-OK   TO TRUE\n              IF WS-RETURN-MSG-OFF\n                 SET CARD-EXPIRY-YEAR-NOT-VALID  TO TRUE\n              END-IF\n              GO TO  1260-EDIT-EXPIRY-YEAR-EXIT\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "1260-EDIT-EXPIRY-YEAR-EXIT",
+    "paragraph": "       1260-EDIT-EXPIRY-YEAR-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "2000-DECIDE-ACTION",
+    "paragraph": "       2000-DECIDE-ACTION.\n           EVALUATE TRUE\n              WHEN CCUP-DETAILS-NOT-FETCHED\n              WHEN CCARD-AID-PFK12\n                 IF  FLG-ACCTFILTER-ISVALID\n                 AND FLG-CARDFILTER-ISVALID\n                     PERFORM 9000-READ-DATA\n                        THRU 9000-READ-DATA-EXIT\n                     IF FOUND-CARDS-FOR-ACCOUNT\n                        SET CCUP-SHOW-DETAILS    TO TRUE\n                     END-IF\n                 END-IF\n              WHEN CCUP-SHOW-DETAILS\n                 IF INPUT-ERROR\n                 OR NO-CHANGES-DETECTED\n                    CONTINUE\n                 ELSE\n                    SET CCUP-CHANGES-OK-NOT-CONFIRMED TO TRUE\n                 END-IF\n              WHEN CCUP-CHANGES-NOT-OK\n                  CONTINUE\n              WHEN CCUP-CHANGES-OK-NOT-CONFIRMED\n               AND CCARD-AID-PFK05\n                 PERFORM 9200-WRITE-PROCESSING\n                    THRU 9200-WRITE-PROCESSING-EXIT\n                 EVALUATE TRUE\n                    WHEN COULD-NOT-LOCK-FOR-UPDATE\n                         SET CCUP-CHANGES-OKAYED-LOCK-ERROR TO TRUE\n                    WHEN LOCKED-BUT-UPDATE-FAILED\n                       SET CCUP-CHANGES-OKAYED-BUT-FAILED TO TRUE\n                    WHEN DATA-WAS-CHANGED-BEFORE-UPDATE\n                        SET CCUP-SHOW-DETAILS            TO TRUE\n                    WHEN OTHER\n                       SET CCUP-CHANGES-OKAYED-AND-DONE   TO TRUE\n                 END-EVALUATE\n              WHEN CCUP-CHANGES-OK-NOT-CONFIRMED\n                  CONTINUE\n              WHEN CCUP-CHANGES-OKAYED-AND-DONE\n                  SET CCUP-SHOW-DETAILS TO TRUE\n                  IF CDEMO-FROM-TRANID    EQUAL LOW-VALUES\n                  OR CDEMO-FROM-TRANID    EQUAL SPACES\n                     MOVE ZEROES       TO CDEMO-ACCT-ID\n                                          CDEMO-CARD-NUM\n                     MOVE LOW-VALUES   TO CDEMO-ACCT-STATUS\n                  END-IF\n              WHEN OTHER\n                   MOVE LIT-THISPGM    TO ABEND-CULPRIT\n                   MOVE '0001'         TO ABEND-CODE\n                   MOVE SPACES         TO ABEND-REASON\n                   MOVE 'UNEXPECTED DATA SCENARIO'\n                                       TO ABEND-MSG\n                   PERFORM ABEND-ROUTINE\n                      THRU ABEND-ROUTINE-EXIT\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "2000-DECIDE-ACTION-EXIT",
+    "paragraph": "       2000-DECIDE-ACTION-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3000-SEND-MAP",
+    "paragraph": "       3000-SEND-MAP.\n           PERFORM 3100-SCREEN-INIT\n              THRU 3100-SCREEN-INIT-EXIT\n           PERFORM 3200-SETUP-SCREEN-VARS\n              THRU 3200-SETUP-SCREEN-VARS-EXIT\n           PERFORM 3250-SETUP-INFOMSG\n              THRU 3250-SETUP-INFOMSG-EXIT\n           PERFORM 3300-SETUP-SCREEN-ATTRS\n              THRU 3300-SETUP-SCREEN-ATTRS-EXIT\n           PERFORM 3400-SEND-SCREEN\n              THRU 3400-SEND-SCREEN-EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3000-SEND-MAP-EXIT",
+    "paragraph": "       3000-SEND-MAP-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3100-SCREEN-INIT",
+    "paragraph": "       3100-SCREEN-INIT.\n           MOVE LOW-VALUES TO CCRDUPAO\n           MOVE FUNCTION CURRENT-DATE     TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01              TO TITLE01O OF CCRDUPAO\n           MOVE CCDA-TITLE02              TO TITLE02O OF CCRDUPAO\n           MOVE LIT-THISTRANID            TO TRNNAMEO OF CCRDUPAO\n           MOVE LIT-THISPGM               TO PGMNAMEO OF CCRDUPAO\n           MOVE FUNCTION CURRENT-DATE     TO WS-CURDATE-DATA\n           MOVE WS-CURDATE-MONTH          TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY            TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)      TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY       TO CURDATEO OF CCRDUPAO\n           MOVE WS-CURTIME-HOURS          TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE         TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND         TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS       TO CURTIMEO OF CCRDUPAO\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3100-SCREEN-INIT-EXIT",
+    "paragraph": "       3100-SCREEN-INIT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "3200-SETUP-SCREEN-VARS",
+    "paragraph": "       3200-SETUP-SCREEN-VARS.\n           IF CDEMO-PGM-ENTER\n              CONTINUE\n           ELSE\n              IF CC-ACCT-ID-N = 0\n                 MOVE LOW-VALUES          TO ACCTSIDO OF CCRDUPAO\n              ELSE\n                 MOVE CC-ACCT-ID          TO ACCTSIDO OF CCRDUPAO\n              END-IF\n              IF CC-CARD-NUM-N = 0\n                MOVE LOW-VALUES           TO CARDSIDO OF CCRDUPAO\n              ELSE\n                MOVE CC-CARD-NUM          TO CARDSIDO OF CCRDUPAO\n              END-IF\n              EVALUATE TRUE\n                  WHEN CCUP-DETAILS-NOT-FETCHED\n                       MOVE LOW-VALUES         TO CRDNAMEO OF CCRDUPAO\n                                                  CRDNAMEO OF CCRDUPAO\n                                                  CRDSTCDO OF CCRDUPAO\n                                                  EXPDAYO  OF CCRDUPAO\n                                                  EXPMONO  OF CCRDUPAO\n                                                  EXPYEARO OF CCRDUPAO\n                  WHEN CCUP-SHOW-DETAILS\n                      MOVE CCUP-OLD-CRDNAME    TO CRDNAMEO OF CCRDUPAO\n                      MOVE CCUP-OLD-CRDSTCD    TO CRDSTCDO OF CCRDUPAO\n                      MOVE CCUP-OLD-EXPDAY     TO EXPDAYO  OF CCRDUPAO\n                      MOVE CCUP-OLD-EXPMON     TO EXPMONO  OF CCRDUPAO\n                      MOVE CCUP-OLD-EXPYEAR    TO EXPYEARO OF CCRDUPAO\n                  WHEN CCUP-CHANGES-MADE\n                      MOVE CCUP-NEW-CRDNAME    TO CRDNAMEO OF CCRDUPAO\n                      MOVE CCUP-NEW-CRDSTCD    TO CRDSTCDO OF CCRDUPAO\n                      MOVE CCUP-NEW-EXPMON     TO EXPMONO  OF CCRDUPAO\n                      MOVE CCUP-NEW-EXPYEAR    TO EXPYEARO OF CCRDUPAO\n                      MOVE CCUP-OLD-EXPDAY     TO EXPDAYO  OF CCRDUPAO\n                  WHEN OTHER\n                      MOVE CCUP-OLD-CRDNAME    TO CRDNAMEO OF CCRDUPAO\n                      MOVE CCUP-OLD-CRDSTCD    TO CRDSTCDO OF CCRDUPAO\n                      MOVE CCUP-OLD-EXPDAY     TO EXPDAYO  OF CCRDUPAO\n                      MOVE CCUP-OLD-EXPMON     TO EXPMONO  OF CCRDUPAO\n                      MOVE CCUP-OLD-EXPYEAR    TO EXPYEARO OF CCRDUPAO\n              END-EVALUATE\n            END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3200-SETUP-SCREEN-VARS-EXIT",
+    "paragraph": "       3200-SETUP-SCREEN-VARS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3250-SETUP-INFOMSG",
+    "paragraph": "       3250-SETUP-INFOMSG.\n           EVALUATE TRUE\n               WHEN CDEMO-PGM-ENTER\n                    SET  PROMPT-FOR-SEARCH-KEYS TO TRUE\n               WHEN CCUP-DETAILS-NOT-FETCHED\n                   SET PROMPT-FOR-SEARCH-KEYS      TO TRUE\n               WHEN CCUP-SHOW-DETAILS\n                    SET FOUND-CARDS-FOR-ACCOUNT    TO TRUE\n               WHEN CCUP-CHANGES-NOT-OK\n                    SET PROMPT-FOR-CHANGES         TO TRUE\n               WHEN CCUP-CHANGES-OK-NOT-CONFIRMED\n                    SET PROMPT-FOR-CONFIRMATION    TO TRUE\n               WHEN CCUP-CHANGES-OKAYED-AND-DONE\n                    SET CONFIRM-UPDATE-SUCCESS     TO TRUE\n               WHEN CCUP-CHANGES-OKAYED-LOCK-ERROR\n                    SET INFORM-FAILURE             TO TRUE\n               WHEN CCUP-CHANGES-OKAYED-BUT-FAILED\n                    SET INFORM-FAILURE             TO TRUE\n               WHEN WS-NO-INFO-MESSAGE\n                   SET PROMPT-FOR-SEARCH-KEYS      TO TRUE\n           END-EVALUATE\n           MOVE WS-INFO-MSG                    TO INFOMSGO OF CCRDUPAO\n           MOVE WS-RETURN-MSG                  TO ERRMSGO OF CCRDUPAO\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3250-SETUP-INFOMSG-EXIT",
+    "paragraph": "       3250-SETUP-INFOMSG-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "3300-SETUP-SCREEN-ATTRS",
+    "paragraph": "       3300-SETUP-SCREEN-ATTRS.\n           EVALUATE TRUE\n              WHEN CCUP-DETAILS-NOT-FETCHED\n                   MOVE DFHBMFSE      TO ACCTSIDA OF CCRDUPAI\n                                         CARDSIDA OF CCRDUPAI\n                   MOVE DFHBMPRF      TO CRDNAMEA OF CCRDUPAI\n                                         CRDSTCDA OF CCRDUPAI\n                                         EXPMONA  OF CCRDUPAI\n                                         EXPYEARA OF CCRDUPAI\n              WHEN  CCUP-SHOW-DETAILS\n              WHEN  CCUP-CHANGES-NOT-OK\n                   MOVE DFHBMPRF      TO ACCTSIDA OF CCRDUPAI\n                                         CARDSIDA OF CCRDUPAI\n                   MOVE DFHBMFSE      TO CRDNAMEA OF CCRDUPAI\n                                         CRDSTCDA OF CCRDUPAI\n                                         EXPMONA  OF CCRDUPAI\n                                         EXPYEARA OF CCRDUPAI\n              WHEN CCUP-CHANGES-OK-NOT-CONFIRMED\n              WHEN CCUP-CHANGES-OKAYED-AND-DONE\n                   MOVE DFHBMPRF      TO ACCTSIDA OF CCRDUPAI\n                                         CARDSIDA OF CCRDUPAI\n                                         CRDNAMEA OF CCRDUPAI\n                                         CRDSTCDA OF CCRDUPAI\n                                         EXPMONA  OF CCRDUPAI\n                                         EXPYEARA OF CCRDUPAI\n              WHEN OTHER\n                   MOVE DFHBMFSE      TO ACCTSIDA OF CCRDUPAI\n                                         CARDSIDA OF CCRDUPAI\n                   MOVE DFHBMPRF      TO CRDNAMEA OF CCRDUPAI\n                                         CRDSTCDA OF CCRDUPAI\n                                         EXPMONA  OF CCRDUPAI\n                                         EXPYEARA OF CCRDUPAI\n           END-EVALUATE\n           EVALUATE TRUE\n              WHEN FOUND-CARDS-FOR-ACCOUNT\n              WHEN NO-CHANGES-DETECTED\n                  MOVE -1              TO CRDNAMEL OF CCRDUPAI\n              WHEN FLG-ACCTFILTER-NOT-OK\n              WHEN FLG-ACCTFILTER-BLANK\n                   MOVE -1             TO ACCTSIDL OF CCRDUPAI\n              WHEN FLG-CARDFILTER-NOT-OK\n              WHEN FLG-CARDFILTER-BLANK\n                   MOVE -1             TO CARDSIDL OF CCRDUPAI\n              WHEN FLG-CARDNAME-NOT-OK\n              WHEN FLG-CARDNAME-BLANK\n                  MOVE -1              TO CRDNAMEL OF  CCRDUPAI\n              WHEN FLG-CARDSTATUS-NOT-OK\n              WHEN FLG-CARDSTATUS-BLANK\n                  MOVE -1              TO CRDSTCDL OF  CCRDUPAI\n              WHEN FLG-CARDEXPMON-NOT-OK\n              WHEN FLG-CARDEXPMON-BLANK\n                  MOVE -1              TO EXPMONL  OF  CCRDUPAI\n              WHEN FLG-CARDEXPYEAR-NOT-OK\n              WHEN FLG-CARDEXPYEAR-BLANK\n                  MOVE -1              TO EXPYEARL OF  CCRDUPAI\n              WHEN OTHER\n                  MOVE -1              TO ACCTSIDL OF CCRDUPAI\n           END-EVALUATE\n           IF CDEMO-LAST-MAPSET   EQUAL LIT-CCLISTMAPSET\n              MOVE DFHDFCOL            TO ACCTSIDC OF CCRDUPAO\n              MOVE DFHDFCOL            TO CARDSIDC OF CCRDUPAO\n           END-IF\n           IF FLG-ACCTFILTER-NOT-OK\n              MOVE DFHRED              TO ACCTSIDC OF CCRDUPAO\n           END-IF\n           IF  FLG-ACCTFILTER-BLANK\n           AND CDEMO-PGM-REENTER\n               MOVE '*'                TO ACCTSIDO OF CCRDUPAO\n               MOVE DFHRED             TO ACCTSIDC OF CCRDUPAO\n           END-IF\n           IF FLG-CARDFILTER-NOT-OK\n              MOVE DFHRED              TO CARDSIDC OF CCRDUPAO\n           END-IF\n           IF  FLG-CARDFILTER-BLANK\n           AND CDEMO-PGM-REENTER\n               MOVE '*'                TO CARDSIDO OF CCRDUPAO\n               MOVE DFHRED             TO CARDSIDC OF CCRDUPAO\n           END-IF\n           IF FLG-CARDNAME-NOT-OK\n           AND CCUP-CHANGES-NOT-OK\n              MOVE DFHRED              TO CRDNAMEC OF CCRDUPAO\n           END-IF\n           IF  FLG-CARDNAME-BLANK\n           AND CCUP-CHANGES-NOT-OK\n               MOVE '*'                TO CRDNAMEO OF CCRDUPAO\n               MOVE DFHRED             TO CRDNAMEC OF CCRDUPAO\n           END-IF\n           IF FLG-CARDSTATUS-NOT-OK\n           AND CCUP-CHANGES-NOT-OK\n              MOVE DFHRED              TO CRDSTCDC OF CCRDUPAO\n           END-IF\n           IF  FLG-CARDSTATUS-BLANK\n           AND CCUP-CHANGES-NOT-OK\n               MOVE '*'                TO CRDSTCDO OF CCRDUPAO\n               MOVE DFHRED             TO CRDSTCDC OF CCRDUPAO\n           END-IF\n           MOVE DFHBMDAR               TO EXPDAYC  OF CCRDUPAO\n           IF FLG-CARDEXPMON-NOT-OK\n           AND CCUP-CHANGES-NOT-OK\n              MOVE DFHRED              TO EXPMONC  OF CCRDUPAO\n           END-IF\n           IF  FLG-CARDEXPMON-BLANK\n           AND CCUP-CHANGES-NOT-OK\n               MOVE '*'                TO EXPMONO  OF CCRDUPAO\n               MOVE DFHRED             TO EXPMONC  OF CCRDUPAO\n           END-IF\n           IF  FLG-CARDEXPYEAR-NOT-OK\n           AND CCUP-CHANGES-NOT-OK\n              MOVE DFHRED              TO EXPYEARC OF CCRDUPAO\n           END-IF\n           IF  FLG-CARDEXPYEAR-BLANK\n           AND CCUP-CHANGES-NOT-OK\n               MOVE '*'                TO EXPYEARO OF CCRDUPAO\n               MOVE DFHRED             TO EXPYEARC OF CCRDUPAO\n           END-IF\n           IF  WS-NO-INFO-MESSAGE\n               MOVE DFHBMDAR           TO INFOMSGA OF CCRDUPAI\n           ELSE\n               MOVE DFHBMBRY           TO INFOMSGA OF CCRDUPAI\n           END-IF\n           IF PROMPT-FOR-CONFIRMATION\n              MOVE DFHBMBRY            TO FKEYSCA  OF CCRDUPAI\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3300-SETUP-SCREEN-ATTRS-EXIT",
+    "paragraph": "       3300-SETUP-SCREEN-ATTRS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "3400-SEND-SCREEN",
+    "paragraph": "       3400-SEND-SCREEN.\n           MOVE LIT-THISMAPSET         TO CCARD-NEXT-MAPSET\n           MOVE LIT-THISMAP            TO CCARD-NEXT-MAP\n           EXEC CICS SEND MAP(CCARD-NEXT-MAP)\n                          MAPSET(CCARD-NEXT-MAPSET)\n                          FROM(CCRDUPAO)\n                          CURSOR\n                          ERASE\n                          FREEKB\n                          RESP(WS-RESP-CD)\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "3400-SEND-SCREEN-EXIT",
+    "paragraph": "       3400-SEND-SCREEN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9000-READ-DATA",
+    "paragraph": "       9000-READ-DATA.\n           INITIALIZE CCUP-OLD-DETAILS\n           MOVE CC-ACCT-ID              TO CCUP-OLD-ACCTID\n           MOVE CC-CARD-NUM             TO CCUP-OLD-CARDID\n           PERFORM 9100-GETCARD-BYACCTCARD\n              THRU 9100-GETCARD-BYACCTCARD-EXIT\n           IF FOUND-CARDS-FOR-ACCOUNT\n              MOVE CARD-CVV-CD          TO CCUP-OLD-CVV-CD\n              INSPECT CARD-EMBOSSED-NAME\n              CONVERTING LIT-LOWER\n                      TO LIT-UPPER\n              MOVE CARD-EMBOSSED-NAME   TO CCUP-OLD-CRDNAME\n              MOVE CARD-EXPIRAION-DATE(1:4)\n                                        TO CCUP-OLD-EXPYEAR\n              MOVE CARD-EXPIRAION-DATE(6:2)\n                                        TO CCUP-OLD-EXPMON\n              MOVE CARD-EXPIRAION-DATE(9:2)\n                                        TO CCUP-OLD-EXPDAY\n              MOVE CARD-ACTIVE-STATUS   TO CCUP-OLD-CRDSTCD\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9000-READ-DATA-EXIT",
+    "paragraph": "       9000-READ-DATA-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "9100-GETCARD-BYACCTCARD",
+    "paragraph": "       9100-GETCARD-BYACCTCARD.\n           MOVE CC-CARD-NUM             TO WS-CARD-RID-CARDNUM\n           EXEC CICS READ\n                FILE      (LIT-CARDFILENAME)\n                RIDFLD    (WS-CARD-RID-CARDNUM)\n                KEYLENGTH (LENGTH OF WS-CARD-RID-CARDNUM)\n                INTO      (CARD-RECORD)\n                LENGTH    (LENGTH OF CARD-RECORD)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n                  SET FOUND-CARDS-FOR-ACCOUNT TO TRUE\n               WHEN DFHRESP(NOTFND)\n                  SET INPUT-ERROR                    TO TRUE\n                  SET FLG-ACCTFILTER-NOT-OK          TO TRUE\n                  SET FLG-CARDFILTER-NOT-OK          TO TRUE\n                  IF  WS-RETURN-MSG-OFF\n                     SET DID-NOT-FIND-ACCTCARD-COMBO TO TRUE\n                  END-IF\n               WHEN OTHER\n                  SET INPUT-ERROR                    TO TRUE\n                  IF  WS-RETURN-MSG-OFF\n                      SET FLG-ACCTFILTER-NOT-OK      TO TRUE\n                  END-IF\n                  MOVE 'READ'                        TO ERROR-OPNAME\n                  MOVE LIT-CARDFILENAME              TO ERROR-FILE\n                  MOVE WS-RESP-CD                    TO ERROR-RESP\n                  MOVE WS-REAS-CD                    TO ERROR-RESP2\n                  MOVE WS-FILE-ERROR-MESSAGE         TO WS-RETURN-MSG\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9100-GETCARD-BYACCTCARD-EXIT",
+    "paragraph": "       9100-GETCARD-BYACCTCARD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "9200-WRITE-PROCESSING",
+    "paragraph": "       9200-WRITE-PROCESSING.\n           MOVE CC-CARD-NUM             TO WS-CARD-RID-CARDNUM\n           EXEC CICS READ\n                FILE      (LIT-CARDFILENAME)\n                UPDATE\n                RIDFLD    (WS-CARD-RID-CARDNUM)\n                KEYLENGTH (LENGTH OF WS-CARD-RID-CARDNUM)\n                INTO      (CARD-RECORD)\n                LENGTH    (LENGTH OF CARD-RECORD)\n                RESP      (WS-RESP-CD)\n                RESP2     (WS-REAS-CD)\n           END-EXEC\n           IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)\n              CONTINUE\n           ELSE\n              SET INPUT-ERROR                    TO TRUE\n              IF  WS-RETURN-MSG-OFF\n                  SET COULD-NOT-LOCK-FOR-UPDATE  TO TRUE\n              END-IF\n              GO TO 9200-WRITE-PROCESSING-EXIT\n           END-IF\n           PERFORM 9300-CHECK-CHANGE-IN-REC\n              THRU 9300-CHECK-CHANGE-IN-REC-EXIT\n           IF DATA-WAS-CHANGED-BEFORE-UPDATE\n              GO TO 9200-WRITE-PROCESSING-EXIT\n           END-IF\n           INITIALIZE CARD-UPDATE-RECORD\n           MOVE CCUP-NEW-CARDID             TO CARD-UPDATE-NUM\n           MOVE CC-ACCT-ID-N                TO CARD-UPDATE-ACCT-ID\n           MOVE CCUP-NEW-CVV-CD             TO CARD-CVV-CD-X\n           MOVE CARD-CVV-CD-N               TO CARD-UPDATE-CVV-CD\n           MOVE CCUP-NEW-CRDNAME            TO CARD-UPDATE-EMBOSSED-NAME\n           STRING  CCUP-NEW-EXPYEAR\n                   '-'\n                   CCUP-NEW-EXPMON\n                   '-'\n                   CCUP-NEW-EXPDAY\n                   DELIMITED BY SIZE\n              INTO CARD-UPDATE-EXPIRAION-DATE\n           END-STRING\n           MOVE CCUP-NEW-CRDSTCD            TO CARD-UPDATE-ACTIVE-STATUS\n           EXEC CICS\n                REWRITE FILE(LIT-CARDFILENAME)\n                        FROM(CARD-UPDATE-RECORD)\n                        LENGTH(LENGTH OF CARD-UPDATE-RECORD)\n                        RESP      (WS-RESP-CD)\n                        RESP2     (WS-REAS-CD)\n           END-EXEC.\n           IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)\n             CONTINUE\n           ELSE\n             SET LOCKED-BUT-UPDATE-FAILED    TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9200-WRITE-PROCESSING-EXIT",
+    "paragraph": "       9200-WRITE-PROCESSING-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9300-CHECK-CHANGE-IN-REC",
+    "paragraph": "       9300-CHECK-CHANGE-IN-REC.\n           INSPECT CARD-EMBOSSED-NAME\n           CONVERTING LIT-LOWER\n                   TO LIT-UPPER\n           IF  CARD-CVV-CD              EQUAL  TO CCUP-OLD-CVV-CD\n           AND CARD-EMBOSSED-NAME       EQUAL  TO CCUP-OLD-CRDNAME\n           AND CARD-EXPIRAION-DATE(1:4) EQUAL  TO CCUP-OLD-EXPYEAR\n           AND CARD-EXPIRAION-DATE(6:2) EQUAL  TO CCUP-OLD-EXPMON\n           AND CARD-EXPIRAION-DATE(9:2) EQUAL  TO CCUP-OLD-EXPDAY\n           AND CARD-ACTIVE-STATUS       EQUAL  TO CCUP-OLD-CRDSTCD\n               CONTINUE\n           ELSE\n              SET DATA-WAS-CHANGED-BEFORE-UPDATE TO TRUE\n              MOVE CARD-CVV-CD                 TO CCUP-OLD-CVV-CD\n              MOVE CARD-EMBOSSED-NAME          TO CCUP-OLD-CRDNAME\n              MOVE CARD-EXPIRAION-DATE(1:4)    TO CCUP-OLD-EXPYEAR\n              MOVE CARD-EXPIRAION-DATE(6:2)    TO CCUP-OLD-EXPMON\n              MOVE CARD-EXPIRAION-DATE(9:2)    TO CCUP-OLD-EXPDAY\n              MOVE CARD-ACTIVE-STATUS          TO CCUP-OLD-CRDSTCD\n              GO TO 9200-WRITE-PROCESSING-EXIT\n           END-IF EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "9300-CHECK-CHANGE-IN-REC-EXIT",
+    "paragraph": "       9300-CHECK-CHANGE-IN-REC-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "RULE",
+    "name": "YYYY-STORE-PFKEY",
+    "paragraph": "       YYYY-STORE-PFKEY.\n           EVALUATE TRUE\n             WHEN EIBAID IS EQUAL TO DFHENTER\n               SET CCARD-AID-ENTER TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHCLEAR\n               SET CCARD-AID-CLEAR TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPA1\n               SET CCARD-AID-PA1  TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPA2\n               SET CCARD-AID-PA2  TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF1\n               SET CCARD-AID-PFK01 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF2\n               SET CCARD-AID-PFK02 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF3\n               SET CCARD-AID-PFK03 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF4\n               SET CCARD-AID-PFK04 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF5\n               SET CCARD-AID-PFK05 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF6\n               SET CCARD-AID-PFK06 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF7\n               SET CCARD-AID-PFK07 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF8\n               SET CCARD-AID-PFK08 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF9\n               SET CCARD-AID-PFK09 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF10\n               SET CCARD-AID-PFK10 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF11\n               SET CCARD-AID-PFK11 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF12\n               SET CCARD-AID-PFK12 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF13\n               SET CCARD-AID-PFK01 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF14\n               SET CCARD-AID-PFK02 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF15\n               SET CCARD-AID-PFK03 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF16\n               SET CCARD-AID-PFK04 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF17\n               SET CCARD-AID-PFK05 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF18\n               SET CCARD-AID-PFK06 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF19\n               SET CCARD-AID-PFK07 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF20\n               SET CCARD-AID-PFK08 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF21\n               SET CCARD-AID-PFK09 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF22\n               SET CCARD-AID-PFK10 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF23\n               SET CCARD-AID-PFK11 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF24\n               SET CCARD-AID-PFK12 TO TRUE\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "YYYY-STORE-PFKEY-EXIT",
+    "paragraph": "       YYYY-STORE-PFKEY-EXIT.\n           EXIT\n           .\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "ABEND-ROUTINE",
+    "paragraph": "       ABEND-ROUTINE.\n           IF ABEND-MSG EQUAL LOW-VALUES\n              MOVE 'UNEXPECTED ABEND OCCURRED.' TO ABEND-MSG\n           END-IF\n           MOVE LIT-THISPGM       TO ABEND-CULPRIT\n           EXEC CICS SEND\n                            FROM (ABEND-DATA)\n                            LENGTH(LENGTH OF ABEND-DATA)\n                            NOHANDLE\n                            ERASE\n           END-EXEC\n           EXEC CICS HANDLE ABEND\n                CANCEL\n           END-EXEC\n           EXEC CICS ABEND\n                ABCODE('9999')\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDUPC.COB",
+    "kind": "NON-RULE",
+    "name": "ABEND-ROUTINE-EXIT",
+    "paragraph": "       ABEND-ROUTINE-EXIT.\n           EXIT\n"
+}]

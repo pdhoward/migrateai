@@ -1,0 +1,112 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "RULE",
+    "name": "0000-START",
+    "paragraph": "       0000-START.\n           EVALUATE LK-M03B-DD\n             WHEN 'TRNXFILE'\n               PERFORM 1000-TRNXFILE-PROC THRU 1999-EXIT\n             WHEN 'XREFFILE'\n               PERFORM 2000-XREFFILE-PROC THRU 2999-EXIT\n             WHEN 'CUSTFILE'\n               PERFORM 3000-CUSTFILE-PROC THRU 3999-EXIT\n             WHEN 'ACCTFILE'\n               PERFORM 4000-ACCTFILE-PROC THRU 4999-EXIT\n             WHEN OTHER\n               GO TO 9999-GOBACK.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "9999-GOBACK",
+    "paragraph": "       9999-GOBACK.\n           GOBACK.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "1000-TRNXFILE-PROC",
+    "paragraph": "       1000-TRNXFILE-PROC.\n           IF M03B-OPEN\n               OPEN INPUT TRNX-FILE\n               GO TO 1900-EXIT\n           END-IF.\n           IF M03B-READ\n               READ TRNX-FILE INTO LK-M03B-FLDT\n               END-READ\n               GO TO 1900-EXIT\n           END-IF.\n           IF M03B-CLOSE\n               CLOSE TRNX-FILE\n               GO TO 1900-EXIT\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "1900-EXIT",
+    "paragraph": "       1900-EXIT.\n           MOVE TRNXFILE-STATUS TO LK-M03B-RC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "1999-EXIT",
+    "paragraph": "       1999-EXIT.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "2000-XREFFILE-PROC",
+    "paragraph": "       2000-XREFFILE-PROC.\n           IF M03B-OPEN\n               OPEN INPUT XREF-FILE\n               GO TO 2900-EXIT\n           END-IF.\n           IF M03B-READ\n               READ XREF-FILE INTO LK-M03B-FLDT\n               END-READ\n               GO TO 2900-EXIT\n           END-IF.\n           IF M03B-CLOSE\n               CLOSE XREF-FILE\n               GO TO 2900-EXIT\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "2900-EXIT",
+    "paragraph": "       2900-EXIT.\n           MOVE XREFFILE-STATUS TO LK-M03B-RC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "2999-EXIT",
+    "paragraph": "       2999-EXIT.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "RULE",
+    "name": "3000-CUSTFILE-PROC",
+    "paragraph": "       3000-CUSTFILE-PROC.\n           IF M03B-OPEN\n               OPEN INPUT CUST-FILE\n               GO TO 3900-EXIT\n           END-IF.\n           IF M03B-READ-K\n               MOVE LK-M03B-KEY (1:LK-M03B-KEY-LN) TO FD-CUST-ID\n               READ CUST-FILE INTO LK-M03B-FLDT\n               END-READ\n               GO TO 3900-EXIT\n           END-IF.\n           IF M03B-CLOSE\n               CLOSE CUST-FILE\n               GO TO 3900-EXIT\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "3900-EXIT",
+    "paragraph": "       3900-EXIT.\n           MOVE CUSTFILE-STATUS TO LK-M03B-RC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "3999-EXIT",
+    "paragraph": "       3999-EXIT.\n           EXIT.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "RULE",
+    "name": "4000-ACCTFILE-PROC",
+    "paragraph": "       4000-ACCTFILE-PROC.\n           IF M03B-OPEN\n               OPEN INPUT ACCT-FILE\n               GO TO 4900-EXIT\n           END-IF.\n           IF M03B-READ-K\n               MOVE LK-M03B-KEY (1:LK-M03B-KEY-LN) TO FD-ACCT-ID\n               READ ACCT-FILE INTO LK-M03B-FLDT\n               END-READ\n               GO TO 4900-EXIT\n           END-IF.\n           IF M03B-CLOSE\n               CLOSE ACCT-FILE\n               GO TO 4900-EXIT\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "4900-EXIT",
+    "paragraph": "       4900-EXIT.\n           MOVE ACCTFILE-STATUS TO LK-M03B-RC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "CBSTM03B.COB",
+    "kind": "NON-RULE",
+    "name": "4999-EXIT",
+    "paragraph": "       4999-EXIT.\n"
+}]

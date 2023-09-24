@@ -1,0 +1,328 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "0000-MAIN",
+    "paragraph": "       0000-MAIN.\n           INITIALIZE CC-WORK-AREA\n                      WS-MISC-STORAGE\n                      WS-COMMAREA\n           MOVE LIT-THISTRANID       TO WS-TRANID\n           SET WS-ERROR-MSG-OFF  TO TRUE\n           IF EIBCALEN = 0\n              INITIALIZE CARDDEMO-COMMAREA\n                         WS-THIS-PROGCOMMAREA\n              MOVE LIT-THISTRANID        TO CDEMO-FROM-TRANID\n              MOVE LIT-THISPGM           TO CDEMO-FROM-PROGRAM\n              SET CDEMO-USRTYP-USER      TO TRUE\n              SET CDEMO-PGM-ENTER        TO TRUE\n              MOVE LIT-THISMAP           TO CDEMO-LAST-MAP\n              MOVE LIT-THISMAPSET        TO CDEMO-LAST-MAPSET\n              SET CA-FIRST-PAGE          TO TRUE\n              SET CA-LAST-PAGE-NOT-SHOWN TO TRUE\n           ELSE\n              MOVE DFHCOMMAREA (1:LENGTH OF CARDDEMO-COMMAREA) TO\n                                CARDDEMO-COMMAREA\n              MOVE DFHCOMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:\n                               LENGTH OF WS-THIS-PROGCOMMAREA )TO\n                                WS-THIS-PROGCOMMAREA\n           END-IF\n           IF (CDEMO-PGM-ENTER\n           AND CDEMO-FROM-PROGRAM NOT EQUAL LIT-THISPGM)\n               INITIALIZE WS-THIS-PROGCOMMAREA\n               SET CDEMO-PGM-ENTER      TO TRUE\n               MOVE LIT-THISMAP         TO CDEMO-LAST-MAP\n               SET CA-FIRST-PAGE        TO TRUE\n               SET CA-LAST-PAGE-NOT-SHOWN TO TRUE\n           END-IF\n           PERFORM YYYY-STORE-PFKEY\n              THRU YYYY-STORE-PFKEY-EXIT\n           IF  EIBCALEN > 0\n           AND CDEMO-FROM-PROGRAM  EQUAL LIT-THISPGM\n               PERFORM 2000-RECEIVE-MAP\n               THRU    2000-RECEIVE-MAP-EXIT\n           END-IF\n           SET PFK-INVALID TO TRUE\n           IF CCARD-AID-ENTER OR\n              CCARD-AID-PFK03 OR\n              CCARD-AID-PFK07 OR\n              CCARD-AID-PFK08\n               SET PFK-VALID TO TRUE\n           END-IF\n           IF PFK-INVALID\n              SET CCARD-AID-ENTER TO TRUE\n           END-IF\n           IF  (CCARD-AID-PFK03\n           AND CDEMO-FROM-PROGRAM  EQUAL LIT-THISPGM)\n              MOVE LIT-THISTRANID   TO CDEMO-FROM-TRANID\n              MOVE LIT-THISPGM      TO CDEMO-FROM-PROGRAM\n              SET  CDEMO-USRTYP-USER TO TRUE\n              SET  CDEMO-PGM-ENTER  TO TRUE\n              MOVE LIT-THISMAPSET   TO CDEMO-LAST-MAPSET\n              MOVE LIT-THISMAP      TO CDEMO-LAST-MAP\n              MOVE LIT-MENUPGM      TO CDEMO-TO-PROGRAM\n              MOVE LIT-MENUMAPSET   TO CCARD-NEXT-MAPSET\n              MOVE LIT-THISMAP      TO CCARD-NEXT-MAP\n              SET WS-EXIT-MESSAGE            TO TRUE\n              SET CDEMO-PGM-ENTER   TO TRUE\n              EXEC CICS XCTL\n                        PROGRAM (LIT-MENUPGM)\n                        COMMAREA(CARDDEMO-COMMAREA)\n              END-EXEC\n           END-IF\n           IF CCARD-AID-PFK08\n              CONTINUE\n           ELSE\n              SET CA-LAST-PAGE-NOT-SHOWN   TO TRUE\n           END-IF\n           EVALUATE TRUE\n               WHEN INPUT-ERROR\n                    MOVE WS-ERROR-MSG    TO CCARD-ERROR-MSG\n                    MOVE LIT-THISPGM     TO CDEMO-FROM-PROGRAM\n                    MOVE LIT-THISMAPSET  TO CDEMO-LAST-MAPSET\n                    MOVE LIT-THISMAP     TO CDEMO-LAST-MAP\n                    MOVE LIT-THISPGM     TO CCARD-NEXT-PROG\n                    MOVE LIT-THISMAPSET  TO CCARD-NEXT-MAPSET\n                    MOVE LIT-THISMAP     TO CCARD-NEXT-MAP\n                    IF  NOT FLG-ACCTFILTER-NOT-OK\n                    AND NOT FLG-CARDFILTER-NOT-OK\n                       PERFORM 9000-READ-FORWARD\n                          THRU 9000-READ-FORWARD-EXIT\n                    END-IF\n                    PERFORM 1000-SEND-MAP\n                       THRU 1000-SEND-MAP\n                    GO TO COMMON-RETURN\n               WHEN CCARD-AID-PFK07\n                    AND CA-FIRST-PAGE\n               WHEN CCARD-AID-PFK07\n                    AND CA-FIRST-PAGE\n                    MOVE WS-CA-FIRST-CARD-NUM\n                                  TO WS-CARD-RID-CARDNUM\n                    PERFORM 9000-READ-FORWARD\n                       THRU 9000-READ-FORWARD-EXIT\n                    PERFORM 1000-SEND-MAP\n                       THRU 1000-SEND-MAP\n                    GO TO COMMON-RETURN\n               WHEN CCARD-AID-PFK03\n               WHEN CDEMO-PGM-REENTER AND\n                    CDEMO-FROM-PROGRAM NOT EQUAL LIT-THISPGM\n                    INITIALIZE CARDDEMO-COMMAREA\n                               WS-THIS-PROGCOMMAREA\n                    MOVE LIT-THISTRANID      TO CDEMO-FROM-TRANID\n                    MOVE LIT-THISPGM         TO CDEMO-FROM-PROGRAM\n                    SET CDEMO-USRTYP-USER    TO TRUE\n                    SET CDEMO-PGM-ENTER      TO TRUE\n                    MOVE LIT-THISMAP         TO CDEMO-LAST-MAP\n                    MOVE LIT-THISMAPSET      TO CDEMO-LAST-MAPSET\n                    SET CA-FIRST-PAGE        TO TRUE\n                    SET CA-LAST-PAGE-NOT-SHOWN TO TRUE\n                    MOVE WS-CA-FIRST-CARD-NUM\n                                  TO WS-CARD-RID-CARDNUM\n                    PERFORM 9000-READ-FORWARD\n                       THRU 9000-READ-FORWARD-EXIT\n                    PERFORM 1000-SEND-MAP\n                       THRU 1000-SEND-MAP\n                    GO TO COMMON-RETURN\n               WHEN CCARD-AID-PFK08\n                    AND CA-NEXT-PAGE-EXISTS\n                    MOVE WS-CA-LAST-CARD-NUM\n                                  TO WS-CARD-RID-CARDNUM\n                    ADD   +1       TO WS-CA-SCREEN-NUM\n                    PERFORM 9000-READ-FORWARD\n                       THRU 9000-READ-FORWARD-EXIT\n                    PERFORM 1000-SEND-MAP\n                       THRU 1000-SEND-MAP-EXIT\n                    GO TO COMMON-RETURN\n               WHEN CCARD-AID-PFK07\n                    AND NOT CA-FIRST-PAGE\n                    MOVE WS-CA-FIRST-CARD-NUM\n                                  TO WS-CARD-RID-CARDNUM\n                    SUBTRACT 1    FROM WS-CA-SCREEN-NUM\n                    PERFORM 9100-READ-BACKWARDS\n                       THRU 9100-READ-BACKWARDS-EXIT\n                    PERFORM 1000-SEND-MAP\n                       THRU 1000-SEND-MAP-EXIT\n                    GO TO COMMON-RETURN\n               WHEN CCARD-AID-ENTER\n                AND VIEW-REQUESTED-ON(I-SELECTED)\n                AND CDEMO-FROM-PROGRAM  EQUAL LIT-THISPGM\n                   MOVE LIT-THISTRANID    TO CDEMO-FROM-TRANID\n                   MOVE LIT-THISPGM       TO CDEMO-FROM-PROGRAM\n                   SET  CDEMO-USRTYP-USER TO TRUE\n                   SET  CDEMO-PGM-ENTER   TO TRUE\n                   MOVE LIT-THISMAPSET    TO CDEMO-LAST-MAPSET\n                   MOVE LIT-THISMAP       TO CDEMO-LAST-MAP\n                   MOVE LIT-CARDDTLPGM    TO CCARD-NEXT-PROG\n                   MOVE LIT-CARDDTLMAPSET TO CCARD-NEXT-MAPSET\n                   MOVE LIT-CARDDTLMAP    TO CCARD-NEXT-MAP\n                   MOVE WS-ROW-ACCTNO (I-SELECTED)\n                                          TO CDEMO-ACCT-ID\n                   MOVE WS-ROW-CARD-NUM (I-SELECTED)\n                                          TO CDEMO-CARD-NUM\n                   EXEC CICS XCTL\n                        PROGRAM (CCARD-NEXT-PROG)\n                        COMMAREA(CARDDEMO-COMMAREA)\n                   END-EXEC\n               WHEN CCARD-AID-ENTER\n                AND UPDATE-REQUESTED-ON(I-SELECTED)\n                AND CDEMO-FROM-PROGRAM  EQUAL LIT-THISPGM\n                   MOVE LIT-THISTRANID    TO CDEMO-FROM-TRANID\n                   MOVE LIT-THISPGM       TO CDEMO-FROM-PROGRAM\n                   SET  CDEMO-USRTYP-USER TO TRUE\n                   SET  CDEMO-PGM-ENTER   TO TRUE\n                   MOVE LIT-THISMAPSET    TO CDEMO-LAST-MAPSET\n                   MOVE LIT-THISMAP       TO CDEMO-LAST-MAP\n                   MOVE LIT-CARDUPDPGM    TO CCARD-NEXT-PROG\n                   MOVE LIT-CARDUPDMAPSET TO CCARD-NEXT-MAPSET\n                   MOVE LIT-CARDUPDMAP    TO CCARD-NEXT-MAP\n                   MOVE WS-ROW-ACCTNO (I-SELECTED)\n                                          TO CDEMO-ACCT-ID\n                   MOVE WS-ROW-CARD-NUM (I-SELECTED)\n                                          TO CDEMO-CARD-NUM\n                   EXEC CICS XCTL\n                        PROGRAM (CCARD-NEXT-PROG)\n                        COMMAREA(CARDDEMO-COMMAREA)\n                   END-EXEC\n               WHEN OTHER\n                    MOVE WS-CA-FIRST-CARD-NUM\n                                  TO WS-CARD-RID-CARDNUM\n                    PERFORM 9000-READ-FORWARD\n                       THRU 9000-READ-FORWARD-EXIT\n                    PERFORM 1000-SEND-MAP\n                       THRU 1000-SEND-MAP\n                    GO TO COMMON-RETURN\n           END-EVALUATE\n           IF INPUT-ERROR\n              MOVE WS-ERROR-MSG   TO CCARD-ERROR-MSG\n              MOVE LIT-THISPGM     TO CDEMO-FROM-PROGRAM\n              MOVE LIT-THISMAPSET  TO CDEMO-LAST-MAPSET\n              MOVE LIT-THISMAP     TO CDEMO-LAST-MAP\n              MOVE LIT-THISPGM     TO CCARD-NEXT-PROG\n              MOVE LIT-THISMAPSET  TO CCARD-NEXT-MAPSET\n              MOVE LIT-THISMAP     TO CCARD-NEXT-MAP\n              GO TO COMMON-RETURN\n           END-IF\n           MOVE LIT-THISPGM        TO CCARD-NEXT-PROG\n           GO TO COMMON-RETURN\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "COMMON-RETURN",
+    "paragraph": "       COMMON-RETURN.\n           MOVE  LIT-THISTRANID TO CDEMO-FROM-TRANID\n           MOVE  LIT-THISPGM     TO CDEMO-FROM-PROGRAM\n           MOVE  LIT-THISMAPSET  TO CDEMO-LAST-MAPSET\n           MOVE  LIT-THISMAP     TO CDEMO-LAST-MAP\n           MOVE  CARDDEMO-COMMAREA    TO WS-COMMAREA\n           MOVE  WS-THIS-PROGCOMMAREA TO\n                  WS-COMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:\n                               LENGTH OF WS-THIS-PROGCOMMAREA )\n           EXEC CICS RETURN\n                TRANSID (LIT-THISTRANID)\n                COMMAREA (WS-COMMAREA)\n                LENGTH(LENGTH OF WS-COMMAREA)\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "0000-MAIN-EXIT",
+    "paragraph": "       0000-MAIN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1000-SEND-MAP",
+    "paragraph": "       1000-SEND-MAP.\n           PERFORM 1100-SCREEN-INIT\n              THRU 1100-SCREEN-INIT-EXIT\n           PERFORM 1200-SCREEN-ARRAY-INIT\n              THRU 1200-SCREEN-ARRAY-INIT-EXIT\n           PERFORM 1250-SETUP-ARRAY-ATTRIBS\n              THRU 1250-SETUP-ARRAY-ATTRIBS-EXIT\n           PERFORM 1300-SETUP-SCREEN-ATTRS\n              THRU 1300-SETUP-SCREEN-ATTRS-EXIT\n           PERFORM 1400-SETUP-MESSAGE\n              THRU 1400-SETUP-MESSAGE-EXIT\n           PERFORM 1500-SEND-SCREEN\n              THRU 1500-SEND-SCREEN-EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1000-SEND-MAP-EXIT",
+    "paragraph": "       1000-SEND-MAP-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "1100-SCREEN-INIT",
+    "paragraph": "       1100-SCREEN-INIT.\n           MOVE LOW-VALUES             TO CCRDLIAO\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01           TO TITLE01O OF CCRDLIAO\n           MOVE CCDA-TITLE02           TO TITLE02O OF CCRDLIAO\n           MOVE LIT-THISTRANID         TO TRNNAMEO OF CCRDLIAO\n           MOVE LIT-THISPGM            TO PGMNAMEO OF CCRDLIAO\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE WS-CURDATE-MONTH       TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY         TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)   TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY    TO CURDATEO OF CCRDLIAO\n           MOVE WS-CURTIME-HOURS       TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE      TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND      TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS    TO CURTIMEO OF CCRDLIAO\n           MOVE WS-CA-SCREEN-NUM       TO PAGENOO  OF CCRDLIAO\n           SET WS-NO-INFO-MESSAGE      TO TRUE\n           MOVE WS-INFO-MSG            TO INFOMSGO OF CCRDLIAO\n           MOVE DFHBMDAR               TO INFOMSGC OF CCRDLIAO\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1100-SCREEN-INIT-EXIT",
+    "paragraph": "       1100-SCREEN-INIT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "1200-SCREEN-ARRAY-INIT",
+    "paragraph": "       1200-SCREEN-ARRAY-INIT.\n           IF   WS-EACH-CARD(1)            EQUAL LOW-VALUES\n              CONTINUE\n           ELSE\n              MOVE WS-EDIT-SELECT(1)       TO CRDSEL1O OF CCRDLIAO\n              MOVE WS-ROW-ACCTNO(1)        TO ACCTNO1O OF CCRDLIAO\n              MOVE WS-ROW-CARD-NUM(1)      TO CRDNUM1O OF CCRDLIAO\n              MOVE WS-ROW-CARD-STATUS(1)   TO CRDSTS1O OF CCRDLIAO\n           END-IF\n           IF   WS-EACH-CARD(2)        EQUAL LOW-VALUES\n              CONTINUE\n           ELSE\n              MOVE WS-EDIT-SELECT(2)       TO CRDSEL2O OF CCRDLIAO\n              MOVE WS-ROW-ACCTNO(2)        TO ACCTNO2O OF CCRDLIAO\n              MOVE WS-ROW-CARD-NUM(2)      TO CRDNUM2O OF CCRDLIAO\n              MOVE WS-ROW-CARD-STATUS(2)   TO CRDSTS2O OF CCRDLIAO\n           END-IF\n           IF   WS-EACH-CARD(3)        EQUAL LOW-VALUES\n              CONTINUE\n           ELSE\n              MOVE WS-EDIT-SELECT(3)       TO CRDSEL3O OF CCRDLIAO\n              MOVE WS-ROW-ACCTNO(3)        TO ACCTNO3O OF CCRDLIAO\n              MOVE WS-ROW-CARD-NUM(3)      TO CRDNUM3O OF CCRDLIAO\n              MOVE WS-ROW-CARD-STATUS(3)   TO CRDSTS3O OF CCRDLIAO\n           END-IF\n           IF   WS-EACH-CARD(4)        EQUAL LOW-VALUES\n              CONTINUE\n           ELSE\n              MOVE WS-EDIT-SELECT(4)       TO CRDSEL4O OF CCRDLIAO\n              MOVE WS-ROW-ACCTNO(4)        TO ACCTNO4O OF CCRDLIAO\n              MOVE WS-ROW-CARD-NUM(4)      TO CRDNUM4O OF CCRDLIAO\n              MOVE WS-ROW-CARD-STATUS(4)   TO CRDSTS4O OF CCRDLIAO\n           END-IF\n           IF   WS-EACH-CARD(5)        EQUAL LOW-VALUES\n              CONTINUE\n           ELSE\n              MOVE WS-EDIT-SELECT(5)       TO CRDSEL5O OF CCRDLIAO\n              MOVE WS-ROW-ACCTNO(5)        TO ACCTNO5O OF CCRDLIAO\n              MOVE WS-ROW-CARD-NUM(5)      TO CRDNUM5O OF CCRDLIAO\n              MOVE WS-ROW-CARD-STATUS(5)   TO CRDSTS5O OF CCRDLIAO\n           END-IF\n           IF   WS-EACH-CARD(6)        EQUAL LOW-VALUES\n              CONTINUE\n           ELSE\n              MOVE WS-EDIT-SELECT(6)       TO CRDSEL6O OF CCRDLIAO\n              MOVE WS-ROW-ACCTNO(6)        TO ACCTNO6O OF CCRDLIAO\n              MOVE WS-ROW-CARD-NUM(6)      TO CRDNUM6O OF CCRDLIAO\n              MOVE WS-ROW-CARD-STATUS(6)   TO CRDSTS6O OF CCRDLIAO\n           END-IF\n           IF   WS-EACH-CARD(7)        EQUAL LOW-VALUES\n              CONTINUE\n           ELSE\n              MOVE WS-EDIT-SELECT(7)       TO CRDSEL7O OF CCRDLIAO\n              MOVE WS-ROW-ACCTNO(7)        TO ACCTNO7O OF CCRDLIAO\n              MOVE WS-ROW-CARD-NUM(7)      TO CRDNUM7O OF CCRDLIAO\n              MOVE WS-ROW-CARD-STATUS(7)   TO CRDSTS7O OF CCRDLIAO\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1200-SCREEN-ARRAY-INIT-EXIT",
+    "paragraph": "       1200-SCREEN-ARRAY-INIT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "1250-SETUP-ARRAY-ATTRIBS",
+    "paragraph": "       1250-SETUP-ARRAY-ATTRIBS.\n           IF   WS-EACH-CARD(1)            EQUAL LOW-VALUES\n           OR   FLG-PROTECT-SELECT-ROWS-YES\n              MOVE DFHBMPRF                TO CRDSEL1A OF CCRDLIAI\n           ELSE\n              IF WS-ROW-CRDSELECT-ERROR(1) = '1'\n                 MOVE DFHRED               TO CRDSEL1C OF CCRDLIAO\n                 IF WS-EDIT-SELECT(1) = SPACE OR LOW-VALUES\n                    MOVE '*'               TO CRDSEL1O OF CCRDLIAO\n                 END-IF\n              END-IF\n              MOVE DFHBMFSE                TO CRDSEL1A OF CCRDLIAI\n           END-IF\n           IF   WS-EACH-CARD(2)            EQUAL LOW-VALUES\n           OR   FLG-PROTECT-SELECT-ROWS-YES\n              MOVE DFHBMPRO                TO CRDSEL2A OF CCRDLIAI\n           ELSE\n              IF WS-ROW-CRDSELECT-ERROR(2) = '1'\n                 MOVE DFHRED               TO CRDSEL2C OF CCRDLIAO\n                 MOVE -1                   TO CRDSEL2L OF CCRDLIAI\n              END-IF\n              MOVE DFHBMFSE                TO CRDSEL2A OF CCRDLIAI\n           END-IF\n           IF   WS-EACH-CARD(3)            EQUAL LOW-VALUES\n           OR   FLG-PROTECT-SELECT-ROWS-YES\n              MOVE DFHBMPRO                TO CRDSEL3A OF CCRDLIAI\n           ELSE\n              IF WS-ROW-CRDSELECT-ERROR(3) = '1'\n                 MOVE DFHRED               TO CRDSEL3C OF CCRDLIAO\n                 MOVE -1                   TO CRDSEL3L OF CCRDLIAI\n              END-IF\n              MOVE DFHBMFSE                TO CRDSEL3A OF CCRDLIAI\n           END-IF\n           IF   WS-EACH-CARD(4)            EQUAL LOW-VALUES\n           OR   FLG-PROTECT-SELECT-ROWS-YES\n              MOVE DFHBMPRO                TO CRDSEL4A OF CCRDLIAI\n              I\n           ELSE\n              IF WS-ROW-CRDSELECT-ERROR(4) = '1'\n                 MOVE DFHRED               TO CRDSEL4C OF CCRDLIAO\n                 MOVE -1                   TO CRDSEL4L OF CCRDLIAI\n              END-IF\n              MOVE DFHBMFSE                TO CRDSEL4A OF CCRDLIAI\n           END-IF\n           IF   WS-EACH-CARD(5)            EQUAL LOW-VALUES\n           OR   FLG-PROTECT-SELECT-ROWS-YES\n              MOVE DFHBMPRO                TO CRDSEL5A OF CCRDLIAI\n           ELSE\n              IF WS-ROW-CRDSELECT-ERROR(5) = '1'\n                 MOVE DFHRED               TO CRDSEL5C OF CCRDLIAO\n                 MOVE -1                   TO CRDSEL5L OF CCRDLIAI\n              END-IF\n              MOVE DFHBMFSE                TO CRDSEL5A OF CCRDLIAI\n           END-IF\n           IF   WS-EACH-CARD(6)            EQUAL LOW-VALUES\n           OR   FLG-PROTECT-SELECT-ROWS-YES\n              MOVE DFHBMPRO                TO CRDSEL6A OF CCRDLIAI\n           ELSE\n              IF WS-ROW-CRDSELECT-ERROR(6) = '1'\n                 MOVE DFHRED               TO CRDSEL6C OF CCRDLIAO\n                 MOVE -1                   TO CRDSEL6L OF CCRDLIAI\n              END-IF\n              MOVE DFHBMFSE                TO CRDSEL6A OF CCRDLIAI\n           END-IF\n           IF   WS-EACH-CARD(7)            EQUAL LOW-VALUES\n           OR   FLG-PROTECT-SELECT-ROWS-YES\n              MOVE DFHBMPRO                TO CRDSEL7A OF CCRDLIAI\n           ELSE\n              IF WS-ROW-CRDSELECT-ERROR(7) = '1'\n                 MOVE DFHRED               TO CRDSEL7C OF CCRDLIAO\n                 MOVE -1                   TO CRDSEL7L OF CCRDLIAI\n              END-IF\n              MOVE DFHBMFSE                TO CRDSEL7A OF CCRDLIAI\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1250-SETUP-ARRAY-ATTRIBS-EXIT",
+    "paragraph": "       1250-SETUP-ARRAY-ATTRIBS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "1300-SETUP-SCREEN-ATTRS",
+    "paragraph": "       1300-SETUP-SCREEN-ATTRS.\n           IF EIBCALEN = 0\n           OR (CDEMO-PGM-ENTER\n           AND CDEMO-FROM-PROGRAM = LIT-MENUPGM)\n              CONTINUE\n           ELSE\n              EVALUATE TRUE\n                  WHEN FLG-ACCTFILTER-ISVALID\n                  WHEN FLG-ACCTFILTER-NOT-OK\n                     MOVE CC-ACCT-ID   TO ACCTSIDO OF CCRDLIAO\n                     MOVE DFHBMFSE     TO ACCTSIDA OF CCRDLIAI\n                  WHEN CDEMO-ACCT-ID = 0\n                     MOVE LOW-VALUES   TO ACCTSIDO OF CCRDLIAO\n                  WHEN OTHER\n                    MOVE CDEMO-ACCT-ID TO ACCTSIDO OF CCRDLIAO\n                    MOVE DFHBMFSE      TO ACCTSIDA OF CCRDLIAI\n              END-EVALUATE\n              EVALUATE TRUE\n                  WHEN FLG-CARDFILTER-ISVALID\n                  WHEN FLG-CARDFILTER-NOT-OK\n                     MOVE CC-CARD-NUM  TO CARDSIDO OF CCRDLIAO\n                     MOVE DFHBMFSE     TO CARDSIDA OF CCRDLIAI\n                  WHEN CDEMO-CARD-NUM = 0\n                     MOVE LOW-VALUES   TO CARDSIDO OF CCRDLIAO\n                  WHEN OTHER\n                    MOVE CDEMO-CARD-NUM\n                                       TO CARDSIDO OF CCRDLIAO\n                    MOVE DFHBMFSE      TO CARDSIDA OF CCRDLIAI\n              END-EVALUATE\n           END-IF\n           IF FLG-ACCTFILTER-NOT-OK\n              MOVE  DFHRED             TO ACCTSIDC OF CCRDLIAO\n              MOVE  -1                 TO ACCTSIDL OF CCRDLIAI\n           END-IF\n           IF FLG-CARDFILTER-NOT-OK\n              MOVE  DFHRED             TO CARDSIDC OF CCRDLIAO\n              MOVE  -1                 TO CARDSIDL OF CCRDLIAI\n           END-IF\n           IF INPUT-OK\n             MOVE   -1                 TO ACCTSIDL OF CCRDLIAI\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1300-SETUP-SCREEN-ATTRS-EXIT",
+    "paragraph": "       1300-SETUP-SCREEN-ATTRS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "1400-SETUP-MESSAGE",
+    "paragraph": "       1400-SETUP-MESSAGE.\n           EVALUATE TRUE\n                WHEN FLG-ACCTFILTER-NOT-OK\n                WHEN FLG-CARDFILTER-NOT-OK\n                  CONTINUE\n                WHEN CCARD-AID-PFK07\n                    AND CA-FIRST-PAGE\n                  MOVE 'NO PREVIOUS PAGES TO DISPLAY'\n                  TO WS-ERROR-MSG\n                WHEN CCARD-AID-PFK08\n                 AND CA-NEXT-PAGE-NOT-EXISTS\n                 AND CA-LAST-PAGE-SHOWN\n                  MOVE 'NO MORE PAGES TO DISPLAY'\n                  TO WS-ERROR-MSG\n                WHEN CCARD-AID-PFK08\n                 AND CA-NEXT-PAGE-NOT-EXISTS\n                  SET WS-INFORM-REC-ACTIONS TO TRUE\n                  IF  CA-LAST-PAGE-NOT-SHOWN\n                  AND CA-NEXT-PAGE-NOT-EXISTS\n                      SET CA-LAST-PAGE-SHOWN TO TRUE\n                  END-IF\n                WHEN WS-NO-INFO-MESSAGE\n                WHEN CA-NEXT-PAGE-EXISTS\n                  SET WS-INFORM-REC-ACTIONS TO TRUE\n                WHEN OTHER\n                   SET WS-NO-INFO-MESSAGE TO TRUE\n           END-EVALUATE\n           MOVE WS-ERROR-MSG          TO ERRMSGO OF CCRDLIAO\n           IF  NOT WS-NO-INFO-MESSAGE\n           AND NOT WS-NO-RECORDS-FOUND\n              MOVE WS-INFO-MSG        TO INFOMSGO OF CCRDLIAO\n              MOVE DFHNEUTR           TO INFOMSGC OF CCRDLIAO\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1400-SETUP-MESSAGE-EXIT",
+    "paragraph": "       1400-SETUP-MESSAGE-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "1500-SEND-SCREEN",
+    "paragraph": "       1500-SEND-SCREEN.\n           EXEC CICS SEND MAP(LIT-THISMAP)\n                          MAPSET(LIT-THISMAPSET)\n                          FROM(CCRDLIAO)\n                          CURSOR\n                          ERASE\n                          RESP(WS-RESP-CD)\n                          FREEKB\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "1500-SEND-SCREEN-EXIT",
+    "paragraph": "       1500-SEND-SCREEN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2000-RECEIVE-MAP",
+    "paragraph": "       2000-RECEIVE-MAP.\n           PERFORM 2100-RECEIVE-SCREEN\n              THRU 2100-RECEIVE-SCREEN-EXIT\n           PERFORM 2200-EDIT-INPUTS\n            THRU   2200-EDIT-INPUTS-EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2000-RECEIVE-MAP-EXIT",
+    "paragraph": "       2000-RECEIVE-MAP-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "2100-RECEIVE-SCREEN",
+    "paragraph": "       2100-RECEIVE-SCREEN.\n           EXEC CICS RECEIVE MAP(LIT-THISMAP)\n                          MAPSET(LIT-THISMAPSET)\n                          INTO(CCRDLIAI)\n                          RESP(WS-RESP-CD)\n           END-EXEC\n           MOVE ACCTSIDI OF CCRDLIAI  TO CC-ACCT-ID\n           MOVE CARDSIDI OF CCRDLIAI  TO CC-CARD-NUM\n           MOVE CRDSEL1I OF CCRDLIAI  TO WS-EDIT-SELECT(1)\n           MOVE CRDSEL2I OF CCRDLIAI  TO WS-EDIT-SELECT(2)\n           MOVE CRDSEL3I OF CCRDLIAI  TO WS-EDIT-SELECT(3)\n           MOVE CRDSEL4I OF CCRDLIAI  TO WS-EDIT-SELECT(4)\n           MOVE CRDSEL5I OF CCRDLIAI  TO WS-EDIT-SELECT(5)\n           MOVE CRDSEL6I OF CCRDLIAI  TO WS-EDIT-SELECT(6)\n           MOVE CRDSEL7I OF CCRDLIAI  TO WS-EDIT-SELECT(7)\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2100-RECEIVE-SCREEN-EXIT",
+    "paragraph": "       2100-RECEIVE-SCREEN-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2200-EDIT-INPUTS",
+    "paragraph": "       2200-EDIT-INPUTS.\n           SET INPUT-OK                   TO TRUE\n           SET FLG-PROTECT-SELECT-ROWS-NO TO TRUE\n           PERFORM 2210-EDIT-ACCOUNT\n              THRU 2210-EDIT-ACCOUNT-EXIT\n           PERFORM 2220-EDIT-CARD\n              THRU 2220-EDIT-CARD-EXIT\n           PERFORM 2250-EDIT-ARRAY\n              THRU 2250-EDIT-ARRAY-EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2200-EDIT-INPUTS-EXIT",
+    "paragraph": "       2200-EDIT-INPUTS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2210-EDIT-ACCOUNT",
+    "paragraph": "       2210-EDIT-ACCOUNT.\n           SET FLG-ACCTFILTER-BLANK TO TRUE\n           IF CC-ACCT-ID   EQUAL LOW-VALUES\n           OR CC-ACCT-ID   EQUAL SPACES\n           OR CC-ACCT-ID-N EQUAL ZEROS\n              SET FLG-ACCTFILTER-BLANK  TO TRUE\n              MOVE ZEROES       TO CDEMO-ACCT-ID\n              GO TO  2210-EDIT-ACCOUNT-EXIT\n           END-IF\n           IF CC-ACCT-ID  IS NOT NUMERIC\n              SET INPUT-ERROR TO TRUE\n              SET FLG-ACCTFILTER-NOT-OK TO TRUE\n              SET FLG-PROTECT-SELECT-ROWS-YES TO TRUE\n              MOVE\n              'ACCOUNT FILTER,IF SUPPLIED MUST BE A 11 DIGIT NUMBER'\n                              TO WS-ERROR-MSG\n              MOVE ZERO       TO CDEMO-ACCT-ID\n              GO TO 2210-EDIT-ACCOUNT-EXIT\n           ELSE\n              MOVE CC-ACCT-ID TO CDEMO-ACCT-ID\n              SET FLG-ACCTFILTER-ISVALID TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2210-EDIT-ACCOUNT-EXIT",
+    "paragraph": "       2210-EDIT-ACCOUNT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2220-EDIT-CARD",
+    "paragraph": "       2220-EDIT-CARD.\n           SET FLG-CARDFILTER-BLANK TO TRUE\n           IF CC-CARD-NUM   EQUAL LOW-VALUES\n           OR CC-CARD-NUM   EQUAL SPACES\n           OR CC-CARD-NUM-N EQUAL ZEROS\n              SET FLG-CARDFILTER-BLANK  TO TRUE\n              MOVE ZEROES       TO CDEMO-CARD-NUM\n              GO TO  2220-EDIT-CARD-EXIT\n           END-IF\n           IF CC-CARD-NUM  IS NOT NUMERIC\n              SET INPUT-ERROR TO TRUE\n              SET FLG-CARDFILTER-NOT-OK TO TRUE\n              SET FLG-PROTECT-SELECT-ROWS-YES TO TRUE\n              IF WS-ERROR-MSG-OFF\n                 MOVE\n              'CARD ID FILTER,IF SUPPLIED MUST BE A 16 DIGIT NUMBER'\n                              TO WS-ERROR-MSG\n              END-IF\n              MOVE ZERO       TO CDEMO-CARD-NUM\n              GO TO 2220-EDIT-CARD-EXIT\n           ELSE\n              MOVE CC-CARD-NUM-N TO CDEMO-CARD-NUM\n              SET FLG-CARDFILTER-ISVALID TO TRUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2220-EDIT-CARD-EXIT",
+    "paragraph": "       2220-EDIT-CARD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2250-EDIT-ARRAY",
+    "paragraph": "       2250-EDIT-ARRAY.\n           IF INPUT-ERROR\n              GO TO 2250-EDIT-ARRAY-EXIT\n           END-IF\n           INSPECT  WS-EDIT-SELECT-FLAGS\n           TALLYING I\n           FOR ALL 'S'\n               ALL 'U'\n           IF I > +1\n               SET INPUT-ERROR      TO TRUE\n               SET WS-MORE-THAN-1-ACTION TO TRUE\n               MOVE WS-EDIT-SELECT-FLAGS\n                                   TO WS-EDIT-SELECT-ERROR-FLAGS\n               INSPECT WS-EDIT-SELECT-ERROR-FLAGS\n                 REPLACING ALL 'S' BY '1'\n                           ALL 'U' BY '1'\n                 CHARACTERS        BY '0'\n           END-IF\n           MOVE ZERO TO I-SELECTED\n           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 7\n               EVALUATE TRUE\n                 WHEN SELECT-OK(I)\n                   MOVE I TO I-SELECTED\n                   IF WS-MORE-THAN-1-ACTION\n                      MOVE '1' TO WS-ROW-CRDSELECT-ERROR(I)\n                   END-IF\n                 WHEN SELECT-BLANK(I)\n                   CONTINUE\n                 WHEN OTHER\n                   SET INPUT-ERROR TO TRUE\n                   MOVE '1' TO WS-ROW-CRDSELECT-ERROR(I)\n                   IF WS-ERROR-MSG-OFF\n                      SET WS-INVALID-ACTION-CODE TO TRUE\n                   END-IF\n              END-EVALUATE\n           END-PERFORM\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "2250-EDIT-ARRAY-EXIT",
+    "paragraph": "       2250-EDIT-ARRAY-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "9000-READ-FORWARD",
+    "paragraph": "       9000-READ-FORWARD.\n           MOVE LOW-VALUES           TO WS-ALL-ROWS\n           EXEC CICS STARTBR\n                DATASET(LIT-CARD-FILE)\n                RIDFLD(WS-CARD-RID-CARDNUM)\n                KEYLENGTH(LENGTH OF WS-CARD-RID-CARDNUM)\n                GTEQ\n                RESP(WS-RESP-CD)\n                RESP2(WS-REAS-CD)\n           END-EXEC\n           MOVE ZEROES TO WS-SCRN-COUNTER\n           SET CA-NEXT-PAGE-EXISTS    TO TRUE\n           SET MORE-RECORDS-TO-READ   TO TRUE\n           PERFORM UNTIL READ-LOOP-EXIT\n           EXEC CICS READNEXT\n                DATASET(LIT-CARD-FILE)\n                INTO (CARD-RECORD)\n                LENGTH(LENGTH OF CARD-RECORD)\n                RIDFLD(WS-CARD-RID-CARDNUM)\n                KEYLENGTH(LENGTH OF WS-CARD-RID-CARDNUM)\n                RESP(WS-RESP-CD)\n                RESP2(WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n               WHEN DFHRESP(DUPREC)\n                   PERFORM 9500-FILTER-RECORDS\n                      THRU 9500-FILTER-RECORDS-EXIT\n                   IF WS-DONOT-EXCLUDE-THIS-RECORD\n                      ADD 1             TO WS-SCRN-COUNTER\n                      MOVE CARD-NUM     TO WS-ROW-CARD-NUM(\n                      WS-SCRN-COUNTER)\n                      MOVE CARD-ACCT-ID TO\n                      WS-ROW-ACCTNO(WS-SCRN-COUNTER)\n                      MOVE CARD-ACTIVE-STATUS\n                                        TO WS-ROW-CARD-STATUS(\n                                        WS-SCRN-COUNTER)\n                      IF WS-SCRN-COUNTER = 1\n                         MOVE CARD-ACCT-ID\n                                        TO WS-CA-FIRST-CARD-ACCT-ID\n                         MOVE CARD-NUM  TO WS-CA-FIRST-CARD-NUM\n                         IF   WS-CA-SCREEN-NUM = 0\n                           ADD   +1     TO WS-CA-SCREEN-NUM\n                         ELSE\n                           CONTINUE\n                         END-IF\n                      ELSE\n                         CONTINUE\n                      END-IF\n                   ELSE\n                       CONTINUE\n                   END-IF\n                   IF WS-SCRN-COUNTER = WS-MAX-SCREEN-LINES\n                      SET READ-LOOP-EXIT  TO TRUE\n                      MOVE CARD-ACCT-ID     TO WS-CA-LAST-CARD-ACCT-ID\n                      MOVE CARD-NUM         TO WS-CA-LAST-CARD-NUM\n                      EXEC CICS READNEXT\n                        DATASET(LIT-CARD-FILE)\n                        INTO (CARD-RECORD)\n                        LENGTH(LENGTH OF CARD-RECORD)\n                        RIDFLD(WS-CARD-RID-CARDNUM)\n                        KEYLENGTH(LENGTH OF WS-CARD-RID-CARDNUM)\n                        RESP(WS-RESP-CD)\n                        RESP2(WS-REAS-CD)\n                      END-EXEC\n                      EVALUATE WS-RESP-CD\n                         WHEN DFHRESP(NORMAL)\n                         WHEN DFHRESP(DUPREC)\n                              SET CA-NEXT-PAGE-EXISTS\n                                                TO TRUE\n                              MOVE CARD-ACCT-ID TO\n                                   WS-CA-LAST-CARD-ACCT-ID\n                              MOVE CARD-NUM     TO WS-CA-LAST-CARD-NUM\n                        WHEN DFHRESP(ENDFILE)\n                            SET CA-NEXT-PAGE-NOT-EXISTS     TO TRUE\n                            IF WS-ERROR-MSG-OFF\n                                MOVE 'NO MORE RECORDS TO SHOW'\n                                                TO WS-ERROR-MSG\n                            END-IF\n                            WHEN OTHER\n                            SET READ-LOOP-EXIT      TO TRUE\n                            MOVE 'READ'              TO ERROR-OPNAME\n                            MOVE LIT-CARD-FILE       TO ERROR-FILE\n                            MOVE WS-RESP-CD          TO ERROR-RESP\n                            MOVE WS-REAS-CD          TO ERROR-RESP2\n                          MOVE WS-FILE-ERROR-MESSAGE TO WS-ERROR-MSG\n                      END-EVALUATE\n                  END-IF\n               WHEN DFHRESP(ENDFILE)\n                  SET READ-LOOP-EXIT              TO TRUE\n                  SET CA-NEXT-PAGE-NOT-EXISTS     TO TRUE\n                  MOVE CARD-ACCT-ID     TO WS-CA-LAST-CARD-ACCT-ID\n                  MOVE CARD-NUM         TO WS-CA-LAST-CARD-NUM\n                  IF WS-ERROR-MSG-OFF\n                     MOVE 'NO MORE RECORDS TO SHOW'  TO WS-ERROR-MSG\n                  END-IF\n                  IF WS-CA-SCREEN-NUM = 1\n                  AND WS-SCRN-COUNTER = 0\n                      SET WS-NO-RECORDS-FOUND    TO TRUE\n                  END-IF\n               WHEN OTHER\n                  SET READ-LOOP-EXIT             TO TRUE\n                  MOVE 'READ'                     TO ERROR-OPNAME\n                  MOVE LIT-CARD-FILE              TO ERROR-FILE\n                  MOVE WS-RESP-CD                 TO ERROR-RESP\n                  MOVE WS-REAS-CD                 TO ERROR-RESP2\n                  MOVE WS-FILE-ERROR-MESSAGE      TO WS-ERROR-MSG\n           END-EVALUATE\n           END-PERFORM\n           EXEC CICS ENDBR FILE(LIT-CARD-FILE)\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "9000-READ-FORWARD-EXIT",
+    "paragraph": "       9000-READ-FORWARD-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "9100-READ-BACKWARDS",
+    "paragraph": "       9100-READ-BACKWARDS.\n           MOVE LOW-VALUES           TO WS-ALL-ROWS\n           MOVE WS-CA-FIRST-CARDKEY  TO WS-CA-LAST-CARDKEY\n           EXEC CICS STARTBR\n                DATASET(LIT-CARD-FILE)\n                RIDFLD(WS-CARD-RID-CARDNUM)\n                KEYLENGTH(LENGTH OF WS-CARD-RID-CARDNUM)\n                GTEQ\n                RESP(WS-RESP-CD)\n                RESP2(WS-REAS-CD)\n           END-EXEC\n           COMPUTE WS-SCRN-COUNTER =\n                                   WS-MAX-SCREEN-LINES + 1\n           END-COMPUTE\n           SET CA-NEXT-PAGE-EXISTS    TO TRUE\n           SET MORE-RECORDS-TO-READ   TO TRUE\n           EXEC CICS READPREV\n                DATASET(LIT-CARD-FILE)\n                INTO (CARD-RECORD)\n                LENGTH(LENGTH OF CARD-RECORD)\n                RIDFLD(WS-CARD-RID-CARDNUM)\n                KEYLENGTH(LENGTH OF WS-CARD-RID-CARDNUM)\n                RESP(WS-RESP-CD)\n                RESP2(WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n               WHEN DFHRESP(DUPREC)\n                   SUBTRACT 1          FROM WS-SCRN-COUNTER\n               WHEN OTHER\n                  SET READ-LOOP-EXIT             TO TRUE\n                  MOVE 'READ'                     TO ERROR-OPNAME\n                  MOVE LIT-CARD-FILE              TO ERROR-FILE\n                  MOVE WS-RESP-CD                 TO ERROR-RESP\n                  MOVE WS-REAS-CD                 TO ERROR-RESP2\n                  MOVE WS-FILE-ERROR-MESSAGE      TO WS-ERROR-MSG\n                  GO TO 9100-READ-BACKWARDS-EXIT\n           END-EVALUATE\n           PERFORM UNTIL READ-LOOP-EXIT\n           EXEC CICS READPREV\n                DATASET(LIT-CARD-FILE)\n                INTO (CARD-RECORD)\n                LENGTH(LENGTH OF CARD-RECORD)\n                RIDFLD(WS-CARD-RID-CARDNUM)\n                KEYLENGTH(LENGTH OF WS-CARD-RID-CARDNUM)\n                RESP(WS-RESP-CD)\n                RESP2(WS-REAS-CD)\n           END-EXEC\n           EVALUATE WS-RESP-CD\n               WHEN DFHRESP(NORMAL)\n               WHEN DFHRESP(DUPREC)\n                   PERFORM 9500-FILTER-RECORDS\n                      THRU 9500-FILTER-RECORDS-EXIT\n                   IF WS-DONOT-EXCLUDE-THIS-RECORD\n                      MOVE CARD-NUM\n                                  TO WS-ROW-CARD-NUM(WS-SCRN-COUNTER)\n                      MOVE CARD-ACCT-ID\n                                  TO WS-ROW-ACCTNO(WS-SCRN-COUNTER)\n                      MOVE CARD-ACTIVE-STATUS\n                                  TO\n                                  WS-ROW-CARD-STATUS(WS-SCRN-COUNTER)\n                      SUBTRACT 1  FROM WS-SCRN-COUNTER\n                      IF WS-SCRN-COUNTER = 0\n                         SET READ-LOOP-EXIT  TO TRUE\n                         MOVE CARD-ACCT-ID\n                                  TO WS-CA-FIRST-CARD-ACCT-ID\n                         MOVE CARD-NUM\n                                  TO WS-CA-FIRST-CARD-NUM\n                      ELSE\n                         CONTINUE\n                      END-IF\n                   ELSE\n                       CONTINUE\n                   END-IF\n               WHEN OTHER\n                  SET READ-LOOP-EXIT             TO TRUE\n                  MOVE 'READ'                     TO ERROR-OPNAME\n                  MOVE LIT-CARD-FILE              TO ERROR-FILE\n                  MOVE WS-RESP-CD                 TO ERROR-RESP\n                  MOVE WS-REAS-CD                 TO ERROR-RESP2\n                  MOVE WS-FILE-ERROR-MESSAGE      TO WS-ERROR-MSG\n           END-EVALUATE\n           END-PERFORM\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "9100-READ-BACKWARDS-EXIT",
+    "paragraph": "       9100-READ-BACKWARDS-EXIT.\n           EXEC CICS\n                ENDBR FILE(LIT-CARD-FILE)\n           END-EXEC\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "9500-FILTER-RECORDS",
+    "paragraph": "       9500-FILTER-RECORDS.\n           SET WS-DONOT-EXCLUDE-THIS-RECORD TO TRUE\n           IF FLG-ACCTFILTER-ISVALID\n              IF  CARD-ACCT-ID = CC-ACCT-ID\n                  CONTINUE\n              ELSE\n                  SET WS-EXCLUDE-THIS-RECORD  TO TRUE\n                  GO TO 9500-FILTER-RECORDS-EXIT\n              END-IF\n           ELSE\n             CONTINUE\n           END-IF\n           IF FLG-CARDFILTER-ISVALID\n              IF  CARD-NUM = CC-CARD-NUM-N\n                  CONTINUE\n              ELSE\n                  SET WS-EXCLUDE-THIS-RECORD TO TRUE\n                  GO TO 9500-FILTER-RECORDS-EXIT\n              END-IF\n           ELSE\n             CONTINUE\n           END-IF\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "9500-FILTER-RECORDS-EXIT",
+    "paragraph": "       9500-FILTER-RECORDS-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "YYYY-STORE-PFKEY",
+    "paragraph": "       YYYY-STORE-PFKEY.\n           EVALUATE TRUE\n             WHEN EIBAID IS EQUAL TO DFHENTER\n               SET CCARD-AID-ENTER TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHCLEAR\n               SET CCARD-AID-CLEAR TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPA1\n               SET CCARD-AID-PA1  TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPA2\n               SET CCARD-AID-PA2  TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF1\n               SET CCARD-AID-PFK01 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF2\n               SET CCARD-AID-PFK02 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF3\n               SET CCARD-AID-PFK03 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF4\n               SET CCARD-AID-PFK04 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF5\n               SET CCARD-AID-PFK05 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF6\n               SET CCARD-AID-PFK06 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF7\n               SET CCARD-AID-PFK07 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF8\n               SET CCARD-AID-PFK08 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF9\n               SET CCARD-AID-PFK09 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF10\n               SET CCARD-AID-PFK10 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF11\n               SET CCARD-AID-PFK11 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF12\n               SET CCARD-AID-PFK12 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF13\n               SET CCARD-AID-PFK01 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF14\n               SET CCARD-AID-PFK02 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF15\n               SET CCARD-AID-PFK03 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF16\n               SET CCARD-AID-PFK04 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF17\n               SET CCARD-AID-PFK05 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF18\n               SET CCARD-AID-PFK06 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF19\n               SET CCARD-AID-PFK07 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF20\n               SET CCARD-AID-PFK08 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF21\n               SET CCARD-AID-PFK09 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF22\n               SET CCARD-AID-PFK10 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF23\n               SET CCARD-AID-PFK11 TO TRUE\n             WHEN EIBAID IS EQUAL TO DFHPF24\n               SET CCARD-AID-PFK12 TO TRUE\n           END-EVALUATE\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "YYYY-STORE-PFKEY-EXIT",
+    "paragraph": "       YYYY-STORE-PFKEY-EXIT.\n           EXIT\n           .\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "SEND-PLAIN-TEXT",
+    "paragraph": "       SEND-PLAIN-TEXT.\n           EXEC CICS SEND TEXT\n                     FROM(WS-ERROR-MSG)\n                     LENGTH(LENGTH OF WS-ERROR-MSG)\n                     ERASE\n                     FREEKB\n           END-EXEC\n           EXEC CICS RETURN\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "SEND-PLAIN-TEXT-EXIT",
+    "paragraph": "       SEND-PLAIN-TEXT-EXIT.\n           EXIT\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "RULE",
+    "name": "SEND-LONG-TEXT",
+    "paragraph": "       SEND-LONG-TEXT.\n           EXEC CICS SEND TEXT\n                     FROM(WS-LONG-MSG)\n                     LENGTH(LENGTH OF WS-LONG-MSG)\n                     ERASE\n                     FREEKB\n           END-EXEC\n           EXEC CICS RETURN\n           END-EXEC\n           .\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COCRDLIC.COB",
+    "kind": "NON-RULE",
+    "name": "SEND-LONG-TEXT-EXIT",
+    "paragraph": "       SEND-LONG-TEXT-EXIT.\n           EXIT\n"
+}]

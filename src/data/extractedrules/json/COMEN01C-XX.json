@@ -1,0 +1,56 @@
+[{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COMEN01C.COB",
+    "kind": "RULE",
+    "name": "MAIN-PARA",
+    "paragraph": "       MAIN-PARA.\n           SET ERR-FLG-OFF TO TRUE\n           MOVE SPACES TO WS-MESSAGE\n                          ERRMSGO OF COMEN1AO\n           IF EIBCALEN = 0\n               MOVE 'COSGN00C' TO CDEMO-FROM-PROGRAM\n               PERFORM RETURN-TO-SIGNON-SCREEN\n           ELSE\n               MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA\n               IF NOT CDEMO-PGM-REENTER\n                   SET CDEMO-PGM-REENTER    TO TRUE\n                   MOVE LOW-VALUES          TO COMEN1AO\n                   PERFORM SEND-MENU-SCREEN\n               ELSE\n                   PERFORM RECEIVE-MENU-SCREEN\n                   EVALUATE EIBAID\n                       WHEN DFHENTER\n                           PERFORM PROCESS-ENTER-KEY\n                       WHEN DFHPF3\n                           MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n                           PERFORM RETURN-TO-SIGNON-SCREEN\n                       WHEN OTHER\n                           MOVE 'Y'                       TO WS-ERR-FLG\n                           MOVE CCDA-MSG-INVALID-KEY      TO WS-MESSAGE\n                           PERFORM SEND-MENU-SCREEN\n                   END-EVALUATE\n               END-IF\n           END-IF\n           EXEC CICS RETURN\n                     TRANSID (WS-TRANID)\n                     COMMAREA (CARDDEMO-COMMAREA)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COMEN01C.COB",
+    "kind": "RULE",
+    "name": "PROCESS-ENTER-KEY",
+    "paragraph": "       PROCESS-ENTER-KEY.\n           PERFORM VARYING WS-IDX\n                   FROM LENGTH OF OPTIONI OF COMEN1AI BY -1 UNTIL\n                   OPTIONI OF COMEN1AI(WS-IDX:1) NOT = SPACES OR\n                   WS-IDX = 1\n           END-PERFORM\n           MOVE OPTIONI OF COMEN1AI(1:WS-IDX) TO WS-OPTION-X\n           INSPECT WS-OPTION-X REPLACING ALL ' ' BY '0'\n           MOVE WS-OPTION-X              TO WS-OPTION\n           MOVE WS-OPTION                TO OPTIONO OF COMEN1AO\n           IF WS-OPTION IS NOT NUMERIC OR\n              WS-OPTION > CDEMO-MENU-OPT-COUNT OR\n              WS-OPTION = ZEROS\n               MOVE 'Y'     TO WS-ERR-FLG\n               MOVE 'Please enter a valid option number...' TO\n                               WS-MESSAGE\n               PERFORM SEND-MENU-SCREEN\n           END-IF\n           IF CDEMO-USRTYP-USER AND\n              CDEMO-MENU-OPT-USRTYPE(WS-OPTION) = 'A'\n               SET ERR-FLG-ON          TO TRUE\n               MOVE SPACES             TO WS-MESSAGE\n               MOVE 'No access - Admin Only option... ' TO\n                                       WS-MESSAGE\n               PERFORM SEND-MENU-SCREEN\n           END-IF\n           IF NOT ERR-FLG-ON\n               IF CDEMO-MENU-OPT-PGMNAME(WS-OPTION)(1:5) NOT = 'DUMMY'\n                   MOVE WS-TRANID    TO CDEMO-FROM-TRANID\n                   MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM\n                   MOVE ZEROS        TO CDEMO-PGM-CONTEXT\n                   EXEC CICS\n                       XCTL PROGRAM(CDEMO-MENU-OPT-PGMNAME(WS-OPTION))\n                       COMMAREA(CARDDEMO-COMMAREA)\n                   END-EXEC\n               END-IF\n               MOVE SPACES             TO WS-MESSAGE\n               MOVE DFHGREEN           TO ERRMSGC  OF COMEN1AO\n               STRING 'This option '       DELIMITED BY SIZE\n                       CDEMO-MENU-OPT-NAME(WS-OPTION)\n                                       DELIMITED BY SPACE\n                       'is coming soon ...'   DELIMITED BY SIZE\n                  INTO WS-MESSAGE\n               PERFORM SEND-MENU-SCREEN\n           END-IF.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COMEN01C.COB",
+    "kind": "NON-RULE",
+    "name": "RETURN-TO-SIGNON-SCREEN",
+    "paragraph": "       RETURN-TO-SIGNON-SCREEN.\n           IF CDEMO-TO-PROGRAM = LOW-VALUES OR SPACES\n               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM\n           END-IF\n           EXEC CICS\n               XCTL PROGRAM(CDEMO-TO-PROGRAM)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COMEN01C.COB",
+    "kind": "NON-RULE",
+    "name": "SEND-MENU-SCREEN",
+    "paragraph": "       SEND-MENU-SCREEN.\n           PERFORM POPULATE-HEADER-INFO\n           PERFORM BUILD-MENU-OPTIONS\n           MOVE WS-MESSAGE TO ERRMSGO OF COMEN1AO\n           EXEC CICS SEND\n                     MAP('COMEN1A')\n                     MAPSET('COMEN01')\n                     FROM(COMEN1AO)\n                     ERASE\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COMEN01C.COB",
+    "kind": "NON-RULE",
+    "name": "RECEIVE-MENU-SCREEN",
+    "paragraph": "       RECEIVE-MENU-SCREEN.\n           EXEC CICS RECEIVE\n                     MAP('COMEN1A')\n                     MAPSET('COMEN01')\n                     INTO(COMEN1AI)\n                     RESP(WS-RESP-CD)\n                     RESP2(WS-REAS-CD)\n           END-EXEC.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COMEN01C.COB",
+    "kind": "NON-RULE",
+    "name": "POPULATE-HEADER-INFO",
+    "paragraph": "       POPULATE-HEADER-INFO.\n           MOVE FUNCTION CURRENT-DATE  TO WS-CURDATE-DATA\n           MOVE CCDA-TITLE01           TO TITLE01O OF COMEN1AO\n           MOVE CCDA-TITLE02           TO TITLE02O OF COMEN1AO\n           MOVE WS-TRANID              TO TRNNAMEO OF COMEN1AO\n           MOVE WS-PGMNAME             TO PGMNAMEO OF COMEN1AO\n           MOVE WS-CURDATE-MONTH       TO WS-CURDATE-MM\n           MOVE WS-CURDATE-DAY         TO WS-CURDATE-DD\n           MOVE WS-CURDATE-YEAR(3:2)   TO WS-CURDATE-YY\n           MOVE WS-CURDATE-MM-DD-YY    TO CURDATEO OF COMEN1AO\n           MOVE WS-CURTIME-HOURS       TO WS-CURTIME-HH\n           MOVE WS-CURTIME-MINUTE      TO WS-CURTIME-MM\n           MOVE WS-CURTIME-SECOND      TO WS-CURTIME-SS\n           MOVE WS-CURTIME-HH-MM-SS    TO CURTIMEO OF COMEN1AO.\n"
+},
+{
+    "client": "AWS",
+    "application": "CARDDEMO",
+    "program": "COMEN01C.COB",
+    "kind": "RULE",
+    "name": "BUILD-MENU-OPTIONS",
+    "paragraph": "       BUILD-MENU-OPTIONS.\n           PERFORM VARYING WS-IDX FROM 1 BY 1 UNTIL\n                           WS-IDX > CDEMO-MENU-OPT-COUNT\n               MOVE SPACES             TO WS-MENU-OPT-TXT\n               STRING CDEMO-MENU-OPT-NUM(WS-IDX)  DELIMITED BY SIZE\n                      '. '                         DELIMITED BY SIZE\n                      CDEMO-MENU-OPT-NAME(WS-IDX) DELIMITED BY SIZE\n                 INTO WS-MENU-OPT-TXT\n               EVALUATE WS-IDX\n                   WHEN 1\n                       MOVE WS-MENU-OPT-TXT TO OPTN001O\n                   WHEN 2\n                       MOVE WS-MENU-OPT-TXT TO OPTN002O\n                   WHEN 3\n                       MOVE WS-MENU-OPT-TXT TO OPTN003O\n                   WHEN 4\n                       MOVE WS-MENU-OPT-TXT TO OPTN004O\n                   WHEN 5\n                       MOVE WS-MENU-OPT-TXT TO OPTN005O\n                   WHEN 6\n                       MOVE WS-MENU-OPT-TXT TO OPTN006O\n                   WHEN 7\n                       MOVE WS-MENU-OPT-TXT TO OPTN007O\n                   WHEN 8\n                       MOVE WS-MENU-OPT-TXT TO OPTN008O\n                   WHEN 9\n                       MOVE WS-MENU-OPT-TXT TO OPTN009O\n                   WHEN 10\n                       MOVE WS-MENU-OPT-TXT TO OPTN010O\n                   WHEN 11\n                       MOVE WS-MENU-OPT-TXT TO OPTN011O\n                   WHEN 12\n                       MOVE WS-MENU-OPT-TXT TO OPTN012O\n                   WHEN OTHER\n                       CONTINUE\n               END-EVALUATE\n"
+}]

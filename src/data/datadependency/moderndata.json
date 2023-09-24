@@ -1,0 +1,3625 @@
+[
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CARDDEMO-COMMAREA",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CCARD-AID-ENTER",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CCARD-AID-PFK03",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-FROM-PROGRAM",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-FROM-TRANID",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-LAST-MAP",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-LAST-MAPSET",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-PGM-ENTER",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-TO-PROGRAM",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-TO-TRANID",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "CDEMO-USRTYP-USER",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "EIBAID",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "LIT-MENUPGM",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "LIT-MENUTRANID",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "LIT-THISPGM",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "LIT-THISTRANID",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "WS-RETURN-MSG",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "1",
+    "Rule Name": "0000-MAIN",
+    "Rule Definition": "Main program logic",
+    "Data Element": "WS-THIS-PROGCOMMAREA",
+    "R/U": "U"
+  },
+  {
+    "Rule #": "2",
+    "Rule Name": "COMMON-RETURN",
+    "Rule Definition": "Common return logic"
+  },
+  {
+    "Rule #": "3",
+    "Rule Name": "1000-PROCESS-INPUTS",
+    "Rule Definition": "Process inputs"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Data Element": "CARD-XREF-RECORD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Data Element": "LIT-CARDXREFNAME-ACCT-PATH",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Data Element": "WS-CARD-RID-ACCT-ID-X",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Data Element": "WS-REAS-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Data Element": "WS-RESP-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Data Element": "XREF-CARD-NUM",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "CARD-XREF-RECORD",
+    "Dataset Name": "CARD-XREF VSAM dataset"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Data Element": "XREF-CUST-ID",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "CARD-XREF-RECORD",
+    "Dataset Name": "CARD-XREF VSAM dataset"
+  },
+  {
+    "Rule #": "4",
+    "Rule Name": "1100-RECEIVE-MAP",
+    "Rule Definition": "Receive map",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "5",
+    "Rule Name": "1200-EDIT-MAP-INPUTS",
+    "Rule Definition": "Edit map inputs",
+    "Data Element": "ACCOUNT-RECORD",
+    "R/U": "R",
+    "Group #": "1",
+    "Dataset Name": "ACCOUNT-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "5",
+    "Rule Name": "1200-EDIT-MAP-INPUTS",
+    "Rule Definition": "Edit map inputs",
+    "Data Element": "FOUND-ACCT-IN-MASTER",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "5",
+    "Rule Name": "1200-EDIT-MAP-INPUTS",
+    "Rule Definition": "Edit map inputs",
+    "Data Element": "LIT-ACCTFILENAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "5",
+    "Rule Name": "1200-EDIT-MAP-INPUTS",
+    "Rule Definition": "Edit map inputs",
+    "Data Element": "WS-REAS-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "5",
+    "Rule Name": "1200-EDIT-MAP-INPUTS",
+    "Rule Definition": "Edit map inputs",
+    "Data Element": "WS-RESP-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "5",
+    "Rule Name": "1200-EDIT-MAP-INPUTS",
+    "Rule Definition": "Edit map inputs",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Data Element": "CUST-ID",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "CUSTOMER-RECORD",
+    "Dataset Name": "CUSTOMER-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Data Element": "CUSTOMER-RECORD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Data Element": "FOUND-CUST-IN-MASTER",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Data Element": "LIT-CUSTFILENAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Data Element": "WS-CARD-RID-CUST-ID-X",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Data Element": "WS-REAS-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Data Element": "WS-RESP-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "6",
+    "Rule Name": "1205-COMPARE-OLD-NEW",
+    "Rule Definition": "Compare old and new data",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACCT-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "ACCOUNT-RECORD",
+    "Dataset Name": "ACCOUNT-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACCT-ID",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "ACCOUNT-RECORD",
+    "Dataset Name": "ACCOUNT-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-ACCT-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CASH-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CURR-BAL-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CURR-CYC-CREDIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CURR-CYC-DEBIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-ADDR-COUNTRY-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-1",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-2",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-3",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-ADDR-STATE-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-ADDR-ZIP",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-DOB-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-DOB-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-DOB-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-EFT-ACCOUNT-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-FICO-SCORE",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-FIRST-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-GOVT-ISSUED-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-LAST-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-MIDDLE-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-PHONE-NUM-1",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-PHONE-NUM-2",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-PRI-HOLDER-IND",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-CUST-SSN",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-DETAILS",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-EXP-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-EXP-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-EXP-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-GROUP-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-OPEN-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-OPEN-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-OPEN-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-REISSUE-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-REISSUE-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "ACUP-OLD-REISSUE-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "CDEMO-CARD-NUM",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "CDEMO-CUST-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "CUST-FIRST-NAME",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "CUSTOMER-RECORD",
+    "Dataset Name": "CUSTOMER-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "CUST-LAST-NAME",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "CUSTOMER-RECORD",
+    "Dataset Name": "CUSTOMER-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Data Element": "CUST-MIDDLE-NAME",
+    "R/U": "R",
+    "Group #": "1",
+    "Record Name": "CUSTOMER-RECORD",
+    "Dataset Name": "CUSTOMER-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "7",
+    "Rule Name": "1210-EDIT-ACCOUNT",
+    "Rule Definition": "Validate account number",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACCOUNT-RECORD",
+    "R/U": "R",
+    "Group #": "1",
+    "Dataset Name": "ACCOUNT-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CASH-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CURR-BAL-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CURR-CYC-CREDIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CURR-CYC-DEBIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-ADDR-COUNTRY-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-1",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-2",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-3",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-ADDR-STATE-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-ADDR-ZIP",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-DOB-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-DOB-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-DOB-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-EFT-ACCOUNT-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-FICO-SCORE",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-FIRST-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-GOVT-ISSUED-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-LAST-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-MIDDLE-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-PHONE-NUM-1",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-PHONE-NUM-2",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-PRI-HOLDER-IND",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-CUST-SSN",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-EXP-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-EXP-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-EXP-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-GROUP-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-OPEN-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-OPEN-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-OPEN-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-REISSUE-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-REISSUE-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "ACUP-OLD-REISSUE-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "CUSTOMER-RECORD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "WS-REAS-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Data Element": "WS-RESP-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "8",
+    "Rule Name": "1215-EDIT-MANDATORY",
+    "Rule Definition": "Validate mandatory field",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "9",
+    "Rule Name": "1220-EDIT-YESNO",
+    "Rule Definition": "Validate Y/N field",
+    "Data Element": "LIT-ACCTFILENAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "9",
+    "Rule Name": "1220-EDIT-YESNO",
+    "Rule Definition": "Validate Y/N field",
+    "Data Element": "WS-CARD-RID-ACCT-ID-X",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "9",
+    "Rule Name": "1220-EDIT-YESNO",
+    "Rule Definition": "Validate Y/N field",
+    "Data Element": "WS-CARD-RID-CUST-ID-X",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "9",
+    "Rule Name": "1220-EDIT-YESNO",
+    "Rule Definition": "Validate Y/N field",
+    "Data Element": "WS-REAS-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "9",
+    "Rule Name": "1220-EDIT-YESNO",
+    "Rule Definition": "Validate Y/N field",
+    "Data Element": "WS-RESP-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "9",
+    "Rule Name": "1220-EDIT-YESNO",
+    "Rule Definition": "Validate Y/N field",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "10",
+    "Rule Name": "1225-EDIT-ALPHA-REQD",
+    "Rule Definition": "Validate required alpha field"
+  },
+  {
+    "Rule #": "11",
+    "Rule Name": "1235-EDIT-ALPHA-OPT",
+    "Rule Definition": "Validate optional alpha field",
+    "Data Element": "WS-EDIT-SIGNED-NUMBER-9V2-X",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "11",
+    "Rule Name": "1235-EDIT-ALPHA-OPT",
+    "Rule Definition": "Validate optional alpha field",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "11",
+    "Rule Name": "1235-EDIT-ALPHA-OPT",
+    "Rule Definition": "Validate optional alpha field",
+    "Data Element": "WS-FLG-SIGNED-NUMBER-EDIT",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "11",
+    "Rule Name": "1235-EDIT-ALPHA-OPT",
+    "Rule Definition": "Validate optional alpha field",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "12",
+    "Rule Name": "1245-EDIT-NUM-REQD",
+    "Rule Definition": "Validate required numeric field",
+    "Data Element": "WS-EDIT-ALPHA-ONLY-FLAGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "12",
+    "Rule Name": "1245-EDIT-NUM-REQD",
+    "Rule Definition": "Validate required numeric field",
+    "Data Element": "WS-EDIT-ALPHANUM-LENGTH",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "12",
+    "Rule Name": "1245-EDIT-NUM-REQD",
+    "Rule Definition": "Validate required numeric field",
+    "Data Element": "WS-EDIT-ALPHANUM-ONLY",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "12",
+    "Rule Name": "1245-EDIT-NUM-REQD",
+    "Rule Definition": "Validate required numeric field",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "12",
+    "Rule Name": "1245-EDIT-NUM-REQD",
+    "Rule Definition": "Validate required numeric field",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "13",
+    "Rule Name": "1250-EDIT-SIGNED-9V2",
+    "Rule Definition": "Validate signed 9v2 field",
+    "Data Element": "WS-EDIT-ALPHANUM-LENGTH",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "13",
+    "Rule Name": "1250-EDIT-SIGNED-9V2",
+    "Rule Definition": "Validate signed 9v2 field",
+    "Data Element": "WS-EDIT-ALPHANUM-ONLY",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "13",
+    "Rule Name": "1250-EDIT-SIGNED-9V2",
+    "Rule Definition": "Validate signed 9v2 field",
+    "Data Element": "WS-EDIT-ALPHANUM-ONLY-FLAGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "13",
+    "Rule Name": "1250-EDIT-SIGNED-9V2",
+    "Rule Definition": "Validate signed 9v2 field",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "13",
+    "Rule Name": "1250-EDIT-SIGNED-9V2",
+    "Rule Definition": "Validate signed 9v2 field",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "14",
+    "Rule Name": "1260-EDIT-US-PHONE-NUM",
+    "Rule Definition": "Validate US phone number",
+    "Data Element": "WS-EDIT-MANDATORY-FLAGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "14",
+    "Rule Name": "1260-EDIT-US-PHONE-NUM",
+    "Rule Definition": "Validate US phone number",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "14",
+    "Rule Name": "1260-EDIT-US-PHONE-NUM",
+    "Rule Definition": "Validate US phone number",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "15",
+    "Rule Name": "EDIT-AREA-CODE",
+    "Rule Definition": "Validate area code",
+    "Data Element": "FLG-YES-NO-BLANK",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "15",
+    "Rule Name": "EDIT-AREA-CODE",
+    "Rule Definition": "Validate area code",
+    "Data Element": "FLG-YES-NO-ISVALID",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "15",
+    "Rule Name": "EDIT-AREA-CODE",
+    "Rule Definition": "Validate area code",
+    "Data Element": "FLG-YES-NO-NOT-OK",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "15",
+    "Rule Name": "EDIT-AREA-CODE",
+    "Rule Definition": "Validate area code",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "15",
+    "Rule Name": "EDIT-AREA-CODE",
+    "Rule Definition": "Validate area code",
+    "Data Element": "WS-EDIT-YES-NO",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "15",
+    "Rule Name": "EDIT-AREA-CODE",
+    "Rule Definition": "Validate area code",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "16",
+    "Rule Name": "EDIT-US-PHONE-PREFIX",
+    "Rule Definition": "Validate phone prefix",
+    "Data Element": "WS-EDIT-ALPHA-ONLY-FLAGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "16",
+    "Rule Name": "EDIT-US-PHONE-PREFIX",
+    "Rule Definition": "Validate phone prefix",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "16",
+    "Rule Name": "EDIT-US-PHONE-PREFIX",
+    "Rule Definition": "Validate phone prefix",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "17",
+    "Rule Name": "EDIT-US-PHONE-LINENUM",
+    "Rule Definition": "Validate phone line number",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "17",
+    "Rule Name": "EDIT-US-PHONE-LINENUM",
+    "Rule Definition": "Validate phone line number"
+  },
+  {
+    "Rule #": "18",
+    "Rule Name": "1265-EDIT-US-SSN",
+    "Rule Definition": "Validate US Social Security Number",
+    "Data Element": "WS-EDIT-ALPHANUM-LENGTH",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "18",
+    "Rule Name": "1265-EDIT-US-SSN",
+    "Rule Definition": "Validate US Social Security Number",
+    "Data Element": "WS-EDIT-ALPHANUM-ONLY",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "18",
+    "Rule Name": "1265-EDIT-US-SSN",
+    "Rule Definition": "Validate US Social Security Number",
+    "Data Element": "WS-EDIT-ALPHANUM-ONLY-FLAGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "18",
+    "Rule Name": "1265-EDIT-US-SSN",
+    "Rule Definition": "Validate US Social Security Number",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "18",
+    "Rule Name": "1265-EDIT-US-SSN",
+    "Rule Definition": "Validate US Social Security Number",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "19",
+    "Rule Name": "1270-EDIT-US-STATE-CD",
+    "Rule Definition": "Validate US state code",
+    "Data Element": "WS-EDIT-SIGNED-NUMBER-9V2-X",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "19",
+    "Rule Name": "1270-EDIT-US-STATE-CD",
+    "Rule Definition": "Validate US state code",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "19",
+    "Rule Name": "1270-EDIT-US-STATE-CD",
+    "Rule Definition": "Validate US state code",
+    "Data Element": "WS-FLG-SIGNED-NUMBER-EDIT",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "19",
+    "Rule Name": "1270-EDIT-US-STATE-CD",
+    "Rule Definition": "Validate US state code",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "20",
+    "Rule Name": "1275-EDIT-FICO-SCORE",
+    "Rule Definition": "Validate FICO score range",
+    "Data Element": "WS-EDIT-US-PHONE-NUM",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "20",
+    "Rule Name": "1275-EDIT-FICO-SCORE",
+    "Rule Definition": "Validate FICO score range",
+    "Data Element": "WS-EDIT-US-PHONE-NUM-FLGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "20",
+    "Rule Name": "1275-EDIT-FICO-SCORE",
+    "Rule Definition": "Validate FICO score range",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "20",
+    "Rule Name": "1275-EDIT-FICO-SCORE",
+    "Rule Definition": "Validate FICO score range",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "21",
+    "Rule Name": "1280-EDIT-US-STATE-ZIP-CD",
+    "Rule Definition": "Validate US state and zip code",
+    "Data Element": "WS-EDIT-US-PHONE-NUMA",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "21",
+    "Rule Name": "1280-EDIT-US-STATE-ZIP-CD",
+    "Rule Definition": "Validate US state and zip code",
+    "Data Element": "WS-EDIT-US-PHONE-NUMA-N",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "21",
+    "Rule Name": "1280-EDIT-US-STATE-ZIP-CD",
+    "Rule Definition": "Validate US state and zip code",
+    "Data Element": "WS-EDIT-US-PHONEA-FLG",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "21",
+    "Rule Name": "1280-EDIT-US-STATE-ZIP-CD",
+    "Rule Definition": "Validate US state and zip code",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "21",
+    "Rule Name": "1280-EDIT-US-STATE-ZIP-CD",
+    "Rule Definition": "Validate US state and zip code",
+    "Data Element": "WS-US-PHONE-AREA-CODE-TO-EDIT",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "21",
+    "Rule Name": "1280-EDIT-US-STATE-ZIP-CD",
+    "Rule Definition": "Validate US state and zip code",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "22",
+    "Rule Name": "2000-DECIDE-ACTION",
+    "Rule Definition": "Decide action based on inputs",
+    "Data Element": "WS-EDIT-EDIT-US-PHONEB",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "22",
+    "Rule Name": "2000-DECIDE-ACTION",
+    "Rule Definition": "Decide action based on inputs",
+    "Data Element": "WS-EDIT-US-PHONE-NUMB",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "22",
+    "Rule Name": "2000-DECIDE-ACTION",
+    "Rule Definition": "Decide action based on inputs",
+    "Data Element": "WS-EDIT-US-PHONE-NUMB-N",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "22",
+    "Rule Name": "2000-DECIDE-ACTION",
+    "Rule Definition": "Decide action based on inputs",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "22",
+    "Rule Name": "2000-DECIDE-ACTION",
+    "Rule Definition": "Decide action based on inputs",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "23",
+    "Rule Name": "3000-SEND-MAP",
+    "Rule Definition": "Send map to display",
+    "Data Element": "WS-EDIT-EDIT-PHONEC",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "23",
+    "Rule Name": "3000-SEND-MAP",
+    "Rule Definition": "Send map to display",
+    "Data Element": "WS-EDIT-US-PHONE-NUMC",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "23",
+    "Rule Name": "3000-SEND-MAP",
+    "Rule Definition": "Send map to display",
+    "Data Element": "WS-EDIT-US-PHONE-NUMC-N",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "23",
+    "Rule Name": "3000-SEND-MAP",
+    "Rule Definition": "Send map to display",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "23",
+    "Rule Name": "3000-SEND-MAP",
+    "Rule Definition": "Send map to display",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "24",
+    "Rule Name": "3100-SCREEN-INIT",
+    "Rule Definition": "Initialize screen",
+    "Data Element": "WS-EDIT-US-SSN-PART1",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "24",
+    "Rule Name": "3100-SCREEN-INIT",
+    "Rule Definition": "Initialize screen",
+    "Data Element": "WS-EDIT-US-SSN-PART1-FLGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "24",
+    "Rule Name": "3100-SCREEN-INIT",
+    "Rule Definition": "Initialize screen",
+    "Data Element": "WS-EDIT-US-SSN-PART1-N",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "24",
+    "Rule Name": "3100-SCREEN-INIT",
+    "Rule Definition": "Initialize screen",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "24",
+    "Rule Name": "3100-SCREEN-INIT",
+    "Rule Definition": "Initialize screen",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "25",
+    "Rule Name": "3200-SETUP-SCREEN-VARS",
+    "Rule Definition": "Set up screen variables",
+    "Data Element": "WS-EDIT-US-SSN-PART2",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "25",
+    "Rule Name": "3200-SETUP-SCREEN-VARS",
+    "Rule Definition": "Set up screen variables",
+    "Data Element": "WS-EDIT-US-SSN-PART2-FLGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "25",
+    "Rule Name": "3200-SETUP-SCREEN-VARS",
+    "Rule Definition": "Set up screen variables",
+    "Data Element": "WS-EDIT-US-SSN-PART2-N",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "25",
+    "Rule Name": "3200-SETUP-SCREEN-VARS",
+    "Rule Definition": "Set up screen variables",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "25",
+    "Rule Name": "3200-SETUP-SCREEN-VARS",
+    "Rule Definition": "Set up screen variables",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "26",
+    "Rule Name": "3201-SHOW-INITIAL-VALUES",
+    "Rule Definition": "Show initial variable values",
+    "Data Element": "WS-EDIT-US-SSN-PART3",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "26",
+    "Rule Name": "3201-SHOW-INITIAL-VALUES",
+    "Rule Definition": "Show initial variable values",
+    "Data Element": "WS-EDIT-US-SSN-PART3-FLGS",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "26",
+    "Rule Name": "3201-SHOW-INITIAL-VALUES",
+    "Rule Definition": "Show initial variable values",
+    "Data Element": "WS-EDIT-US-SSN-PART3-N",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "26",
+    "Rule Name": "3201-SHOW-INITIAL-VALUES",
+    "Rule Definition": "Show initial variable values",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "26",
+    "Rule Name": "3201-SHOW-INITIAL-VALUES",
+    "Rule Definition": "Show initial variable values",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "27",
+    "Rule Name": "3202-SHOW-ORIGINAL-VALUES",
+    "Rule Definition": "Show original variable values",
+    "Data Element": "FLG-STATE-NOT-OK",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "27",
+    "Rule Name": "3202-SHOW-ORIGINAL-VALUES",
+    "Rule Definition": "Show original variable values",
+    "Data Element": "US-STATE-CODE-TO-EDIT",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "27",
+    "Rule Name": "3202-SHOW-ORIGINAL-VALUES",
+    "Rule Definition": "Show original variable values",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "27",
+    "Rule Name": "3202-SHOW-ORIGINAL-VALUES",
+    "Rule Definition": "Show original variable values",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "28",
+    "Rule Name": "3203-SHOW-UPDATED-VALUES",
+    "Rule Definition": "Show updated variable values",
+    "Data Element": "FICO-RANGE-IS-VALID",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "28",
+    "Rule Name": "3203-SHOW-UPDATED-VALUES",
+    "Rule Definition": "Show updated variable values",
+    "Data Element": "FLG-FICO-SCORE-NOT-OK",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "28",
+    "Rule Name": "3203-SHOW-UPDATED-VALUES",
+    "Rule Definition": "Show updated variable values",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "29",
+    "Rule Name": "3250-SETUP-INFOMSG",
+    "Rule Definition": "Set up informational message",
+    "Data Element": "FLG-STATE-NOT-OK",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "29",
+    "Rule Name": "3250-SETUP-INFOMSG",
+    "Rule Definition": "Set up informational message",
+    "Data Element": "FLG-ZIPCODE-NOT-OK",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "29",
+    "Rule Name": "3250-SETUP-INFOMSG",
+    "Rule Definition": "Set up informational message",
+    "Data Element": "US-STATE-AND-FIRST-ZIP2",
+    "R/U": "R",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "29",
+    "Rule Name": "3250-SETUP-INFOMSG",
+    "Rule Definition": "Set up informational message",
+    "Group #": "4"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCOUNT-RECORD",
+    "R/U": "R",
+    "Group #": "1",
+    "Dataset Name": "ACCOUNT-MASTER VSAM dataset"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-CASH-CREDIT-LIMIT",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-CREDIT-LIMIT",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-CURR-BAL",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-CURR-CYC-CREDIT",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-CURR-CYC-DEBIT",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-EXPIRAION-DATE",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-GROUP-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-OPEN-DATE",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACCT-UPDATE-REISSUE-DATE",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-ACCT-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-CASH-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-CURR-BAL-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-CURR-CYC-CREDIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-CURR-CYC-DEBIT-N",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-EXP-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-EXP-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-EXP-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-GROUP-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-OPEN-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-OPEN-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-OPEN-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-REISSUE-DAY",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-REISSUE-MON",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "ACUP-NEW-REISSUE-YEAR",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-ADDR-COUNTRY-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-ADDR-LINE-1",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-ADDR-LINE-2",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-ADDR-LINE-3",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-ADDR-STATE-CD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-ADDR-ZIP",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-DOB-YYYY-MM-DD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-EFT-ACCOUNT-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-FICO-CREDIT-SCORE",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-FIRST-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-GOVT-ISSUED-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-ID",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-LAST-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-MIDDLE-NAME",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-PHONE-NUM-1",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-PHONE-NUM-2",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-PRI-CARD-IND",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUST-UPDATE-SSN",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Data Element": "CUSTOMER-RECORD",
+    "R/U": "R",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "30",
+    "Rule Name": "3300-SETUP-SCREEN-ATTRS",
+    "Rule Definition": "Set up screen attributes",
+    "Group #": "1"
+  },
+  {
+    "Rule #": "31",
+    "Rule Name": "3310-PROTECT-ALL-ATTRS",
+    "Rule Definition": "Protect all screen attributes"
+  },
+  {
+    "Rule #": "32",
+    "Rule Name": "3320-UNPROTECT-FEW-ATTRS",
+    "Rule Definition": "Unprotect some attributes"
+  },
+  {
+    "Rule #": "33",
+    "Rule Name": "3390-SETUP-INFOMSG-ATTRS",
+    "Rule Definition": "Set up info message attributes"
+  },
+  {
+    "Rule #": "34",
+    "Rule Name": "3400-SEND-SCREEN",
+    "Rule Definition": "Send screen to display",
+    "Data Element": "CACTUPAO",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "34",
+    "Rule Name": "3400-SEND-SCREEN",
+    "Rule Definition": "Send screen to display",
+    "Data Element": "LIT-THISMAP",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "34",
+    "Rule Name": "3400-SEND-SCREEN",
+    "Rule Definition": "Send screen to display",
+    "Data Element": "LIT-THISMAPSET",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "34",
+    "Rule Name": "3400-SEND-SCREEN",
+    "Rule Definition": "Send screen to display"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Data Element": "WS-CURDATE-DATA",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Data Element": "WS-CURDATE-DD",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Data Element": "WS-CURDATE-MM",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Data Element": "WS-CURDATE-YY",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Data Element": "WS-CURTIME-HOURS",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Data Element": "WS-CURTIME-MINUTE",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Data Element": "WS-CURTIME-SECOND",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "35",
+    "Rule Name": "9000-READ-ACCT",
+    "Rule Definition": "Read account data",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "36",
+    "Rule Name": "9200-GETCARDXREF-BYACCT",
+    "Rule Definition": "Get card cross reference data",
+    "Data Element": "CDEMO-PGM-ENTER",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "36",
+    "Rule Name": "9200-GETCARDXREF-BYACCT",
+    "Rule Definition": "Get card cross reference data",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-CASH-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-CURR-BAL-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-CURR-CYC-CREDIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-CURR-CYC-DEBIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-EXP-DAY",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-EXP-MON",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-EXP-YEAR",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-GROUP-ID",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-OPEN-DAY",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-OPEN-MON",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-OPEN-YEAR",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-REISSUE-DAY",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-REISSUE-MON",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "ACUP-OLD-REISSUE-YEAR",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "FOUND-ACCT-DATA",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "FOUND-ACCT-IN-MASTER",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "NO-CHANGES-DETECTED",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Data Element": "PROMPT-FOR-CHANGES",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "37",
+    "Rule Name": "9300-GETACCTDATA-BYACCT",
+    "Rule Definition": "Get account data",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CASH-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CURR-BAL-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CURR-CYC-CREDIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CURR-CYC-DEBIT-N",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-ADDR-COUNTRY-CD",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-1",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-2",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-ADDR-LINE-3",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-ADDR-STATE-CD",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-ADDR-ZIP",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-DOB-DAY",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-DOB-MON",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-DOB-YEAR",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-EFT-ACCOUNT-ID",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-FICO-SCORE",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-FIRST-NAME",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-GOVT-ISSUED-ID",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-ID",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-LAST-NAME",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-MIDDLE-NAME",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-PHONE-NUM-1",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-PHONE-NUM-2",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-PRI-HOLDER-IND",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-CUST-SSN",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-EXP-DAY",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-EXP-MON",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-EXP-YEAR",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-GROUP-ID",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-OPEN-DAY",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-OPEN-MON",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-OPEN-YEAR",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-REISSUE-DAY",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-REISSUE-MON",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "ACUP-OLD-REISSUE-YEAR",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "CDEMO-PGM-ENTER",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Data Element": "FOUND-CUST-IN-MASTER",
+    "R/U": "R",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "38",
+    "Rule Name": "9400-GETCUSTDATA-BYCUST",
+    "Rule Definition": "Get customer data",
+    "Group #": "2"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-ACTIVE-STATUS",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CASH-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CREDIT-LIMIT-N",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CURR-BAL-N",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CURR-CYC-CREDIT-N",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CURR-CYC-DEBIT-N",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-ADDR-COUNTRY-CD",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-ADDR-LINE-1",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-ADDR-LINE-2",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-ADDR-LINE-3",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-ADDR-STATE-CD",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-ADDR-ZIP",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-DOB-DAY",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-DOB-MON",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-DOB-YEAR",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-EFT-ACCOUNT-ID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-FIRST-NAME",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-GOVT-ISSUED-ID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-ID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-LAST-NAME",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-MIDDLE-NAME",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-PHONE-NUM-1A",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-PHONE-NUM-1B",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-PHONE-NUM-1C",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-PHONE-NUM-2A",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-PHONE-NUM-2B",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-PHONE-NUM-2C",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-PRI-HOLDER-IND",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-SSN-1",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-SSN-2",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-CUST-SSN-3",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-EXP-DAY",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-EXP-MON",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-EXP-YEAR",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-GROUP-ID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-OPEN-DAY",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-OPEN-MON",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-OPEN-YEAR",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-REISSUE-DAY",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-REISSUE-MON",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "ACUP-NEW-REISSUE-YEAR",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "FLG-CASH-CREDIT-LIMIT-ISVALID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "FLG-CRED-LIMIT-ISVALID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "FLG-CURR-BAL-ISVALID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "FLG-CURR-CYC-CREDIT-ISVALID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "FLG-CURR-CYC-DEBIT-ISVALID",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Data Element": "WS-EDIT-YES-NO",
+    "R/U": "R",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "39",
+    "Rule Name": "9500-STORE-FETCHED-DATA",
+    "Rule Definition": "Store fetched data",
+    "Group #": "3"
+  },
+  {
+    "Rule #": "40",
+    "Rule Name": "9600-WRITE-PROCESSING",
+    "Rule Definition": "Write updated data"
+  },
+  {
+    "Rule #": "41",
+    "Rule Name": "9700-CHECK-CHANGE-IN-REC",
+    "Rule Definition": "Check for changes in data"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-CLEAR",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-ENTER",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PA1",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PA2",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK01",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK02",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK03",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK04",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK05",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK06",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK07",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK08",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK09",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK10",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK11",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "CCARD-AID-PFK12",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey",
+    "Data Element": "EIBAID",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "42",
+    "Rule Name": "YYYY-STORE-PFKEY",
+    "Rule Definition": "Store pressed PFKey"
+  },
+  {
+    "Rule #": "43",
+    "Rule Name": "EDIT-DATE-CCYYMMDD",
+    "Rule Definition": "Edit date field",
+    "Data Element": "WS-EDIT-DATE-IS-INVALID",
+    "R/U": "R"
+  },
+  {
+    "Rule #": "43",
+    "Rule Name": "EDIT-DATE-CCYYMMDD",
+    "Rule Definition": "Edit date field"
+  },
+  {
+    "Rule #": "44",
+    "Rule Name": "EDIT-YEAR-CCYY",
+    "Rule Definition": "Edit year field",
+    "Data Element": "FLG-YEAR-BLANK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "44",
+    "Rule Name": "EDIT-YEAR-CCYY",
+    "Rule Definition": "Edit year field",
+    "Data Element": "FLG-YEAR-NOT-OK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "44",
+    "Rule Name": "EDIT-YEAR-CCYY",
+    "Rule Definition": "Edit year field",
+    "Data Element": "WS-EDIT-DATE-CCYY",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "44",
+    "Rule Name": "EDIT-YEAR-CCYY",
+    "Rule Definition": "Edit year field",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "44",
+    "Rule Name": "EDIT-YEAR-CCYY",
+    "Rule Definition": "Edit year field",
+    "Data Element": "WS-RETURN-MSG",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "44",
+    "Rule Name": "EDIT-YEAR-CCYY",
+    "Rule Definition": "Edit year field",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Data Element": "FLG-MONTH-BLANK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Data Element": "FLG-MONTH-NOT-OK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Data Element": "WS-EDIT-DATE-MM",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Data Element": "WS-EDIT-DATE-MM-N",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Data Element": "WS-RETURN-MSG",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Data Element": "WS-VALID-MONTH",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "45",
+    "Rule Name": "EDIT-MONTH",
+    "Rule Definition": "Edit month field",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "46",
+    "Rule Name": "EDIT-DAY",
+    "Rule Definition": "Edit day field",
+    "Data Element": "FLG-DAY-BLANK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "46",
+    "Rule Name": "EDIT-DAY",
+    "Rule Definition": "Edit day field",
+    "Data Element": "FLG-DAY-ISVALID",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "46",
+    "Rule Name": "EDIT-DAY",
+    "Rule Definition": "Edit day field",
+    "Data Element": "WS-EDIT-DATE-DD",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "46",
+    "Rule Name": "EDIT-DAY",
+    "Rule Definition": "Edit day field",
+    "Data Element": "WS-EDIT-DATE-DD-N",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "46",
+    "Rule Name": "EDIT-DAY",
+    "Rule Definition": "Edit day field",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "46",
+    "Rule Name": "EDIT-DAY",
+    "Rule Definition": "Edit day field",
+    "Data Element": "WS-VALID-DAY",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "46",
+    "Rule Name": "EDIT-DAY",
+    "Rule Definition": "Edit day field",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "FLG-DAY-ISVALID",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "FLG-DAY-NOT-OK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "FLG-MONTH-NOT-OK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "FLG-YEAR-NOT-OK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-DAY-29",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-DAY-30",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-DAY-31",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-DIV-BY",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-DIVIDEND",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-EDIT-DATE-CCYY-N",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-EDIT-DATE-IS-VALID",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-EDIT-DATE-YY-N",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-FEBRUARY",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-MONTH-NOT-31-DAY",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-REMAINDER",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Data Element": "WS-RETURN-MSG",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "47",
+    "Rule Name": "EDIT-DAY-MONTH-YEAR",
+    "Rule Definition": "Validate day, month and year",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "FLG-DAY-ISVALID",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "FLG-MONTH-NOT-OK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "FLG-YEAR-NOT-OK",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "INPUT-ERROR",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-DATE",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-DATE-FMT",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-DATE-FORMAT",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-DATE-VALIDATION-RESULT",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-EDIT-VARIABLE-NAME",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-MSG-NO",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-RETURN-MSG",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Data Element": "WS-SEVERITY-N",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "48",
+    "Rule Name": "EDIT-DATE-LE",
+    "Rule Definition": "Use standard subroutine to validate date",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "49",
+    "Rule Name": "EDIT-DATE-OF-BIRTH",
+    "Rule Definition": "Additional date of birth validation",
+    "Data Element": "WS-CURRENT-DATE-YYYYMMDD",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "49",
+    "Rule Name": "EDIT-DATE-OF-BIRTH",
+    "Rule Definition": "Additional date of birth validation",
+    "Data Element": "WS-EDIT-DATE-CCYYMMDD-N",
+    "R/U": "R",
+    "Group #": "5"
+  },
+  {
+    "Rule #": "49",
+    "Rule Name": "EDIT-DATE-OF-BIRTH",
+    "Rule Definition": "Additional date of birth validation",
+    "Group #": "5"
+  }
+]
